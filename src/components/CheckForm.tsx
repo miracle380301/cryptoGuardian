@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,6 +10,7 @@ import { Loader2, Search, Shield } from 'lucide-react'
 
 export function CheckForm() {
   const { t } = useTranslation()
+  const router = useRouter()
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -22,11 +24,11 @@ export function CheckForm() {
 
     setLoading(true)
 
-    // 임시 로딩 (실제 검증 기능은 나중에 구현)
-    setTimeout(() => {
-      setLoading(false)
-      alert(`${url} 검증 완료! (임시 기능)`)
-    }, 2000)
+    // Clean the domain for URL (preserve case for visual similarity detection)
+    const cleanDomain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]
+
+    // Navigate to check page
+    router.push(`/check/${encodeURIComponent(cleanDomain)}`)
   }
 
   return (

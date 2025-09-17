@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>KISA API Test</title>
+</head>
+<body>
+    <h1>KISA Phishing Database Test</h1>
+    <p>Testing domain: han.gl</p>
+    <button onclick="testKISA()">Test han.gl</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testKISA() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = 'Testing...';
+
+            try {
+                const response = await fetch('http://localhost:3000/api/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ domain: 'han.gl' })
+                });
+
+                const data = await response.json();
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+
+                // Highlight KISA results
+                if (data.checks && data.checks.reputation) {
+                    const kisaDetail = data.checks.reputation.details.details?.find(d => d.source === 'KISA');
+                    if (kisaDetail) {
+                        console.log('KISA Result:', kisaDetail);
+                        alert(`KISA: ${kisaDetail.isReported ? '🚨 PHISHING DETECTED!' : '✅ Clean'}\n${kisaDetail.details}`);
+                    }
+                }
+            } catch (error) {
+                resultDiv.textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
