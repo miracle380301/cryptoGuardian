@@ -18,7 +18,8 @@
       "Bash(touch:*)",
       "Bash(tasklist)",
       "Bash(findstr:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

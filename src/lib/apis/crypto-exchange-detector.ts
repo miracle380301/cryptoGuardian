@@ -113,7 +113,7 @@ export class CryptoExchangeDetector {
         patterns: ['legitimate-exchange'],
         confidence: 100,
         details: [`정식 거래소 도메인: ${this.LEGITIMATE_EXCHANGES[domain as keyof typeof this.LEGITIMATE_EXCHANGES].name}`],
-        recommendations: ['✅ 안전한 정식 거래소 사이트입니다']
+        recommendations: ['안전한 정식 거래소 사이트입니다']
       };
     }
 
@@ -379,37 +379,37 @@ export class CryptoExchangeDetector {
     const recommendations: string[] = [];
 
     if (riskLevel === 'dangerous') {
-      recommendations.push('🚨 즉시 사이트 이용 중단 - 거래소 사칭 사이트일 가능성이 매우 높습니다');
-      recommendations.push('🚫 로그인, 개인정보, 결제정보를 절대 입력하지 마세요');
+      recommendations.push('즉시 사이트 이용 중단 - 거래소 사칭 사이트일 가능성이 매우 높습니다');
+      recommendations.push('로그인, 개인정보, 결제정보를 절대 입력하지 마세요');
       if (targetExchange && legitimateUrl) {
-        recommendations.push(`✅ 정식 ${targetExchange} 사이트 이용: ${legitimateUrl}`);
+        recommendations.push(`정식 ${targetExchange} 사이트 이용: ${legitimateUrl}`);
       }
     } else if (riskLevel === 'suspicious') {
-      recommendations.push('⚠️ 주의깊게 확인하세요 - 거래소 사칭 패턴이 감지되었습니다');
-      recommendations.push('🔍 공식 거래소 웹사이트에서 직접 접속하세요');
-      recommendations.push('📱 공식 앱을 통해 거래하는 것이 더 안전합니다');
+      recommendations.push('주의깊게 확인하세요 - 거래소 사칭 패턴이 감지되었습니다');
+      recommendations.push('공식 거래소 웹사이트에서 직접 접속하세요');
+      recommendations.push('공식 앱을 통해 거래하는 것이 더 안전합니다');
     }
 
     // 패턴별 구체적 추천사항
     if (patterns.some(p => p.includes('impersonation'))) {
-      recommendations.push('⚠️ 유명 거래소 사칭이 의심됩니다 - 공식 도메인을 다시 확인하세요');
+      recommendations.push('유명 거래소 사칭이 의심됩니다 - 공식 도메인을 다시 확인하세요');
     }
 
     if (patterns.includes('promotional-keywords')) {
-      recommendations.push('💰 "보너스", "에어드랍" 등의 유혹적 제안은 사기의 전형적 수법입니다');
+      recommendations.push('"보너스", "에어드랍" 등의 유혹적 제안은 사기의 전형적 수법입니다');
     }
 
     if (patterns.includes('free-suspicious-tld')) {
-      recommendations.push('🌐 의심스러운 최상위 도메인(.tk, .ml 등)을 사용합니다');
+      recommendations.push('의심스러운 최상위 도메인(.tk, .ml 등)을 사용합니다');
     }
 
     if (patterns.includes('urgency-keywords')) {
-      recommendations.push('⏰ "한정", "특별" 등 긴급성을 조장하는 표현은 의심하세요');
+      recommendations.push('"한정", "특별" 등 긴급성을 조장하는 표현은 의심하세요');
     }
 
     // 일반적 보안 추천사항
-    recommendations.push('🔐 2FA(이중인증)가 활성화된 정식 거래소만 이용하세요');
-    recommendations.push('📧 의심스러운 이메일이나 메시지의 링크는 클릭하지 마세요');
+    recommendations.push('2FA(이중인증)가 활성화된 정식 거래소만 이용하세요');
+    recommendations.push('의심스러운 이메일이나 메시지의 링크는 클릭하지 마세요');
 
     return recommendations;
   }
@@ -441,29 +441,29 @@ export class CryptoExchangeDetector {
 
   // 분석 결과 로깅
   private logExchangeAnalysis(domain: string, result: CryptoExchangeDetectionResult): void {
-    console.log('\n🏦 === 가상화폐 거래소 위장 탐지 결과 ===');
-    console.log(`📍 도메인: ${domain}`);
-    console.log(`🎭 사칭 여부: ${result.isImpersonation ? 'YES' : 'NO'}`);
+    console.log('\n=== 가상화폐 거래소 위장 탐지 결과 ===');
+    console.log(`도메인: ${domain}`);
+    console.log(`사칭 여부: ${result.isImpersonation ? 'YES' : 'NO'}`);
     if (result.targetExchange) {
-      console.log(`🎯 사칭 대상: ${result.targetExchange}`);
-      console.log(`✅ 정식 URL: ${result.legitimateUrl}`);
+      console.log(`사칭 대상: ${result.targetExchange}`);
+      console.log(`정식 URL: ${result.legitimateUrl}`);
     }
-    console.log(`⚠️ 위험도: ${result.riskLevel}`);
-    console.log(`📊 신뢰도: ${result.confidence}%`);
+    console.log(`위험도: ${result.riskLevel}`);
+    console.log(`신뢰도: ${result.confidence}%`);
 
     if (result.patterns.length > 0) {
-      console.log(`🚩 감지된 패턴: ${result.patterns.join(', ')}`);
+      console.log(`감지된 패턴: ${result.patterns.join(', ')}`);
     }
 
     if (result.details.length > 0) {
-      console.log('\n📋 상세 분석:');
+      console.log('\n 상세 분석:');
       result.details.forEach((detail, index) => {
         console.log(`   ${index + 1}. ${detail}`);
       });
     }
 
     if (result.recommendations.length > 0) {
-      console.log('\n💡 추천사항:');
+      console.log('\n 추천사항:');
       result.recommendations.forEach((rec, index) => {
         console.log(`   ${index + 1}. ${rec}`);
       });

@@ -339,14 +339,14 @@ export class SafeBrowsingAPI {
               threatEntryType: 'URL'
             }],
             score: 0,
-            scoreBreakdown: ['🚨 Visual similarity attack detected: 0 points (BLOCKED)', `Typosquatting penalty: ${typoPenalty}`]
+            scoreBreakdown: ['Visual similarity attack detected: 0 points (BLOCKED)', `Typosquatting penalty: ${typoPenalty}`]
           },
           timestamp: new Date().toISOString()
         };
       }
 
       typoScore = Math.max(0, typoScore + typoPenalty);
-      scoreBreakdown.push(`⚠️ Typosquatting detected: ${typoPenalty} points (Score: ${typoScore}/40)`);
+      scoreBreakdown.push(`Typosquatting detected: ${typoPenalty} points (Score: ${typoScore}/40)`);
     } else {
       scoreBreakdown.push(`✓ Typosquatting check: ${typoScore}/40 points`);
     }
@@ -358,7 +358,7 @@ export class SafeBrowsingAPI {
 
     if (patternPenalty < 0) {
       patternScore = Math.max(0, patternScore + patternPenalty);
-      scoreBreakdown.push(`⚠️ Suspicious patterns: ${patternPenalty} points (Score: ${patternScore}/30)`);
+      scoreBreakdown.push(`Suspicious patterns: ${patternPenalty} points (Score: ${patternScore}/30)`);
     } else {
       scoreBreakdown.push(`✓ Pattern analysis: ${patternScore}/30 points`);
     }
@@ -425,7 +425,7 @@ export class SafeBrowsingAPI {
                 safe: false,
                 threats: googleApiThreats,
                 score: 0,
-                scoreBreakdown: ['🚨 Google threat detected: 0 points (BLOCKED)', ...scoreBreakdown]
+                scoreBreakdown: ['Google threat detected: 0 points (BLOCKED)', ...scoreBreakdown]
               },
               timestamp: new Date().toISOString()
             };
@@ -438,18 +438,18 @@ export class SafeBrowsingAPI {
           console.warn('Google Safe Browsing API error:', response.status, errorText);
           console.log(`[SAFE_BROWSING DEBUG] API error response:`, errorText);
           googleApiScore = 15; // API 실패시 절반 점수
-          scoreBreakdown.push('⚠️ Google API unavailable: 15/30 points');
+          scoreBreakdown.push('Google API unavailable: 15/30 points');
         }
       } catch (error) {
         console.error('Google Safe Browsing API error:', error);
         console.log(`[SAFE_BROWSING DEBUG] Exception details:`, error);
         googleApiScore = 15; // API 실패시 절반 점수
-        scoreBreakdown.push('⚠️ Google API error: 15/30 points');
+        scoreBreakdown.push('Google API error: 15/30 points');
       }
     } else {
       console.log(`[SAFE_BROWSING DEBUG] API key not configured or is placeholder - using pattern analysis only`);
       googleApiScore = 0; // API 키 없으면 0점
-      scoreBreakdown.push('ℹ️ Google API key not configured: 0/30 points');
+      scoreBreakdown.push('Google API key not configured: 0/30 points');
     }
 
     // Calculate final score with new weighting system
@@ -479,11 +479,11 @@ export class SafeBrowsingAPI {
 
     // Add positive indicators
     if (finalScore >= 90) {
-      scoreBreakdown.push('✅ High confidence - likely safe');
+      scoreBreakdown.push('High confidence - likely safe');
     } else if (finalScore >= 70) {
-      scoreBreakdown.push('⚠️ Medium confidence - exercise caution');
+      scoreBreakdown.push('Medium confidence - exercise caution');
     } else {
-      scoreBreakdown.push('🚨 Low confidence - potentially dangerous');
+      scoreBreakdown.push('Low confidence - potentially dangerous');
     }
 
     const result = {

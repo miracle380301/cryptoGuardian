@@ -31,13 +31,13 @@ export default function Home() {
             </div>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-            CryptoGuardian
+            {t.header.logo.replace('🛡️ ', '')}
           </h1>
           <p className="text-2xl text-gray-600 mb-4 font-medium">
-            Verify Cryptocurrency Websites Before You Trade
+            {t.main.title}
           </p>
           <p className="text-gray-500 max-w-4xl mx-auto text-lg leading-relaxed">
-            Instant security analysis and trust scores for crypto exchanges, wallets, and DeFi platforms. Protect yourself from scams and fraudulent websites.
+            {t.main.subtitle}
           </p>
         </div>
 
@@ -50,15 +50,15 @@ export default function Home() {
         <div className="flex justify-center items-center space-x-8 mb-16 text-sm">
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-            <span className="text-gray-600">Trusted data sources</span>
+            <span className="text-gray-600">{t.main.features.trusted}</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span className="text-gray-600">Real-time verification</span>
+            <span className="text-gray-600">{t.main.features.instant}</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-            <span className="text-gray-600">SSL & Security checks</span>
+            <span className="text-gray-600">{t.main.features.secure}</span>
           </div>
         </div>
 
@@ -68,9 +68,9 @@ export default function Home() {
             <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
               <Globe className="h-8 w-8 text-blue-600" />
             </div>
-            <h3 className="font-bold text-xl mb-3 text-gray-900">Real-time Analysis</h3>
+            <h3 className="font-bold text-xl mb-3 text-gray-900">{t.main.featuresDetailed.realtime.title}</h3>
             <p className="text-gray-600">
-              Live verification of website legitimacy and security status
+              {t.main.featuresDetailed.realtime.description}
             </p>
           </div>
 
@@ -78,9 +78,9 @@ export default function Home() {
             <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
               <Lock className="h-8 w-8 text-green-600" />
             </div>
-            <h3 className="font-bold text-xl mb-3 text-gray-900">SSL & Security Checks</h3>
+            <h3 className="font-bold text-xl mb-3 text-gray-900">{t.main.featuresDetailed.ssl.title}</h3>
             <p className="text-gray-600">
-              Comprehensive SSL certificate and security protocol validation
+              {t.main.featuresDetailed.ssl.description}
             </p>
           </div>
 
@@ -88,32 +88,32 @@ export default function Home() {
             <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
               <TrendingUp className="h-8 w-8 text-purple-600" />
             </div>
-            <h3 className="font-bold text-xl mb-3 text-gray-900">Trust Score System</h3>
+            <h3 className="font-bold text-xl mb-3 text-gray-900">{t.main.featuresDetailed.trustScore.title}</h3>
             <p className="text-gray-600">
-              Clear 0-100 scoring based on multiple security parameters
+              {t.main.featuresDetailed.trustScore.description}
             </p>
           </div>
         </div>
 
         {/* Statistics Section */}
         <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8 text-gray-900">Live Statistics</h2>
+          <h2 className="text-2xl font-bold text-center mb-8 text-gray-900">{t.main.liveStats.title}</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <div className="text-4xl font-bold text-blue-600 mb-2">15,432</div>
-              <div className="text-gray-600 text-sm">Sites Analyzed</div>
+              <div className="text-gray-600 text-sm">{t.main.liveStats.sitesAnalyzed}</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-green-600 mb-2">94%</div>
-              <div className="text-gray-600 text-sm">Detection Rate</div>
+              <div className="text-gray-600 text-sm">{t.main.liveStats.detectionRate}</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-red-600 mb-2">823</div>
-              <div className="text-gray-600 text-sm">Scams Detected</div>
+              <div className="text-gray-600 text-sm">{t.main.liveStats.scamsDetected}</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-blue-600 mb-2">24/7</div>
-              <div className="text-gray-600 text-sm">Monitoring</div>
+              <div className="text-gray-600 text-sm">{t.main.liveStats.monitoring}</div>
             </div>
           </div>
         </div>

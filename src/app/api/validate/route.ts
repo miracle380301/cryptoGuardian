@@ -209,7 +209,7 @@ function processWhoisCheck(result: PromiseSettledResult<any>): ValidationCheck {
     ageMessage = `New domain (${domainAgeDays} days old)`;
   } else { // Less than 1 month
     ageScore = 10;
-    ageMessage = `⚠️ Very new domain (${domainAgeDays} days old)`;
+    ageMessage = `Very new domain (${domainAgeDays} days old)`;
   }
 
   // 2. Domain Status Score (70% weight)
@@ -249,7 +249,7 @@ function processSSLCheck(result: PromiseSettledResult<any>): ValidationCheck {
       passed: false,
       score: 0,
       weight: 0.2,
-      message: '⚠️ SSL verification failed',
+      message: 'SSL verification failed',
       details: { error: result.status === 'rejected' ? result.reason : result.value.error }
     };
   }
@@ -262,7 +262,7 @@ function processSSLCheck(result: PromiseSettledResult<any>): ValidationCheck {
       passed: false,
       score: 0,
       weight: 0.2,
-      message: '🚨 No SSL certificate found - Site is not secure',
+      message: 'No SSL certificate found - Site is not secure',
       details: data
     };
   }
@@ -273,7 +273,7 @@ function processSSLCheck(result: PromiseSettledResult<any>): ValidationCheck {
   // Build message based on score and breakdown
   let message = '';
   if (!data.valid) {
-    message = '🚨 Invalid SSL certificate';
+    message = 'Invalid SSL certificate';
   } else if (data.scoreBreakdown && data.scoreBreakdown.length > 0) {
     message = `✓ SSL Grade: ${data.grade}\n${data.scoreBreakdown.join('\n')}`;
   } else if (data.grade) {
@@ -291,7 +291,7 @@ function processSSLCheck(result: PromiseSettledResult<any>): ValidationCheck {
   }
   if (data.daysRemaining !== undefined) {
     if (data.daysRemaining < 30) {
-      message += `\n⚠️ Expires in ${data.daysRemaining} days`;
+      message += `\nExpires in ${data.daysRemaining} days`;
     } else {
       message += `\nValid for ${data.daysRemaining} days`;
     }
@@ -407,7 +407,7 @@ function processSafeBrowsingCheck(result: PromiseSettledResult<any>): Validation
       passed: true,
       score: 75,
       weight: 0.2,
-      message: '⚠️ Unable to verify with Google Safe Browsing',
+      message: ' Unable to verify with Google Safe Browsing',
       details: { error: result.status === 'rejected' ? result.reason : result.value.error }
     };
   }
@@ -420,12 +420,12 @@ function processSafeBrowsingCheck(result: PromiseSettledResult<any>): Validation
   // Build message based on score and breakdown
   let message = '';
   if (data.safe && score >= 70) {
-    message = '✅ No threats detected';
+    message = 'No threats detected';
   } else if (data.threats && data.threats.length > 0) {
     const threatTypes = data.threats.map((t: any) => t.threatType).join(', ');
-    message = `🚨 Threats detected: ${threatTypes}`;
+    message = `Threats detected: ${threatTypes}`;
   } else {
-    message = '⚠️ Suspicious patterns detected';
+    message = 'Suspicious patterns detected';
   }
 
   // Add score breakdown if available
@@ -538,25 +538,25 @@ function calculateDomainStatusScoreV2(statuses: string[]): { score: number; stat
   // Critical issues - Heavy penalties
   if (statusText.includes('clienthold') || statusText.includes('client hold')) {
     score -= 70; // Major red flag
-    statusMessages.push('⚠️ Domain on hold (suspended)');
+    statusMessages.push('Domain on hold (suspended)');
     hasNegativeStatus = true;
   }
 
   if (statusText.includes('serverhold') || statusText.includes('server hold')) {
     score -= 80; // Very serious
-    statusMessages.push('🚨 Server hold (critical issue)');
+    statusMessages.push('Server hold (critical issue)');
     hasNegativeStatus = true;
   }
 
   if (statusText.includes('redemptionperiod') || statusText.includes('redemption period')) {
     score -= 90; // Almost expired
-    statusMessages.push('🚨 In redemption period (expired)');
+    statusMessages.push('In redemption period (expired)');
     hasNegativeStatus = true;
   }
 
   if (statusText.includes('pendingdelete') || statusText.includes('pending delete')) {
     score -= 95; // About to be deleted
-    statusMessages.push('🚨 Pending deletion');
+    statusMessages.push('Pending deletion');
     hasNegativeStatus = true;
   }
 
@@ -637,15 +637,15 @@ function processTeamScamCheck(result: PromiseSettledResult<any>): ValidationChec
   let message = '';
   if (data.isTeamScam) {
     if (data.riskLevel === 'dangerous') {
-      message = '🚨 High probability of team scam mission detected';
+      message = 'High probability of team scam mission detected';
     } else {
-      message = '⚠️ Suspicious team scam patterns detected';
+      message = 'Suspicious team scam patterns detected';
     }
     if (data.patterns.length > 0) {
       message += ` (${data.patterns.slice(0, 3).join(', ')})`;
     }
   } else {
-    message = '✅ No team scam patterns detected';
+    message = 'No team scam patterns detected';
   }
 
   return {
@@ -685,12 +685,12 @@ function processCryptoExchangeCheck(result: PromiseSettledResult<any>): Validati
   let message = '';
   if (data.isImpersonation) {
     if (data.targetExchange) {
-      message = `🚨 Possible ${data.targetExchange} impersonation detected`;
+      message = `Possible ${data.targetExchange} impersonation detected`;
     } else {
-      message = '🚨 Crypto exchange impersonation detected';
+      message = 'Crypto exchange impersonation detected';
     }
   } else {
-    message = '✅ No exchange impersonation detected';
+    message = 'No exchange impersonation detected';
   }
 
   return {
@@ -730,12 +730,12 @@ function processKoreanCryptoScamCheck(result: PromiseSettledResult<any>): Valida
   let message = '';
   if (data.isKoreanCryptoScam) {
     if (data.scamType) {
-      message = `🚨 Korean crypto scam detected: ${data.scamType}`;
+      message = `Korean crypto scam detected: ${data.scamType}`;
     } else {
-      message = '🚨 Korean crypto scam patterns detected';
+      message = 'Korean crypto scam patterns detected';
     }
   } else {
-    message = '✅ No Korean crypto scam patterns detected';
+    message = 'No Korean crypto scam patterns detected';
   }
 
   return {
@@ -760,45 +760,45 @@ function generateRecommendations(checks: any, score: number): string[] {
 
   // Enhanced crypto scam specific recommendations
   if (checks.teamScam && !checks.teamScam.passed) {
-    recommendations.push('🚨 CRITICAL: Team scam mission detected - avoid at all costs.');
+    recommendations.push('CRITICAL: Team scam mission detected - avoid at all costs.');
   }
 
   if (checks.cryptoExchange && !checks.cryptoExchange.passed) {
-    recommendations.push('🚨 CRITICAL: Cryptocurrency exchange impersonation detected.');
+    recommendations.push('CRITICAL: Cryptocurrency exchange impersonation detected.');
     if (checks.cryptoExchange.details?.legitimateUrl) {
-      recommendations.push(`✅ Use the official site instead: ${checks.cryptoExchange.details.legitimateUrl}`);
+      recommendations.push(`Use the official site instead: ${checks.cryptoExchange.details.legitimateUrl}`);
     }
   }
 
   if (checks.koreanCryptoScam && !checks.koreanCryptoScam.passed) {
-    recommendations.push('🚨 WARNING: Korean cryptocurrency scam patterns detected.');
+    recommendations.push('WARNING: Korean cryptocurrency scam patterns detected.');
   }
 
   if (!checks.ssl.passed) {
-    recommendations.push('⚠️ Avoid entering sensitive information - no valid SSL certificate.');
+    recommendations.push('Avoid entering sensitive information - no valid SSL certificate.');
   }
 
   if (!checks.whois.passed || checks.whois.score < 50) {
-    recommendations.push('⚠️ Be cautious - this is a very new domain.');
+    recommendations.push('Be cautious - this is a very new domain.');
   }
 
   if (!checks.reputation.passed) {
-    recommendations.push('🚨 High risk - domain has poor reputation or is blacklisted.');
+    recommendations.push('High risk - domain has poor reputation or is blacklisted.');
   }
 
   if (!checks.safeBrowsing.passed) {
-    recommendations.push('🚨 Google Safe Browsing has detected threats on this site.');
+    recommendations.push('Google Safe Browsing has detected threats on this site.');
   }
 
   if (score < 50) {
-    recommendations.push('❌ Strongly recommend avoiding this site.');
+    recommendations.push('Strongly recommend avoiding this site.');
     recommendations.push('Consider using well-known exchanges like Binance, Coinbase, or Kraken.');
   }
 
   // Add specific crypto security recommendations
   if (checks.teamScam || checks.cryptoExchange || checks.koreanCryptoScam) {
-    recommendations.push('🔐 For crypto safety: Only use official exchange apps and websites.');
-    recommendations.push('📱 Verify URLs through official social media or support channels.');
+    recommendations.push('For crypto safety: Only use official exchange apps and websites.');
+    recommendations.push('Verify URLs through official social media or support channels.');
   }
 
   return recommendations;

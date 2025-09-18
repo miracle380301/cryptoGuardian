@@ -39,7 +39,7 @@ export function CheckForm() {
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter website URL or domain (e.g., binance.com)"
+            placeholder={t.main.inputPlaceholder}
             className="pl-12 h-14 text-lg border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors bg-white"
             disabled={loading}
           />
@@ -54,12 +54,12 @@ export function CheckForm() {
           {loading ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Checking...
+              {t.main.checkingButton}
             </>
           ) : (
             <>
               <Shield className="mr-2 h-5 w-5" />
-              Check Website
+              {t.main.checkButton}
             </>
           )}
         </Button>

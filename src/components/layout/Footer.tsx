@@ -29,7 +29,7 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Quick Links</h4>
+            <h4 className="font-semibold text-gray-900 mb-4">{/* Quick Links */}</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
@@ -51,7 +51,7 @@ export function Footer() {
 
           {/* Legal & Contact */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Legal</h4>
+            <h4 className="font-semibold text-gray-900 mb-4">{/* Legal */}</h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/privacy" className="text-gray-600 hover:text-blue-600 transition-colors">

@@ -16,21 +16,21 @@ export function Header() {
             <Shield className="h-6 w-6 text-blue-600" />
             <div>
               <h1 className="text-xl font-bold text-gray-900">
-                CryptoGuardian
+                {t.header.logo.replace('🛡️ ', '')}
               </h1>
-              <p className="text-xs text-gray-600 hidden sm:block">Crypto Site Security Checker</p>
+              <p className="text-xs text-gray-600 hidden sm:block">{t.header.tagline}</p>
             </div>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-6">
             <Link href="/" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-              🏠 Home
+              🏠 {t.header.nav.home}
             </Link>
             <Link href="/about" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-              About
+              {t.header.nav.about}
             </Link>
             <Link href="/api" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-              API
+              {t.header.nav.api}
             </Link>
           </nav>
 

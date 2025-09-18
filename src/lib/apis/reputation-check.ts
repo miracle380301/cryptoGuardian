@@ -840,27 +840,22 @@ export class PhishingReportCheckAPI {
 
   // 결과를 콘솔에 출력하는 메서드
   private logResults(domain: string, result: PhishingReportResult): void {
-    console.log('\n🔍 === 피싱 신고 사이트 검증 결과 ===');
-    console.log(`📍 도메인: ${domain}`);
-    console.log(`📊 최종 점수: ${result.score}/100`);
-    console.log(`⚠️ 위험 수준: ${result.riskLevel}`);
-    console.log(`🚨 신고된 사이트: ${result.isReported ? 'YES' : 'NO'}`);
-    console.log(`📈 신뢰도: ${result.confidence}%`);
-    console.log(`🏛️ 정부기관 인증: ${result.governmentVerified ? 'YES' : 'NO'}`);
+    console.log('\n === 피싱 신고 사이트 검증 결과 ===');
+    console.log(` 도메인: ${domain}`);
+    console.log(` 최종 점수: ${result.score}/100`);
+    console.log(` 위험 수준: ${result.riskLevel}`);
+    console.log(` 신고된 사이트: ${result.isReported ? 'YES' : 'NO'}`);
+    console.log(` 신뢰도: ${result.confidence}%`);
+    console.log(` 정부기관 인증: ${result.governmentVerified ? 'YES' : 'NO'}`);
 
     if (result.reportSources.length > 0) {
-      console.log(`📋 신고 소스: ${result.reportSources.join(', ')}`);
-      console.log(`📅 마지막 신고: ${result.lastReported || 'N/A'}`);
-      console.log(`🔢 총 신고 수: ${result.reportCount}`);
+      console.log(` 신고 소스: ${result.reportSources.join(', ')}`);
+      console.log(` 마지막 신고: ${result.lastReported || 'N/A'}`);
+      console.log(` 총 신고 수: ${result.reportCount}`);
     }
 
-    console.log('\n📋 각 API 검증 결과:');
+    console.log('\n 각 API 검증 결과:');
     result.details.forEach((detail, index) => {
-      const emoji = detail.confidence === 0 ? '❌' : // API 실패
-                   detail.riskLevel === 'clean' ? '✅' :
-                   detail.riskLevel === 'suspicious' ? '⚠️' : '🚨';
-
-      console.log(`${emoji} ${detail.source}:`);
       console.log(`   - 위험도: ${detail.riskLevel}`);
       console.log(`   - 신고 여부: ${detail.isReported ? 'YES' : 'NO'}`);
       console.log(`   - 신뢰도: ${detail.confidence}%`);
@@ -878,7 +873,7 @@ export class PhishingReportCheckAPI {
     });
 
     // 점수 계산 과정 로그
-    console.log('🧮 점수 계산 과정:');
+    console.log(' 점수 계산 과정:');
     console.log(`   - 기본 점수: 100점`);
 
     const reportedAPIs = result.details.filter(d => d.isReported);
@@ -897,7 +892,7 @@ export class PhishingReportCheckAPI {
     console.log(`   - 최종 계산: ${result.score}점`);
 
     // API 가중치 정보
-    console.log('\n⚖️ API 가중치 (피싱/스캠 탐지 우선):');
+    console.log('\n API 가중치 (피싱/스캠 탐지 우선):');
     console.log('   - KISA: 30% (한국 피싱 DB - 매우 정확)');
     console.log('   - VirusTotal: 25% (글로벌 멀웨어/피싱)');
     console.log('   - CryptoScamDB: 20% (암호화폐 스캠 특화)');

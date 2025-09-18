@@ -302,30 +302,30 @@ export class TeamScamDetector {
     const recommendations: string[] = [];
 
     if (riskLevel === 'dangerous') {
-      recommendations.push('🚨 즉시 접근 중단 - 팀 스캠 미션일 가능성이 매우 높습니다');
-      recommendations.push('🚫 어떤 개인정보나 결제정보도 입력하지 마세요');
-      recommendations.push('📞 의심스러운 연락이 왔다면 공식 채널로 확인하세요');
+      recommendations.push(' 즉시 접근 중단 - 팀 스캠 미션일 가능성이 매우 높습니다');
+      recommendations.push(' 어떤 개인정보나 결제정보도 입력하지 마세요');
+      recommendations.push(' 의심스러운 연락이 왔다면 공식 채널로 확인하세요');
     } else if (riskLevel === 'suspicious') {
-      recommendations.push('⚠️ 신중하게 접근하세요 - 팀 스캠 패턴이 감지되었습니다');
-      recommendations.push('🔍 제공업체를 공식 웹사이트에서 직접 확인하세요');
-      recommendations.push('💰 투자나 수익 관련 제안은 특히 주의하세요');
+      recommendations.push(' 신중하게 접근하세요 - 팀 스캠 패턴이 감지되었습니다');
+      recommendations.push(' 제공업체를 공식 웹사이트에서 직접 확인하세요');
+      recommendations.push(' 투자나 수익 관련 제안은 특히 주의하세요');
     }
 
     // 패턴별 구체적 추천사항
     if (patterns.includes('telegram-impersonation') || patterns.includes('whatsapp-impersonation')) {
-      recommendations.push('📱 공식 메신저 앱에서 직접 확인하세요');
+      recommendations.push(' 공식 메신저 앱에서 직접 확인하세요');
     }
 
     if (patterns.includes('binance-impersonation') || patterns.includes('upbit-impersonation')) {
-      recommendations.push('🏦 공식 거래소 웹사이트에서 직접 접속하세요');
+      recommendations.push(' 공식 거래소 웹사이트에서 직접 접속하세요');
     }
 
     if (patterns.includes('team-mission-direct')) {
-      recommendations.push('🎯 "팀 미션" 관련 제안은 90% 이상이 사기입니다');
+      recommendations.push(' "팀 미션" 관련 제안은 90% 이상이 사기입니다');
     }
 
     if (patterns.includes('guaranteed-income')) {
-      recommendations.push('💸 "보장된 수익"은 존재하지 않습니다');
+      recommendations.push(' "보장된 수익"은 존재하지 않습니다');
     }
 
     return recommendations;
@@ -359,24 +359,24 @@ export class TeamScamDetector {
   // 분석 결과 로깅
   private logTeamScamAnalysis(domain: string, result: TeamScamDetectionResult): void {
     console.log('\n🕵️ === 팀 스캠 미션 패턴 분석 결과 ===');
-    console.log(`📍 도메인: ${domain}`);
-    console.log(`🎯 팀 스캠 여부: ${result.isTeamScam ? 'YES' : 'NO'}`);
-    console.log(`⚠️ 위험도: ${result.riskLevel}`);
-    console.log(`📊 신뢰도: ${result.confidence}%`);
+    console.log(` 도메인: ${domain}`);
+    console.log(` 팀 스캠 여부: ${result.isTeamScam ? 'YES' : 'NO'}`);
+    console.log(` 위험도: ${result.riskLevel}`);
+    console.log(` 신뢰도: ${result.confidence}%`);
 
     if (result.patterns.length > 0) {
-      console.log(`🚩 감지된 패턴: ${result.patterns.join(', ')}`);
+      console.log(` 감지된 패턴: ${result.patterns.join(', ')}`);
     }
 
     if (result.details.length > 0) {
-      console.log('\n📋 상세 분석:');
+      console.log('\n 상세 분석:');
       result.details.forEach((detail, index) => {
         console.log(`   ${index + 1}. ${detail}`);
       });
     }
 
     if (result.recommendations.length > 0) {
-      console.log('\n💡 추천사항:');
+      console.log('\n 추천사항:');
       result.recommendations.forEach((rec, index) => {
         console.log(`   ${index + 1}. ${rec}`);
       });

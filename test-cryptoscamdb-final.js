@@ -46,24 +46,24 @@ async function testCryptoScamDB(domain) {
     });
 
     if (matches.length > 0) {
-      console.log(`\n🚨 FOUND ${matches.length} matches for ${domain}:`);
+      console.log(`\n FOUND ${matches.length} matches for ${domain}:`);
       matches.slice(0, 5).forEach(match => {
         console.log(`  - ${match}`);
       });
     } else {
-      console.log(`\n✅ Domain ${domain} NOT found in CryptoScamDB`);
+      console.log(`\n Domain ${domain} NOT found in CryptoScamDB`);
 
       // Check for suspicious patterns
       const patterns = ['pancakeswap-', 'uniswap-', 'metamask-', 'binance-'];
       const suspicious = patterns.some(p => cleanDomain.includes(p));
 
       if (suspicious) {
-        console.log(`⚠️ BUT domain has suspicious crypto pattern!`);
+        console.log(`BUT domain has suspicious crypto pattern!`);
       }
     }
 
     // Show sample entries
-    console.log('\n📋 Sample CryptoScamDB entries (first 10):');
+    console.log('\n Sample CryptoScamDB entries (first 10):');
     scamUrls.slice(0, 10).forEach((url, i) => {
       console.log(`  ${i + 1}. ${url}`);
     });

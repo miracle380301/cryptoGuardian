@@ -457,43 +457,43 @@ export class KoreanCryptoScamDetector {
     const recommendations: string[] = [];
 
     if (riskLevel === 'dangerous') {
-      recommendations.push('🚨 즉시 사이트 이용 중단 - 국내 가상화폐 사기일 가능성이 매우 높습니다');
-      recommendations.push('🚫 개인정보, 계좌정보, 가상화폐 지갑 정보를 절대 입력하지 마세요');
-      recommendations.push('📞 의심스러운 연락이 왔다면 한국인터넷진흥원(privacy.go.kr)에 신고하세요');
+      recommendations.push(' 즉시 사이트 이용 중단 - 국내 가상화폐 사기일 가능성이 매우 높습니다');
+      recommendations.push(' 개인정보, 계좌정보, 가상화폐 지갑 정보를 절대 입력하지 마세요');
+      recommendations.push(' 의심스러운 연락이 왔다면 한국인터넷진흥원(privacy.go.kr)에 신고하세요');
     } else if (riskLevel === 'suspicious') {
-      recommendations.push('⚠️ 주의하세요 - 국내 가상화폐 사기 패턴이 감지되었습니다');
-      recommendations.push('🔍 금융감독원 등록업체인지 확인하세요 (fss.or.kr)');
-      recommendations.push('💡 투자 전 충분한 검토와 전문가 상담을 받으세요');
+      recommendations.push(' 주의하세요 - 국내 가상화폐 사기 패턴이 감지되었습니다');
+      recommendations.push(' 금융감독원 등록업체인지 확인하세요 (fss.or.kr)');
+      recommendations.push(' 투자 전 충분한 검토와 전문가 상담을 받으세요');
     }
 
     // 패턴별 구체적 추천사항
     if (patterns.includes('fake-korean-exchange')) {
-      recommendations.push('🏦 정식 한국 거래소: 업비트, 빗썸, 코인원, 코빗, 고팩스만 이용하세요');
+      recommendations.push(' 정식 한국 거래소: 업비트, 빗썸, 코인원, 코빗, 고팩스만 이용하세요');
     }
 
     if (patterns.includes('fake-korean-government')) {
-      recommendations.push('🏛️ 정부기관 사칭 시 즉시 해당 기관에 직접 확인하세요');
+      recommendations.push(' 정부기관 사칭 시 즉시 해당 기관에 직접 확인하세요');
     }
 
     if (patterns.includes('kpop-culture-exploitation')) {
-      recommendations.push('🎵 K-pop/연예인과 관련된 가상화폐는 99% 사기입니다');
+      recommendations.push(' K-pop/연예인과 관련된 가상화폐는 99% 사기입니다');
     }
 
     if (patterns.includes('known-scam-pattern')) {
-      recommendations.push('📋 이미 알려진 사기 수법과 유사한 패턴입니다');
+      recommendations.push(' 이미 알려진 사기 수법과 유사한 패턴입니다');
     }
 
     if (patterns.includes('investment-korean') || patterns.includes('guarantee-korean')) {
-      recommendations.push('💰 "보장된 수익", "확실한 투자"는 존재하지 않습니다');
+      recommendations.push(' "보장된 수익", "확실한 투자"는 존재하지 않습니다');
     }
 
     // 일반적 보안 추천사항
-    recommendations.push('📱 의심스러운 앱 설치나 파일 다운로드를 하지 마세요');
-    recommendations.push('🔐 공식 거래소의 2단계 인증(2FA)을 반드시 설정하세요');
-    recommendations.push('💬 가상화폐 관련 제안은 텔레그램, 카카오톡 등에서 온 것일수록 의심하세요');
+    recommendations.push(' 의심스러운 앱 설치나 파일 다운로드를 하지 마세요');
+    recommendations.push(' 공식 거래소의 2단계 인증(2FA)을 반드시 설정하세요');
+    recommendations.push(' 가상화폐 관련 제안은 텔레그램, 카카오톡 등에서 온 것일수록 의심하세요');
 
     if (scamType) {
-      recommendations.push(`🎯 감지된 사기 유형: ${scamType}`);
+      recommendations.push(` 감지된 사기 유형: ${scamType}`);
     }
 
     return recommendations;
@@ -527,31 +527,31 @@ export class KoreanCryptoScamDetector {
   // 분석 결과 로깅
   private logKoreanScamAnalysis(domain: string, result: KoreanCryptoScamDetectionResult): void {
     console.log('\n🇰🇷 === 국내 가상화폐 사기 탐지 결과 ===');
-    console.log(`📍 도메인: ${domain}`);
-    console.log(`🎯 국내 가상화폐 사기 여부: ${result.isKoreanCryptoScam ? 'YES' : 'NO'}`);
+    console.log(` 도메인: ${domain}`);
+    console.log(` 국내 가상화폐 사기 여부: ${result.isKoreanCryptoScam ? 'YES' : 'NO'}`);
     if (result.scamType) {
-      console.log(`🔍 사기 유형: ${result.scamType}`);
+      console.log(` 사기 유형: ${result.scamType}`);
     }
-    console.log(`⚠️ 위험도: ${result.riskLevel}`);
-    console.log(`📊 신뢰도: ${result.confidence}%`);
+    console.log(` 위험도: ${result.riskLevel}`);
+    console.log(` 신뢰도: ${result.confidence}%`);
 
     if (result.patterns.length > 0) {
-      console.log(`🚩 감지된 패턴: ${result.patterns.join(', ')}`);
+      console.log(` 감지된 패턴: ${result.patterns.join(', ')}`);
     }
 
     if (result.relatedScams && result.relatedScams.length > 0) {
-      console.log(`📋 관련 알려진 사기: ${result.relatedScams.join(', ')}`);
+      console.log(` 관련 알려진 사기: ${result.relatedScams.join(', ')}`);
     }
 
     if (result.details.length > 0) {
-      console.log('\n📋 상세 분석:');
+      console.log('\n 상세 분석:');
       result.details.forEach((detail, index) => {
         console.log(`   ${index + 1}. ${detail}`);
       });
     }
 
     if (result.recommendations.length > 0) {
-      console.log('\n💡 추천사항:');
+      console.log('\n 추천사항:');
       result.recommendations.forEach((rec, index) => {
         console.log(`   ${index + 1}. ${rec}`);
       });

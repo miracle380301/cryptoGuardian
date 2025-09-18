@@ -9,7 +9,7 @@ export const translations = {
 
     // 헤더
     header: {
-      logo: '🛡️ 크립토가디언',
+      logo: '크립토가디언',
       tagline: '암호화폐 사이트 보안 검증 서비스',
       nav: {
         home: '홈',
@@ -63,7 +63,7 @@ export const translations = {
 
     // 결과 페이지
     results: {
-      backButton: '← 다시 검증하기',
+      backButton: '다시 검증하기',
       title: '검증 결과',
       trustScore: '신뢰도 점수',
       status: {
@@ -139,6 +139,35 @@ export const translations = {
           '거래를 중단하고 자산을 안전한 곳으로 이동하세요',
           '절대 개인키나 시드구문을 입력하지 마세요'
         ]
+      },
+      checkNames: {
+        'Domain Registration': '도메인 등록',
+        'SSL Certificate': 'SSL 인증서',
+        'Reputation Check': '평판 검사',
+        'Exchange Verification': '거래소 검증',
+        'Safe Browsing': '안전 브라우징',
+        'Team Scam Detection': '팀 스캠 감지',
+        'Exchange Impersonation Check': '거래소 사칭 검사',
+        'Korean Crypto Scam Check': '한국 크립토 스캠 검사'
+      },
+      hardcodedTexts: {
+        error: '오류',
+        tryAgain: '다시 시도',
+        viewWhois: 'WHOIS 보기',
+        sslLabs: 'SSL 검사',
+        ctLogs: 'CT 로그',
+        googleCT: 'Google CT',
+        safeBrowsing: '안전 브라우징',
+        sucuri: 'Sucuri',
+        urlVoid: 'URLVoid',
+        detectedIn: '다음에서 탐지됨',
+        cleanInAllDatabases: '모든 데이터베이스에서 안전',
+        checked: '확인됨',
+        score: '점수',
+        weight: '가중치',
+        recommendations: '권장 사항',
+        lastChecked: '마지막 확인',
+        resultsFromCache: '캐시된 결과'
       }
     },
 
@@ -302,6 +331,35 @@ export const translations = {
           'Stop trading and move assets to a safe place',
           'Never enter private keys or seed phrases'
         ]
+      },
+      checkNames: {
+        'Domain Registration': 'Domain Registration',
+        'SSL Certificate': 'SSL Certificate',
+        'Reputation Check': 'Reputation Check',
+        'Exchange Verification': 'Exchange Verification',
+        'Safe Browsing': 'Safe Browsing',
+        'Team Scam Detection': 'Team Scam Detection',
+        'Exchange Impersonation Check': 'Exchange Impersonation Check',
+        'Korean Crypto Scam Check': 'Korean Crypto Scam Check'
+      },
+      hardcodedTexts: {
+        error: 'Error',
+        tryAgain: 'Try Again',
+        viewWhois: 'View WHOIS',
+        sslLabs: 'SSL Labs',
+        ctLogs: 'CT Logs',
+        googleCT: 'Google CT',
+        safeBrowsing: 'Safe Browsing',
+        sucuri: 'Sucuri',
+        urlVoid: 'URLVoid',
+        detectedIn: 'Detected in',
+        cleanInAllDatabases: 'Clean in all databases',
+        checked: 'Checked',
+        score: 'Score',
+        weight: 'Weight',
+        recommendations: 'Recommendations',
+        lastChecked: 'Last checked',
+        resultsFromCache: 'Results from cache'
       }
     },
 

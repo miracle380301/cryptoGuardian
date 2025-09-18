@@ -6,8 +6,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, RefreshCw, Share2, Shield, AlertTriangle, XCircle, CheckCircle, Info, ExternalLink } from 'lucide-react'
 import { ValidationResult } from '@/types/api.types'
+import { useTranslation } from '@/lib/i18n/useTranslation'
+import { translateMessage, translateSummary, translateRecommendation } from '@/lib/i18n/translateMessage'
 
 export default function CheckResultPage() {
+  const { t, language: currentLang } = useTranslation()
   const params = useParams()
   const router = useRouter()
   const domain = decodeURIComponent(params.domain as string)
@@ -82,7 +85,7 @@ export default function CheckResultPage() {
               className="mb-8"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Check
+              {t.results.backButton}
             </Button>
 
             <Card className="mb-8 animate-pulse">
@@ -120,13 +123,13 @@ export default function CheckResultPage() {
               className="mb-8"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Check
+              {t.results.backButton}
             </Button>
 
             <Card className="bg-red-50 border-red-200">
               <CardContent className="p-8 text-center">
                 <XCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
-                <h2 className="text-2xl font-bold text-red-900 mb-2">Error</h2>
+                <h2 className="text-2xl font-bold text-red-900 mb-2">{t.results.hardcodedTexts.error}</h2>
                 <p className="text-red-700">{error}</p>
                 <Button
                   onClick={checkDomain}
@@ -134,7 +137,7 @@ export default function CheckResultPage() {
                   variant="outline"
                 >
                   <RefreshCw className="mr-2 h-4 w-4" />
-                  Try Again
+                  {t.results.hardcodedTexts.tryAgain}
                 </Button>
               </CardContent>
             </Card>
@@ -157,7 +160,7 @@ export default function CheckResultPage() {
               onClick={() => router.push('/')}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Check Another Site
+              {t.results.backButton}
             </Button>
 
             <div className="flex gap-2">
@@ -167,14 +170,14 @@ export default function CheckResultPage() {
                 onClick={checkDomain}
               >
                 <RefreshCw className="mr-2 h-4 w-4" />
-                Recheck
+                {t.results.details.refreshButton}
               </Button>
               <Button
                 variant="outline"
                 size="sm"
               >
                 <Share2 className="mr-2 h-4 w-4" />
-                Share
+                {t.results.details.shareButton}
               </Button>
             </div>
           </div>
@@ -183,13 +186,13 @@ export default function CheckResultPage() {
           <Card className={`mb-8 ${getScoreBackground(result.finalScore)} border-2`}>
             <CardHeader className="text-center pb-4">
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Security Analysis for {result.domain}
+                {t.results.title} - {result.domain}
               </h1>
               <div className="flex items-center justify-center gap-2 mb-6">
                 {getStatusIcon(result.status)}
                 <span className={`text-lg font-medium ${getScoreColor(result.finalScore)}`}>
-                  {result.status === 'safe' ? 'SAFE' :
-                   result.status === 'warning' ? 'CAUTION' : 'DANGER'}
+                  {result.status === 'safe' ? t.results.status.safe.toUpperCase() :
+                   result.status === 'warning' ? t.results.status.warning.toUpperCase() : t.results.status.danger.toUpperCase()}
                 </span>
               </div>
             </CardHeader>
@@ -242,13 +245,13 @@ export default function CheckResultPage() {
               </div>
 
               <p className="text-gray-700 max-w-2xl mx-auto">
-                {result.summary}
+                {translateSummary(result.domain, result.finalScore, result.status, !!result.checks.exchange, currentLang)}
               </p>
 
               {result.checks.exchange && (
                 <div className="mt-4 inline-flex items-center gap-2 bg-blue-100 text-blue-900 px-4 py-2 rounded-full">
                   <Shield className="w-4 h-4" />
-                  <span className="text-sm font-medium">Verified Exchange</span>
+                  <span className="text-sm font-medium">{t.results.checks.exchange.verified}</span>
                 </div>
               )}
             </CardContent>
@@ -265,7 +268,7 @@ export default function CheckResultPage() {
                       <div className="flex-1">
                         <div className="flex items-start justify-between">
                           <h3 className="font-semibold text-gray-900 mb-1">
-                            {check.name}
+                            {t.results.checkNames?.[check.name as keyof typeof t.results.checkNames] || check.name}
                           </h3>
                           <div className="flex gap-2">
                             {key === 'whois' && (
@@ -276,7 +279,7 @@ export default function CheckResultPage() {
                                 className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700"
                               >
                                 <ExternalLink className="w-3 h-3" />
-                                <span>View WHOIS</span>
+                                <span>{t.results.hardcodedTexts.viewWhois}</span>
                               </a>
                             )}
                             {key === 'ssl' && (
@@ -289,7 +292,7 @@ export default function CheckResultPage() {
                                   title="Qualys SSL Labs Test"
                                 >
                                   <ExternalLink className="w-3 h-3" />
-                                  <span>SSL Labs</span>
+                                  <span>{t.results.hardcodedTexts.sslLabs}</span>
                                 </a>
                                 <a
                                   href={`https://crt.sh/?q=${result.domain}`}
@@ -299,7 +302,7 @@ export default function CheckResultPage() {
                                   title="Certificate Transparency Logs"
                                 >
                                   <ExternalLink className="w-3 h-3" />
-                                  <span>CT Logs</span>
+                                  <span>{t.results.hardcodedTexts.ctLogs}</span>
                                 </a>
                                 <a
                                   href={`https://transparencyreport.google.com/https/certificates?domain=${result.domain}`}
@@ -309,7 +312,7 @@ export default function CheckResultPage() {
                                   title="Google Certificate Transparency"
                                 >
                                   <ExternalLink className="w-3 h-3" />
-                                  <span>Google CT</span>
+                                  <span>{t.results.hardcodedTexts.googleCT}</span>
                                 </a>
                               </div>
                             )}
@@ -323,7 +326,7 @@ export default function CheckResultPage() {
                                   title="Google Safe Browsing Status"
                                 >
                                   <ExternalLink className="w-3 h-3" />
-                                  <span>Safe Browsing</span>
+                                  <span>{t.results.hardcodedTexts.safeBrowsing}</span>
                                 </a>
                                 <a
                                   href={`https://sitecheck.sucuri.net/results/${result.domain}`}
@@ -333,7 +336,7 @@ export default function CheckResultPage() {
                                   title="Sucuri Website Security Check"
                                 >
                                   <ExternalLink className="w-3 h-3" />
-                                  <span>Sucuri</span>
+                                  <span>{t.results.hardcodedTexts.sucuri}</span>
                                 </a>
                                 <a
                                   href={`https://www.urlvoid.com/scan/${result.domain}`}
@@ -343,14 +346,14 @@ export default function CheckResultPage() {
                                   title="URLVoid Malware Scanner"
                                 >
                                   <ExternalLink className="w-3 h-3" />
-                                  <span>URLVoid</span>
+                                  <span>{t.results.hardcodedTexts.urlVoid}</span>
                                 </a>
                               </div>
                             )}
                           </div>
                         </div>
                         <p className="text-sm text-gray-600 mb-2 whitespace-pre-line">
-                          {check.message}
+                          {translateMessage(check.message, currentLang)}
                         </p>
 
                         {/* Show detection sources if reported */}
@@ -404,7 +407,7 @@ export default function CheckResultPage() {
                                     <div className="flex items-start justify-between">
                                       <div className="flex-1">
                                         <p className={`text-sm font-semibold ${textColor}`}>
-                                          Detected in {detection.source}
+                                          {t.results.hardcodedTexts.detectedIn} {detection.source}
                                         </p>
                                       </div>
                                       <a
@@ -427,10 +430,10 @@ export default function CheckResultPage() {
                                 <div className="flex items-start gap-2">
                                   <div className="flex-1">
                                     <p className="text-sm font-semibold text-green-800">
-                                      Clean in all databases
+                                      {t.results.hardcodedTexts.cleanInAllDatabases}
                                     </p>
                                     <p className="text-xs text-green-700 mt-1">
-                                      Checked: KISA, VirusTotal, PhishTank, CryptoScamDB, FCA, SEC
+                                      {t.results.hardcodedTexts.checked}: KISA, VirusTotal, PhishTank, CryptoScamDB, FCA, SEC
                                     </p>
                                   </div>
                                 </div>
@@ -440,10 +443,10 @@ export default function CheckResultPage() {
                         )}
                         <div className="flex items-center gap-4 text-sm">
                           <span className={`font-medium ${check.passed ? 'text-green-600' : 'text-red-600'}`}>
-                            Score: {check.score}/100
+                            {t.results.hardcodedTexts.score}: {check.score}/100
                           </span>
                           <span className="text-gray-400">
-                            Weight: {(check.weight * 100).toFixed(0)}%
+                            {t.results.hardcodedTexts.weight}: {(check.weight * 100).toFixed(0)}%
                           </span>
                         </div>
                       </div>
@@ -469,22 +472,25 @@ export default function CheckResultPage() {
           </div>
 
           {/* Recommendations */}
-          {result.recommendations && result.recommendations.length > 0 && (
+          {(true) && (
             <Card className="bg-blue-50 border-blue-200">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Info className="w-5 h-5 text-blue-600" />
-                  Recommendations
+                  {t.results.hardcodedTexts.recommendations}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-2">
-                  {result.recommendations.map((rec, idx) => (
-                    <li key={idx} className="flex items-start gap-2">
-                      <span className="text-blue-600 mt-0.5">•</span>
-                      <span className="text-gray-700">{rec}</span>
-                    </li>
-                  ))}
+                  {result.recommendations && result.recommendations.length > 0 ?
+                    result.recommendations.map((rec, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-blue-600 mt-0.5">•</span>
+                        <span className="text-gray-700">{translateRecommendation(rec, currentLang)}</span>
+                      </li>
+                    )) :
+                    <li className="text-gray-500">권장사항이 없습니다.</li>
+                  }
                 </ul>
               </CardContent>
             </Card>
@@ -494,9 +500,9 @@ export default function CheckResultPage() {
 
           {/* Footer info */}
           <div className="mt-8 text-center text-sm text-gray-500">
-            <p>Last checked: {new Date(result.timestamp).toLocaleString()}</p>
+            <p>{t.results.hardcodedTexts.lastChecked}: {new Date(result.timestamp).toLocaleString()}</p>
             {result.cached && (
-              <p className="mt-1">Results from cache</p>
+              <p className="mt-1">{t.results.hardcodedTexts.resultsFromCache}</p>
             )}
           </div>
         </div>
