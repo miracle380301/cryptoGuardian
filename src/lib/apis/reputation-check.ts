@@ -340,6 +340,13 @@ export class PhishingReportCheckAPI {
 
       const data = await response.json();
 
+      // KISA API 응답 구조 확인 (디버깅용)
+      console.log('KISA API response structure:', JSON.stringify(data, null, 2));
+      if (data.data && data.data.length > 0) {
+        console.log('First KISA record fields:', Object.keys(data.data[0]));
+        console.log('Sample KISA record:', JSON.stringify(data.data[0], null, 2));
+      }
+
       // KISA 피싱 사이트 목록에서 도메인 매칭
       // Field name is "홈페이지주소" not "url"
       const matchedUrls = data.data?.filter((item: any) => {
@@ -353,13 +360,31 @@ export class PhishingReportCheckAPI {
       const isReported = matchedUrls.length > 0;
 
       if (isReported) {
+        console.log(`🚨 KISA phishing site detected: ${domain}`);
+        console.log(`   Matched records: ${matchedUrls.length}`);
+
+        // 날짜 필드 확인 (디버깅용)
+        const firstMatch = matchedUrls[0];
+        console.log('Matched record fields:', Object.keys(firstMatch));
+        console.log('Date fields check:');
+        console.log('  - 날짜:', firstMatch?.날짜);
+        console.log('  - 등록일:', firstMatch?.등록일);
+        console.log('  - 신고일:', firstMatch?.신고일);
+        console.log('  - 접수일:', firstMatch?.접수일);
+        console.log('  - createdAt:', firstMatch?.createdAt);
+        console.log('  - created_at:', firstMatch?.created_at);
+        console.log('Matched record:', JSON.stringify(firstMatch, null, 2));
+
+        const actualReportDate = firstMatch?.날짜 || firstMatch?.등록일 || firstMatch?.신고일 || firstMatch?.접수일 || firstMatch?.createdAt || firstMatch?.created_at;
+        console.log('Final report date used:', actualReportDate);
+
         return {
           source: 'KISA',
           isReported: true,
           riskLevel: 'malicious',
           details: `Listed in KISA phishing database (${matchedUrls.length} record(s) found)`,
           confidence: 95,
-          reportDate: matchedUrls[0]?.날짜 || matchedUrls[0]?.등록일 || new Date().toISOString(),
+          reportDate: actualReportDate || new Date().toISOString(),
           evidenceUrl: `https://www.krcert.or.kr/data/reportList.do?searchValue=${encodeURIComponent(domain)}`
         };
       }

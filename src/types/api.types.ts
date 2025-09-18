@@ -73,7 +73,7 @@ export interface SafeBrowsingData {
   scoreBreakdown?: string[];
 }
 
-// CoinGecko Exchange Data
+// Multi-source Exchange Data
 export interface ExchangeData {
   id: string;
   name: string;
@@ -83,11 +83,25 @@ export interface ExchangeData {
   established_year?: number;
   country?: string;
   url?: string;
+  refer_url?: string;
+  image?: string;
   has_trading_incentive: boolean;
   centralized: boolean;
   public_notice?: string;
   alert_notice?: string;
   is_verified: boolean;
+  dataSource?: string;
+  batchDate?: Date;
+  lastUpdatedAt?: Date;
+  // CryptoCompare data
+  cryptocompareId?: string;
+  cryptocompareName?: string;
+  totalVolume24h?: number;
+  totalTrades24h?: number;
+  topTierVolume24h?: number;
+  totalPairs?: number;
+  cryptocompareGrade?: string;
+  dataSources?: string[];
 }
 
 // Cache Types
@@ -114,12 +128,14 @@ export interface ValidationResult {
   checks: {
     whois: ValidationCheck;
     ssl: ValidationCheck;
-    reputation: ValidationCheck;
+    maliciousSite: ValidationCheck;
     exchange?: ValidationCheck;
     safeBrowsing: ValidationCheck;
     teamScam?: ValidationCheck;
     cryptoExchange?: ValidationCheck;
     koreanCryptoScam?: ValidationCheck;
+    // Keep reputation for backward compatibility
+    reputation?: ValidationCheck;
   };
   summary: string;
   recommendations: string[];
