@@ -26,6 +26,16 @@ export const translations = {
       inputPlaceholder: 'URL 또는 도메인을 입력하세요 (예: binance.com)',
       checkButton: '보안 검증하기',
       checkingButton: '검증 중...',
+      searchTypes: {
+        general: {
+          label: '일반 도메인',
+          placeholder: 'URL 또는 도메인을 입력하세요 (예: example.com)'
+        },
+        crypto: {
+          label: '암호화폐 관련',
+          placeholder: '암호화폐 거래소나 관련 사이트 입력 (예: binance.com)'
+        }
+      },
       features: {
         trusted: '신뢰할 수 있는 데이터 소스',
         instant: '실시간 검증',
@@ -122,6 +132,35 @@ export const translations = {
         shareButton: '결과 공유',
         reportButton: '신고하기'
       },
+      report: {
+        title: '사이트 신고',
+        description: '의심스러운 사이트를 신고해주세요',
+        domain: '도메인',
+        reportType: '신고 유형',
+        reportTypes: {
+          phishing: '피싱 사이트',
+          scam: '스캠 사이트',
+          malware: '악성코드',
+          'fake-exchange': '가짜 거래소',
+          other: '기타'
+        },
+        reportDescription: '신고 내용',
+        reportDescriptionPlaceholder: '발견한 문제점이나 피해 사례를 자세히 설명해주세요',
+        reporterEmail: '신고자 이메일',
+        reporterEmailPlaceholder: '연락 가능한 이메일 주소',
+        evidence: '증거 자료',
+        evidencePlaceholder: '관련 URL이나 스크린샷 설명 (선택사항)',
+        submitButton: '신고 제출',
+        submittingButton: '제출 중...',
+        cancelButton: '취소',
+        successMessage: '신고가 성공적으로 접수되었습니다',
+        successDescription: '검토 후 조치하겠습니다',
+        errorMessage: '신고 제출에 실패했습니다',
+        errorDescription: '잠시 후 다시 시도해주세요',
+        alreadyReported: '이미 신고하셨습니다',
+        alreadyReportedDescription: '동일한 이메일로 이미 신고하신 도메인입니다',
+        okButton: '확인'
+      },
       recommendations: {
         title: '권장 사항',
         safe: [
@@ -143,9 +182,10 @@ export const translations = {
       checkNames: {
         'Domain Registration': '도메인 등록',
         'SSL Certificate': 'SSL 인증서',
-        'Reputation Check': '평판 검사',
+        'Malicious Site Check': '악성 사이트 검사',
         'Exchange Verification': '거래소 검증',
         'Safe Browsing': '안전 브라우징',
+        'User Reports Check': '사용자 신고 검사',
         'Team Scam Detection': '팀 스캠 감지',
         'Exchange Impersonation Check': '거래소 사칭 검사',
         'Korean Crypto Scam Check': '한국 크립토 스캠 검사'
@@ -168,6 +208,21 @@ export const translations = {
         recommendations: '권장 사항',
         lastChecked: '마지막 확인',
         resultsFromCache: '캐시된 결과'
+      },
+      exchangeInfo: {
+        title: '거래소 정보',
+        exchangeName: '거래소명',
+        verificationStatus: '검증 상태',
+        verified: '검증됨',
+        notVerified: '검증되지 않음',
+        country: '국가',
+        establishedYear: '설립연도',
+        officialWebsite: '공식 웹사이트',
+        dataSource: '데이터 출처',
+        dataCollectionDate: '데이터 수집일',
+        lastUpdate: '마지막 업데이트',
+        score: '점수',
+        alert: '알림'
       }
     },
 
@@ -201,7 +256,7 @@ export const translations = {
 
     // Header
     header: {
-      logo: '🛡️ CryptoGuardian',
+      logo: 'CryptoGuardian',
       tagline: 'Crypto Site Security Verification Service',
       nav: {
         home: 'Home',
@@ -218,6 +273,16 @@ export const translations = {
       inputPlaceholder: 'Enter website URL or domain (e.g., binance.com)',
       checkButton: 'Check Website',
       checkingButton: 'Checking...',
+      searchTypes: {
+        general: {
+          label: 'General Domain',
+          placeholder: 'Enter URL or domain (e.g., example.com)'
+        },
+        crypto: {
+          label: 'Crypto Related',
+          placeholder: 'Enter crypto exchange or related site (e.g., binance.com)'
+        }
+      },
       features: {
         trusted: 'Trusted data sources',
         instant: 'Real-time verification',
@@ -255,7 +320,7 @@ export const translations = {
 
     // Results page
     results: {
-      backButton: '← Check Another',
+      backButton: 'Check Another',
       title: 'Verification Results',
       trustScore: 'Trust Score',
       status: {
@@ -314,6 +379,35 @@ export const translations = {
         shareButton: 'Share Results',
         reportButton: 'Report'
       },
+      report: {
+        title: 'Report Website',
+        description: 'Report suspicious websites',
+        domain: 'Domain',
+        reportType: 'Report Type',
+        reportTypes: {
+          phishing: 'Phishing Site',
+          scam: 'Scam Site',
+          malware: 'Malware',
+          'fake-exchange': 'Fake Exchange',
+          other: 'Other'
+        },
+        reportDescription: 'Report Details',
+        reportDescriptionPlaceholder: 'Please describe the issues or incidents you found in detail',
+        reporterEmail: 'Reporter Email',
+        reporterEmailPlaceholder: 'Contact email address',
+        evidence: 'Evidence',
+        evidencePlaceholder: 'Related URLs or screenshot descriptions (optional)',
+        submitButton: 'Submit Report',
+        submittingButton: 'Submitting...',
+        cancelButton: 'Cancel',
+        successMessage: 'Report submitted successfully',
+        successDescription: 'We will review and take action',
+        errorMessage: 'Failed to submit report',
+        errorDescription: 'Please try again later',
+        alreadyReported: 'Already Reported',
+        alreadyReportedDescription: 'You have already reported this domain with this email address',
+        okButton: 'OK'
+      },
       recommendations: {
         title: 'Recommendations',
         safe: [
@@ -338,6 +432,7 @@ export const translations = {
         'Reputation Check': 'Reputation Check',
         'Exchange Verification': 'Exchange Verification',
         'Safe Browsing': 'Safe Browsing',
+        'User Reports Check': 'User Reports Check',
         'Team Scam Detection': 'Team Scam Detection',
         'Exchange Impersonation Check': 'Exchange Impersonation Check',
         'Korean Crypto Scam Check': 'Korean Crypto Scam Check'
@@ -360,6 +455,21 @@ export const translations = {
         recommendations: 'Recommendations',
         lastChecked: 'Last checked',
         resultsFromCache: 'Results from cache'
+      },
+      exchangeInfo: {
+        title: 'Exchange Information',
+        exchangeName: 'Exchange Name',
+        verificationStatus: 'Verification Status',
+        verified: 'Verified',
+        notVerified: 'Not Verified',
+        country: 'Country',
+        establishedYear: 'Established Year',
+        officialWebsite: 'Official Website',
+        dataSource: 'Data Source',
+        dataCollectionDate: 'Data Collection Date',
+        lastUpdate: 'Last Update',
+        score: 'Score',
+        alert: 'Alert'
       }
     },
 
