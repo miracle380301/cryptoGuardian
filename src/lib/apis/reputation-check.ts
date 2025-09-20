@@ -51,26 +51,16 @@ export class PhishingReportCheckAPI {
       }
 
       // 공신력 있는 정부기관 및 피싱 신고 API들 병렬 호출
-      const [virusTotalResult, fcaResult, secResult, kisaResult, phishTankResult, cryptoScamResult] =
+      const [virusTotalResult] =
         await Promise.allSettled([
-          this.checkVirusTotal(cleanDomain),
-          this.checkFCADatabase(cleanDomain),
-          this.checkSECDatabase(cleanDomain),
-          this.checkKISADatabase(cleanDomain),
-          this.checkPhishTank(cleanDomain),
-          this.checkCryptoScamDB(cleanDomain)
+          this.checkVirusTotal(cleanDomain)
         ]);
 
       // 결과 통합 및 점수 계산
       const phishingData = this.combinePhishingData(
         cleanDomain,
         {
-          virusTotal: virusTotalResult,
-          fca: fcaResult,
-          sec: secResult,
-          kisa: kisaResult,
-          phishTank: phishTankResult,
-          cryptoScam: cryptoScamResult
+          virusTotal: virusTotalResult
         }
       );
 
@@ -115,7 +105,10 @@ export class PhishingReportCheckAPI {
 
   // VirusTotal API v3 체크 (500회/일)
   private async checkVirusTotal(domain: string): Promise<GovernmentAPIResult> {
+    console.log(`VirusTotal: Checking domain ${domain}`);
+
     if (!this.virusTotalApiKey) {
+      console.log('VirusTotal: API key not configured');
       throw new Error('VirusTotal API key is required');
     }
 
@@ -125,12 +118,18 @@ export class PhishingReportCheckAPI {
       }
     });
 
+    console.log(`VirusTotal: API response status ${response.status}`);
+
     if (!response.ok) {
+      console.log(`VirusTotal: API error ${response.status} ${response.statusText}`);
       throw new Error(`VirusTotal API error: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('VirusTotal: Raw API response:', JSON.stringify(data, null, 2));
+
     const analysis = data.data?.attributes?.last_analysis_stats || {};
+    console.log('VirusTotal: Analysis stats:', analysis);
 
     const maliciousCount = analysis.malicious || 0;
     const suspiciousCount = analysis.suspicious || 0;
@@ -139,6 +138,52 @@ export class PhishingReportCheckAPI {
     const isReported = maliciousCount > 0 || suspiciousCount > 2;
     const riskLevel = maliciousCount > 5 ? 'malicious' :
                      (maliciousCount > 0 || suspiciousCount > 2) ? 'suspicious' : 'clean';
+
+    console.log(`VirusTotal: Results for ${domain}:`, {
+      maliciousCount,
+      suspiciousCount,
+      totalEngines,
+      isReported,
+      riskLevel
+    });
+
+    // 악성 사이트로 판정되면 DB에 자동 추가
+    if (isReported && (riskLevel === 'malicious' || riskLevel === 'suspicious')) {
+      try {
+        console.log(`💾 VirusTotal: Adding ${domain} to blacklist database`);
+
+        const { default: prisma } = await import('@/lib/db/prisma');
+
+        // 이미 존재하는지 확인
+        const existing = await prisma.blacklistedDomain.findFirst({
+          where: {
+            domain: domain.toLowerCase()
+          }
+        });
+
+        if (!existing) {
+          await prisma.blacklistedDomain.create({
+            data: {
+              domain: domain.toLowerCase(),
+              reason: `VirusTotal detection: ${maliciousCount}/${totalEngines} security vendors flagged as ${riskLevel}`,
+              reportedBy: 'VirusTotal',
+              reportDate: data.data?.attributes?.last_modification_date ?
+                         new Date(data.data.attributes.last_modification_date * 1000) : new Date(),
+              primaryDataSource: 'virustotal',
+              evidence: [`https://www.virustotal.com/gui/domain/${domain}`],
+              riskLevel: riskLevel,
+              severity: riskLevel === 'malicious' ? 'high' : 'medium'
+            }
+          });
+          console.log(`VirusTotal: Successfully added ${domain} to blacklist`);
+        } else {
+          console.log(`VirusTotal: ${domain} already exists in blacklist`);
+        }
+      } catch (dbError) {
+        console.error(`VirusTotal: Failed to add ${domain} to blacklist:`, dbError);
+        // DB 에러가 있어도 검증 결과는 반환
+      }
+    }
 
     return {
       source: 'VirusTotal',
@@ -301,90 +346,74 @@ export class PhishingReportCheckAPI {
     };
   }
 
-  // KISA 피싱 사이트 신고센터 체크 (한국인터넷진흥원 Open API)
+  // KISA 피싱 사이트 신고센터 체크 (데이터베이스에서 조회)
   private async checkKISADatabase(domain: string): Promise<GovernmentAPIResult> {
     try {
-      const kisaApiKey = process.env.KISA_API_KEY;
-
-      if (!kisaApiKey) {
-        console.log('KISA API key not configured - using pattern matching fallback');
-        return this.checkKISAPatternFallback(domain);
-      }
-
-      // KISA Open API 호출
       const cleanDomain = domain.toLowerCase()
         .replace(/^https?:\/\//, '')
         .replace(/^www\./, '')
         .split('/')[0];
 
-      const apiUrl = new URL('https://api.odcloud.kr/api/15109780/v1/uddi:707478dd-938f-4155-badb-fae6202ee7ed');
-      apiUrl.searchParams.append('serviceKey', kisaApiKey);
-      apiUrl.searchParams.append('page', '1');
-      apiUrl.searchParams.append('perPage', '1000'); // Increase to search more records
-      apiUrl.searchParams.append('returnType', 'JSON');
+      console.log(`Checking KISA database for: ${cleanDomain}`);
 
-      console.log(`Checking KISA phishing database for: ${cleanDomain}`);
+      // Import DB functions
+      const { checkBlacklist } = await import('@/lib/db/services');
+      const { default: prisma } = await import('@/lib/db/prisma');
 
-      const response = await fetch(apiUrl.toString(), {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
+      // KISA 데이터 통계 확인
+      const kisaCount = await prisma.blacklistedDomain.count({
+        where: {
+          OR: [
+            { reportedBy: 'KISA' },
+            { kisaId: { not: null } },
+            { primaryDataSource: 'kisa' }
+          ]
         }
       });
+      console.log(`KISA: Total KISA records in DB: ${kisaCount}`);
 
-      if (!response.ok) {
-        console.error('KISA API error:', response.status, response.statusText);
-        // API 실패 시 패턴 매칭 fallback
-        return this.checkKISAPatternFallback(domain);
+      // 여러 형태로 도메인 체크 시도
+      const variations = [
+        cleanDomain,
+        `www.${cleanDomain}`,
+        `https://${cleanDomain}`,
+        `http://${cleanDomain}`,
+        domain.toLowerCase()
+      ];
+
+      console.log(`KISA: Trying domain variations:`, variations);
+
+      let blacklisted = null;
+      for (const variation of variations) {
+        blacklisted = await checkBlacklist(variation);
+        if (blacklisted) {
+          console.log(`KISA: Found match with variation: ${variation}`);
+          break;
+        }
       }
 
-      const data = await response.json();
+      console.log(`KISA DB check result for ${cleanDomain}:`, {
+        found: !!blacklisted,
+        reportedBy: blacklisted ? (blacklisted as any).reportedBy : null,
+        kisaId: blacklisted ? (blacklisted as any).kisaId : null,
+        reason: blacklisted ? blacklisted.reason : null
+      });
 
-      // KISA API 응답 구조 확인 (디버깅용)
-      console.log('KISA API response structure:', JSON.stringify(data, null, 2));
-      if (data.data && data.data.length > 0) {
-        console.log('First KISA record fields:', Object.keys(data.data[0]));
-        console.log('Sample KISA record:', JSON.stringify(data.data[0], null, 2));
-      }
-
-      // KISA 피싱 사이트 목록에서 도메인 매칭
-      // Field name is "홈페이지주소" not "url"
-      const matchedUrls = data.data?.filter((item: any) => {
-        const phishingUrl = (item.홈페이지주소 || item.url || '').toLowerCase();
-        // Check if the phishing URL contains our domain
-        return phishingUrl.includes(cleanDomain) ||
-               phishingUrl.includes(`//${domain}`) ||
-               phishingUrl.includes(`//${domain}/`);
-      }) || [];
-
-      const isReported = matchedUrls.length > 0;
-
-      if (isReported) {
-        console.log(`🚨 KISA phishing site detected: ${domain}`);
-        console.log(`   Matched records: ${matchedUrls.length}`);
-
-        // 날짜 필드 확인 (디버깅용)
-        const firstMatch = matchedUrls[0];
-        console.log('Matched record fields:', Object.keys(firstMatch));
-        console.log('Date fields check:');
-        console.log('  - 날짜:', firstMatch?.날짜);
-        console.log('  - 등록일:', firstMatch?.등록일);
-        console.log('  - 신고일:', firstMatch?.신고일);
-        console.log('  - 접수일:', firstMatch?.접수일);
-        console.log('  - createdAt:', firstMatch?.createdAt);
-        console.log('  - created_at:', firstMatch?.created_at);
-        console.log('Matched record:', JSON.stringify(firstMatch, null, 2));
-
-        const actualReportDate = firstMatch?.날짜 || firstMatch?.등록일 || firstMatch?.신고일 || firstMatch?.접수일 || firstMatch?.createdAt || firstMatch?.created_at;
-        console.log('Final report date used:', actualReportDate);
+      // KISA 데이터 확인 - 여러 조건으로 체크
+      if (blacklisted && (
+        (blacklisted as any).reportedBy === 'KISA' ||
+        (blacklisted as any).kisaId ||
+        (blacklisted as any).primaryDataSource === 'kisa'
+      )) {
+        console.log(`🚨 KISA phishing site detected in DB: ${domain}`);
 
         return {
           source: 'KISA',
           isReported: true,
           riskLevel: 'malicious',
-          details: `Listed in KISA phishing database (${matchedUrls.length} record(s) found)`,
+          details: `Listed in KISA phishing database - ${blacklisted.reason}`,
           confidence: 95,
-          reportDate: actualReportDate || new Date().toISOString(),
+          reportDate: (blacklisted as any).reportDate?.toISOString() || new Date().toISOString(),
           evidenceUrl: `https://www.krcert.or.kr/data/reportList.do?searchValue=${encodeURIComponent(domain)}`
         };
       }
@@ -393,7 +422,7 @@ export class PhishingReportCheckAPI {
       return this.checkKISAPatternFallback(domain);
 
     } catch (error) {
-      console.error('KISA API check error:', error);
+      console.error('KISA database check error:', error);
       // 에러 발생 시 패턴 매칭으로 fallback
       return this.checkKISAPatternFallback(domain);
     }
@@ -429,26 +458,29 @@ export class PhishingReportCheckAPI {
     }
 
     // 한국 도메인이지만 의심스러운 암호화폐 관련 서비스
-    const cryptoKeywords = ['crypto', 'bitcoin', 'coin', 'trading'];
+    const cryptoKeywords = ['crypto', 'bitcoin', 'btc', 'ethereum', 'eth', 'trading', 'exchange'];
     const hasCryptoKeyword = cryptoKeywords.some(keyword => domain.includes(keyword));
 
-    if (isKoreanTLD && hasCryptoKeyword && !this.isKnownKoreanCryptoExchange(domain)) {
+    if (isKoreanTLD && hasCryptoKeyword) {
       return {
         source: 'KISA',
-        isReported: true,
+        isReported: false,
         riskLevel: 'suspicious',
-        details: 'Korean domain with cryptocurrency keywords - potential unregulated service',
-        confidence: 70,
+        details: 'Korean crypto-related domain - verify legitimacy through official channels',
+        confidence: 60,
+        reportDate: new Date().toISOString(),
         evidenceUrl: `https://www.krcert.or.kr/data/reportList.do?searchValue=${encodeURIComponent(domain)}`
       };
     }
 
+    // 정상적인 경우
     return {
       source: 'KISA',
       isReported: false,
       riskLevel: 'clean',
-      details: 'Not found in KISA phishing database',
-      confidence: 85,
+      details: 'Not found in KISA database - appears safe',
+      confidence: 70,
+      reportDate: new Date().toISOString(),
       evidenceUrl: `https://www.krcert.or.kr/data/reportList.do?searchValue=${encodeURIComponent(domain)}`
     };
   }
@@ -490,7 +522,7 @@ export class PhishingReportCheckAPI {
 
       console.log(`Checking PhishTank for domain: ${cleanDomain}`);
 
-      // Check the primary variant first
+      // Check the primary variant only
       const primaryUrl = urlVariants[0];
 
       const requestBody = new URLSearchParams();
@@ -579,6 +611,49 @@ export class PhishingReportCheckAPI {
       // Add verification date if available
       if (verifiedAt) {
         details += ` - Verified on ${new Date(verifiedAt).toLocaleDateString()}`;
+      }
+
+      // 피싱 사이트로 판정되면 DB에 자동 추가
+      if (isReported && (riskLevel === 'malicious' || riskLevel === 'suspicious')) {
+        try {
+          console.log(`💾 PhishTank: Adding ${domain} to blacklist database`);
+
+          const { default: prisma } = await import('@/lib/db/prisma');
+
+          // 이미 존재하는지 확인
+          const existing = await prisma.blacklistedDomain.findFirst({
+            where: {
+              domain: domain.toLowerCase()
+            }
+          });
+
+          if (!existing) {
+            await prisma.blacklistedDomain.create({
+              data: {
+                domain: domain.toLowerCase(),
+                reason: `PhishTank verified phishing site (ID: ${phishId})`,
+                reportedBy: 'PhishTank',
+                reportDate: verifiedAt ? new Date(verifiedAt) : new Date(),
+                primaryDataSource: 'phishtank',
+                evidence: [phishDetailPage || `https://phishtank.org/phish_detail.php?phish_id=${phishId}`],
+                riskLevel: riskLevel,
+                severity: riskLevel === 'malicious' ? 'high' : 'medium',
+                category: 'phishing',
+                phishTankId: phishId ? phishId.toString() : null,
+                phishTankUrl: phishDetailPage,
+                verificationStatus: verified ? 'verified' : 'pending',
+                isActive: isStillActive !== false,
+                isConfirmed: verified
+              }
+            });
+            console.log(`PhishTank: Successfully added ${domain} to blacklist`);
+          } else {
+            console.log(`PhishTank: ${domain} already exists in blacklist`);
+          }
+        } catch (dbError) {
+          console.error(`PhishTank: Failed to add ${domain} to blacklist:`, dbError);
+          // DB 에러가 있어도 검증 결과는 반환
+        }
       }
 
       return {
@@ -741,21 +816,11 @@ export class PhishingReportCheckAPI {
     domain: string,
     results: {
       virusTotal: PromiseSettledResult<GovernmentAPIResult>;
-      fca: PromiseSettledResult<GovernmentAPIResult>;
-      sec: PromiseSettledResult<GovernmentAPIResult>;
-      kisa: PromiseSettledResult<GovernmentAPIResult>;
-      phishTank: PromiseSettledResult<GovernmentAPIResult>;
-      cryptoScam: PromiseSettledResult<GovernmentAPIResult>;
     }
   ): PhishingReportResult {
-    // API 가중치 - 피싱/스캠 탐지에 집중
+    // API 가중치 - 피싱/스캠 탐지에 집중 (CryptoScamDB, PhishTank는 DB에서 직접 조회)
     const apiWeights = {
-      KISA: 0.30,         // 30% - 한국 피싱 DB (매우 정확)
-      VirusTotal: 0.25,   // 25% - 글로벌 멀웨어/피싱
-      CryptoScamDB: 0.20, // 20% - 암호화폐 스캠 특화
-      PhishTank: 0.15,    // 15% - 커뮤니티 피싱 DB
-      FCA: 0.05,          // 5% - 금융 규제 (보조)
-      SEC: 0.05           // 5% - 금융 규제 (보조)
+      VirusTotal: 1.0   // 100% - 글로벌 멀웨어/피싱 (단일 주요 소스)
     };
 
     let finalScore = 100;
@@ -795,7 +860,7 @@ export class PhishingReportCheckAPI {
 
     // 정부기관 신뢰도 보너스 (모든 정부 API가 안전하다고 판단할 경우)
     const governmentAPIs = allResults.filter(r =>
-      ['VirusTotal', 'FCA', 'SEC', 'KISA'].includes(r.source)
+      ['VirusTotal'].includes(r.source)
     );
     const allGovernmentSafe = governmentAPIs.length > 0 &&
       governmentAPIs.every(api => !api.isReported && api.riskLevel === 'clean');
@@ -918,12 +983,10 @@ export class PhishingReportCheckAPI {
 
     // API 가중치 정보
     console.log('\n API 가중치 (피싱/스캠 탐지 우선):');
-    console.log('   - KISA: 30% (한국 피싱 DB - 매우 정확)');
-    console.log('   - VirusTotal: 25% (글로벌 멀웨어/피싱)');
-    console.log('   - CryptoScamDB: 20% (암호화폐 스캠 특화)');
-    console.log('   - PhishTank: 15% (커뮤니티 피싱 DB)');
-    console.log('   - FCA: 5% (영국 금융규제 - 보조)');
-    console.log('   - SEC: 5% (미국 금융규제 - 보조)');
+    console.log('   - VirusTotal: 100% (글로벌 멀웨어/피싱 - 단일 주요 소스)');
+    console.log('   - CryptoScamDB: DB에서 직접 조회 (블랙리스트)');
+    console.log('   - KISA: DB에서 직접 조회 (블랙리스트)');
+    console.log('   - FCA/SEC/PhishTank: 제거됨 (복잡도 감소)');
 
     console.log('\n' + '='.repeat(50) + '\n');
   }

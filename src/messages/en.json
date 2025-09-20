@@ -1,0 +1,101 @@
+{
+  "checkNames": {
+    "domainRegistration": "Domain Registration",
+    "sslCertificate": "SSL Certificate",
+    "maliciousSiteCheck": "Malicious Site Check",
+    "reputationCheck": "Reputation Check",
+    "exchangeVerification": "Exchange Verification",
+    "safeBrowsing": "Safe Browsing",
+    "teamScamDetection": "Team Scam Detection",
+    "exchangeImpersonationCheck": "Exchange Impersonation Check",
+    "koreanCryptoScamCheck": "Korean Crypto Scam Check"
+  },
+  "messages": {
+    "unableToVerifyDomainRegistration": "Unable to verify domain registration",
+    "sslVerificationFailed": "SSL verification failed",
+    "noSslCertificateFound": "No SSL certificate found - Site is not secure",
+    "invalidSslCertificate": "Invalid SSL certificate",
+    "validSslCertificate": "Valid SSL certificate",
+    "unableToVerifyReputation": "Unable to verify reputation",
+    "cleanNoThreatsDetected": "Clean - No threats detected",
+    "domainOnHoldSuspended": "Domain on hold (suspended)",
+    "exchangeVerificationFailed": "Exchange verification failed",
+    "unableToVerifyWithGoogleSafeBrowsing": "Unable to verify with Google Safe Browsing",
+    "noThreatsFoundByGoogleSafeBrowsing": "No threats found by Google Safe Browsing",
+    "noThreatsDetected": "No threats detected",
+    "highConfidenceLikelySafe": "High confidence - likely safe",
+    "teamScamDetectionUnavailable": "Team scam detection unavailable",
+    "exchangeImpersonationCheckUnavailable": "Exchange impersonation check unavailable",
+    "koreanCryptoScamCheckUnavailable": "Korean crypto scam check unavailable",
+    "noTeamScamPatternsDetected": "No team scam patterns detected",
+    "noExchangeImpersonationDetected": "No exchange impersonation detected",
+    "noKoreanCryptoScamPatternsDetected": "No Korean crypto scam patterns detected",
+    "blacklistedKisa": "Blacklisted: KISA",
+    "blacklistedSecurityDatabase": "Blacklisted: Security Database",
+    "domainIsBlacklisted": "Domain is blacklisted",
+    "domainIsBlacklistedSslCheckSkipped": "Domain is blacklisted - SSL check skipped",
+    "phishingSiteDetected": "Phishing site detected"
+  },
+  "about": {
+    "title": "CryptoGuardian",
+    "subtitle": "Real-time Security Verification Platform for Cryptocurrency Investors",
+    "problem": {
+      "title": "Billions Lost to Crypto Scams Every Year",
+      "description1": "In 2023 alone, South Korea saw over $75 million in losses from cryptocurrency scams. Fake exchanges, phishing sites, and scam tokens are becoming increasingly sophisticated.",
+      "description2": "New investors struggle to distinguish official sites from imposters. Searching for \"Binance\" might lead you to \"binance-kr.com\" or similar fake domains, resulting in devastating losses."
+    },
+    "solution": {
+      "title": "How We Solve This",
+      "realtime": {
+        "title": "Real-time Multi-source Verification",
+        "description": "We query major security databases including KISA, VirusTotal, and URLhaus in real-time to assess risk levels instantly."
+      },
+      "exchange": {
+        "title": "Verified Exchange Information",
+        "description": "Only verified exchange data from CoinGecko and CryptoCompare. Trust scores and trading volumes help you choose safe platforms."
+      },
+      "community": {
+        "title": "Community Reporting System",
+        "description": "Users can report and share suspicious sites directly. New scam tactics are quickly identified and blocked."
+      },
+      "weekly": {
+        "title": "Weekly Updates",
+        "description": "Automatic weekly updates of blacklists and exchange information. Always protecting you with the latest data."
+      }
+    },
+    "partners": {
+      "title": "Trusted Data Partners",
+      "kisa": "Korea Internet & Security Agency",
+      "exchange": "Exchange Data",
+      "malicious": "Malicious URL DB"
+    },
+    "stats": {
+      "title": "Our Track Record",
+      "blocked": "Malicious Domains Blocked",
+      "verified": "Verified Exchanges",
+      "monitoring": "24/7 Monitoring"
+    },
+    "howto": {
+      "title": "Simple to Use",
+      "step1": {
+        "title": "Enter Suspicious URL",
+        "description": "Input any crypto-related site: exchanges, wallets, DeFi platforms."
+      },
+      "step2": {
+        "title": "Instant Verification Results",
+        "description": "Clear indicators: Safe, Caution, or Danger status."
+      },
+      "step3": {
+        "title": "Review Detailed Information",
+        "description": "Risk factors, alternative exchanges, evidence links, and more."
+      }
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description1": "CryptoGuardian was built to protect cryptocurrency investors across Asia. Our goal is simple: make crypto trading safer for everyone, regardless of technical expertise.",
+      "description2": "No security system is perfect. But we work tirelessly to gather the latest threat intelligence and provide the fastest, most accurate verification service possible.",
+      "disclaimer": "Disclaimer: This service is for reference only. Users bear full responsibility for their investment decisions. Always verify from multiple sources and invest carefully."
+    },
+    "cta": "Verify Now"
+  }
+}

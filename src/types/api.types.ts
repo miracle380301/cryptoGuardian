@@ -118,19 +118,20 @@ export interface ValidationCheck {
   score: number;
   weight: number;
   message: string;
-  details?: any;
+  details?: Record<string, any> | null;
 }
 
 export interface ValidationResult {
   domain: string;
+  originalInput: string; // 사용자가 입력한 원본 URL
   finalScore: number; // 0-100
   status: 'safe' | 'warning' | 'danger';
   checks: {
-    whois: ValidationCheck;
-    ssl: ValidationCheck;
-    maliciousSite: ValidationCheck;
+    whois?: ValidationCheck;
+    ssl?: ValidationCheck;
+    maliciousSite?: ValidationCheck;
     exchange?: ValidationCheck;
-    safeBrowsing: ValidationCheck;
+    safeBrowsing?: ValidationCheck;
     teamScam?: ValidationCheck;
     cryptoExchange?: ValidationCheck;
     koreanCryptoScam?: ValidationCheck;

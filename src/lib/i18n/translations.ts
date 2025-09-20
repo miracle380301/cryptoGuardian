@@ -243,6 +243,70 @@ export const translations = {
       privacy: '개인정보처리방침',
       terms: '이용약관',
       contact: '문의하기'
+    },
+
+    // About page
+    about: {
+      title: 'CryptoGuardian',
+      subtitle: '암호화폐 투자자를 위한 실시간 보안 검증 플랫폼',
+      problem: {
+        title: '매년 수십억 원의 피해가 발생합니다',
+        description1: '2023년 한국에서만 암호화폐 사기로 인한 피해액이 1,000억원을 넘어섰습니다. 가짜 거래소, 피싱 사이트, 스캠 코인 등 수법은 갈수록 정교해지고 있죠.',
+        description2: '특히 초보 투자자들은 공식 사이트와 사칭 사이트를 구별하기 어려워 큰 피해를 입고 있습니다. "바이낸스"를 검색했는데 "binance-kr.com" 같은 가짜 사이트에 접속하는 경우가 빈번합니다.'
+      },
+      solution: {
+        title: '우리가 해결하는 방법',
+        realtime: {
+          title: '실시간 다중 검증',
+          description: 'KISA, VirusTotal, URLhaus 등 국내외 주요 보안 데이터베이스를 실시간으로 조회해 위험도를 평가합니다.'
+        },
+        exchange: {
+          title: '거래소 정보 제공',
+          description: 'CoinGecko와 CryptoCompare에서 검증된 정식 거래소 정보만 제공. 신뢰도 점수와 거래량으로 안전한 거래소를 추천합니다.'
+        },
+        community: {
+          title: '커뮤니티 신고 시스템',
+          description: '사용자들이 직접 의심 사이트를 신고하고 공유. 새로운 사기 수법도 빠르게 차단됩니다.'
+        },
+        weekly: {
+          title: '주간 업데이트',
+          description: '매주 자동으로 최신 블랙리스트와 거래소 정보를 업데이트. 항상 최신 정보로 여러분을 보호합니다.'
+        }
+      },
+      partners: {
+        title: '신뢰할 수 있는 데이터 파트너',
+        kisa: '한국인터넷진흥원',
+        exchange: '거래소 데이터',
+        malicious: '악성 URL DB'
+      },
+      stats: {
+        title: '현재까지의 성과',
+        blocked: '차단된 악성 도메인',
+        verified: '검증된 정식 거래소',
+        monitoring: '24/7 모니터링'
+      },
+      howto: {
+        title: '간단한 사용법',
+        step1: {
+          title: '의심되는 URL 입력',
+          description: '거래소, 지갑, DeFi 등 암호화폐 관련 사이트 주소를 입력하세요.'
+        },
+        step2: {
+          title: '즉시 검증 결과 확인',
+          description: '안전, 주의, 위험 3단계로 명확하게 표시됩니다.'
+        },
+        step3: {
+          title: '상세 정보 확인',
+          description: '위험 요소, 대체 거래소, 증거 자료 등을 확인할 수 있습니다.'
+        }
+      },
+      mission: {
+        title: '우리의 목표',
+        description1: 'CryptoGuardian은 한국 암호화폐 투자자들의 자산을 보호하기 위해 만들어졌습니다. 복잡한 보안 지식 없이도 누구나 안전하게 암호화폐를 거래할 수 있도록 돕는 것이 목표입니다.',
+        description2: '완벽한 보안은 없습니다. 하지만 우리는 최선을 다해 최신 위협 정보를 수집하고, 가장 빠르고 정확한 검증 서비스를 제공하기 위해 노력하고 있습니다.',
+        disclaimer: '면책 조항: 본 서비스는 참고용이며, 투자 결정에 대한 최종 책임은 이용자에게 있습니다. 항상 복수의 출처를 확인하고 신중하게 투자하세요.'
+      },
+      cta: '지금 바로 검증하기'
     }
   },
 

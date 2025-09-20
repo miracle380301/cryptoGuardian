@@ -22,7 +22,7 @@ export default function ApiTestPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ domain }),
+        body: JSON.stringify({ domain, language: 'en' }),
       });
 
       const data = await response.json();

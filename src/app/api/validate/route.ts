@@ -4,13 +4,14 @@ import { SSLCheckAPI } from '@/lib/apis/ssl-check';
 import { PhishingReportCheckAPI } from '@/lib/apis/reputation-check';
 import { CoinGeckoAPI } from '@/lib/apis/coingecko';
 import { SafeBrowsingAPI } from '@/lib/apis/safe-browsing';
+import { translateMessage, translateSummary } from '@/lib/i18n/translateMessage';
 // Note: Enhanced scam detection modules are temporarily disabled
 // import { TeamScamDetector } from '@/lib/apis/team-scam-detector';
 // import { CryptoExchangeDetector } from '@/lib/apis/crypto-exchange-detector';
 // import { KoreanCryptoScamDetector } from '@/lib/apis/korean-crypto-scam-detector';
-import { getCache } from '@/lib/cache/memory-cache';
 import { ValidationResult, ValidationCheck } from '@/types/api.types';
-import { saveValidationHistory, checkBlacklist, checkWhitelist, getReputationCache, saveReputationCache, restoreValidationResultFromCache } from '@/lib/db/services';
+import { checkBlacklist } from '@/lib/db/services';
+import { checkUserReports } from '@/lib/apis/user-reports';
 import prisma from '@/lib/db/prisma';
 
 // Initialize APIs
@@ -23,12 +24,11 @@ const safeBrowsingAPI = new SafeBrowsingAPI();
 // const teamScamDetector = new TeamScamDetector();
 // const cryptoExchangeDetector = new CryptoExchangeDetector();
 // const koreanCryptoScamDetector = new KoreanCryptoScamDetector();
-const cache = getCache();
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { domain, type = 'general' } = body; // type can be 'general' or 'crypto'
+    const { domain, type = 'general', language } = body; // type can be 'general' or 'crypto'
 
     if (!domain) {
       return NextResponse.json(
@@ -37,6 +37,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Store original input for display
+    const originalInput = domain;
+
     // Clean domain (preserve case for visual similarity detection)
     const cleanDomain = domain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
 
@@ -44,39 +47,38 @@ export async function POST(request: NextRequest) {
     const ipAddress = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || undefined;
     const userAgent = request.headers.get('user-agent') || undefined;
 
-    // PRIORITY 1: Check blacklist first - highest security priority
-    // This check overrides all other security checks if domain is blacklisted
-    const [blacklisted, whitelisted] = await Promise.all([
+    // Get language preference (body > URL params > headers)
+    const acceptLanguage = request.headers.get('accept-language') || '';
+    const urlParams = new URL(request.url).searchParams;
+    const langParam = urlParams.get('lang') || urlParams.get('language');
+    const currentLang = (language || langParam || (acceptLanguage.includes('ko') ? 'ko' : 'en')) as 'ko' | 'en';
+
+    // 1. Blacklist check
+    let [blacklisted] = await Promise.all([
       checkBlacklist(cleanDomain.toLowerCase()),
-      checkWhitelist(cleanDomain.toLowerCase())
+      //checkWhitelist(cleanDomain.toLowerCase())
     ]);
 
-    // CRITICAL: If blacklisted, immediately return maximum danger result
-    // No other checks needed - this is confirmed malicious
+    // 없으면 Reputation API 호출해서 실시간 검사 후 DB 저장
+    if (!blacklisted) {
+      console.log('3-2. Blacklist not found, calling reputation API');
+      await reputationAPI.checkPhishingReports(cleanDomain);
+
+      // API에서 악성 감지되면 DB에 저장되므로 다시 체크
+      blacklisted = await checkBlacklist(cleanDomain.toLowerCase());
+      console.log('@@@ 3-1. Blacklist DB found', blacklisted);
+    } else {
+      console.log('3-1. Blacklist DB found:', blacklisted);
+    }
+
     if (blacklisted) {
-      // 조회수 증가는 제거 (불필요)
 
       const blacklistResult: ValidationResult = {
         domain: cleanDomain,
+        originalInput: originalInput,
         finalScore: 0, // CRITICAL: Absolute minimum score for confirmed threats
         status: 'danger', // MAXIMUM DANGER - confirmed malicious
         checks: {
-          whois: {
-            name: 'Domain Registration',
-            passed: false,
-            score: 0,
-            weight: 0.2,
-            message: (blacklisted as any).targetBrand ?
-              `Impersonating ${(blacklisted as any).targetBrand}` :
-              'Domain is blacklisted'
-          },
-          ssl: {
-            name: 'SSL Certificate',
-            passed: false,
-            score: 0,
-            weight: 0.2,
-            message: 'Domain is blacklisted - SSL check skipped'
-          },
           maliciousSite: {
             name: 'Malicious Site Check',
             passed: false,
@@ -93,7 +95,7 @@ export async function POST(request: NextRequest) {
               kisaId: (blacklisted as any).kisaId,
               verificationStatus: (blacklisted as any).verificationStatus || 'confirmed',
               // 블랙리스트 증거 정보
-              blacklistEvidence: {
+              maliciousSite: {
                 reason: blacklisted.reason,
                 severity: blacklisted.severity,
                 reportDate: (blacklisted as any).reportDate,
@@ -104,74 +106,66 @@ export async function POST(request: NextRequest) {
                 isConfirmed: (blacklisted as any).isConfirmed || true
               }
             }
-          },
-          safeBrowsing: {
-            name: 'Safe Browsing',
-            passed: false,
-            score: 0,
-            weight: 0.3,
-            message: (blacklisted as any).riskLevel === 'crypto-scam' ?
-              'Cryptocurrency scam detected' :
-              (blacklisted as any).riskLevel === 'phishing' ?
-              'Phishing site detected' :
-              'Malicious site detected'
           }
         },
         summary: (blacklisted as any).targetBrand ?
-          `🚨 CRITICAL THREAT: ${cleanDomain} is a CONFIRMED ${(blacklisted as any).targetBrand} impersonation site (${blacklisted.severity} risk) - IMMEDIATE DANGER` :
-          `🚨 MAXIMUM DANGER: ${cleanDomain} is BLACKLISTED as ${blacklisted.severity} risk - ${blacklisted.reason}`,
-        recommendations: [
-          '⚠️ CRITICAL DANGER: This domain is CONFIRMED MALICIOUS - IMMEDIATELY CLOSE THIS SITE',
-          '🚫 DO NOT enter any personal information, passwords, or financial details',
-          '🛡️ This domain is in our security blacklist - ZERO trust level',
-          (blacklisted as any).targetBrand ?
-            `❌ FAKE SITE: This is NOT the official ${(blacklisted as any).targetBrand} website` :
-            '📢 This site has been reported for malicious activity by security authorities',
-          '💻 Close browser and clear cache immediately',
-          '🔒 For crypto: Only use verified official exchange websites',
-          (blacklisted as any).targetBrand ?
-            `✅ Use only the official ${(blacklisted as any).targetBrand} website` :
-            '⚡ Report this site if you encountered it through suspicious means'
-        ],
+          `CRITICAL THREAT: ${cleanDomain} is a CONFIRMED ${(blacklisted as any).targetBrand} impersonation site (${blacklisted.severity} risk) - IMMEDIATE DANGER` :
+          `MAXIMUM DANGER: ${cleanDomain} is BLACKLISTED as ${blacklisted.severity} risk - ${blacklisted.reason}`,
+        recommendations: (() => {
+          const sources = [];
+          // 여러 소스 처리
+          if ((blacklisted as any).reportedBy) {
+            sources.push((blacklisted as any).reportedBy);
+          }
+          if ((blacklisted as any).sources && Array.isArray((blacklisted as any).sources)) {
+            sources.push(...(blacklisted as any).sources);
+          }
+
+          // 중복 제거
+          const uniqueSources = [...new Set(sources)];
+
+          // 항상 영어로 sourceText 생성 (translateMessage에서 번역됨)
+          const sourceText = uniqueSources.length > 1 ?
+            `${uniqueSources.slice(0, -1).join(', ')} and ${uniqueSources.slice(-1)}` :
+            uniqueSources[0] || 'Security Database';
+
+          // 기본 영어 권장사항들을 생성 후 translateMessage로 번역
+          const baseRecommendations: string[] = [];
+
+          baseRecommendations.push(`Malicious Site Detected: ${sourceText} ${uniqueSources.length > 1 ? 'have' : 'has'} flagged this domain`);
+
+          baseRecommendations.push((blacklisted as any).targetBrand ?
+            `Impersonation Alert: This site is impersonating ${(blacklisted as any).targetBrand}` :
+            'Avoid entering any personal information on this site');
+
+          baseRecommendations.push((blacklisted as any).riskLevel === 'phishing' ?
+            'Phishing site - designed to steal your credentials' :
+            (blacklisted as any).riskLevel === 'crypto-scam' ?
+            'Cryptocurrency scam - may steal your crypto assets' :
+            'Malicious activity detected - exercise extreme caution');
+
+          if (uniqueSources.length > 1) {
+            baseRecommendations.push(`Multiple security agencies confirm this threat (${uniqueSources.length} sources)`);
+          }
+
+          // 언어에 따라 번역 또는 원본 반환
+          const recommendations = currentLang === 'en'
+            ? baseRecommendations
+            : baseRecommendations.map(rec => translateMessage(rec, currentLang));
+
+          return recommendations;
+        })(),
         timestamp: new Date().toISOString()
       };
 
-      // Save to database with CRITICAL priority
-      await saveValidationHistory(blacklistResult, ipAddress, userAgent);
+      // Blacklist detection - no need to save additional history
 
       // IMMEDIATE RETURN: No further security checks needed
       // Blacklisted domains are confirmed threats with maximum danger level
       return NextResponse.json(blacklistResult);
     }
 
-    // If whitelisted, boost the trust score
-    let whitelistBonus = 0;
-    if (whitelisted) {
-      whitelistBonus = 20; // Add 20 points bonus for whitelisted domains
-    }
-
-    // Check database reputation cache first (더 오래 지속되는 캐시)
-    const dbCache = await getReputationCache(cleanDomain.toLowerCase());
-    if (dbCache) {
-      const cachedResult = restoreValidationResultFromCache(dbCache);
-      return NextResponse.json({
-        ...cachedResult,
-        cached: true,
-        cacheType: 'database'
-      });
-    }
-
-    // Check memory cache
-    const cacheKey = `validation:${cleanDomain.toLowerCase()}`;
-    const cachedResult = cache.get<ValidationResult>(cacheKey);
-
-    if (cachedResult) {
-      return NextResponse.json({
-        ...cachedResult,
-        cached: true,
-        cacheType: 'memory'
-      });
-    }
+    console.log('=================================');
 
     // Check Exchange database for legitimate crypto exchanges (only for crypto type)
     let exchangeResult: PromiseSettledResult<any> = { status: 'rejected' as const, reason: new Error('No exchange found') };
@@ -205,15 +199,97 @@ export async function POST(request: NextRequest) {
         dummyRejected  // safeBrowsing
       ];
     } else {
-      // Perform all checks for non-verified sites
+      // Check if we have cached whois/ssl data in whiteDomain
+      const whitelistEntry = await prisma.whitelistedDomain.findUnique({
+        where: { domain: cleanDomain }
+      }) as any;
+
+      // Check if we have cached data
+      const hasValidWhoisCache = whitelistEntry?.whoisData;
+      const hasValidSSLCache = whitelistEntry?.sslData;
+
+      // Log cache status
+      console.log(`[${cleanDomain}] WHOIS: ${hasValidWhoisCache ? '📦 Using DB cache' : '🌐 Calling API'}`);
+      console.log(`[${cleanDomain}] SSL: ${hasValidSSLCache ? '📦 Using DB cache' : '🌐 Calling API'}`);
+      console.log(`[${cleanDomain}] SafeBrowsing: 🌐 Always calling API (real-time check)`);
+
+      // Prepare checks - use cached data or make API calls
       const basicChecks = [
-        whoisAPI.lookup(cleanDomain),
-        sslAPI.checkSSL(cleanDomain),
-        reputationAPI.checkPhishingReports(cleanDomain),
-        safeBrowsingAPI.checkUrl(cleanDomain)
+        hasValidWhoisCache ?
+          Promise.resolve(whitelistEntry.whoisData) :
+          whoisAPI.lookup(cleanDomain),
+        hasValidSSLCache ?
+          Promise.resolve(whitelistEntry.sslData) :
+          sslAPI.checkSSL(cleanDomain),
+        safeBrowsingAPI.checkUrl(cleanDomain), // Always call safeBrowsing for real-time check
+        checkUserReports(cleanDomain) // Check user reports
       ];
 
       basicResults = await Promise.allSettled(basicChecks);
+
+      // Store whois and SSL results to whiteDomain if they are fresh API calls (not from cache)
+      try {
+        const whoisData = !hasValidWhoisCache && basicResults[0]?.status === 'fulfilled' ? basicResults[0].value : null;
+        const sslData = !hasValidSSLCache && basicResults[1]?.status === 'fulfilled' ? basicResults[1].value : null;
+
+        // Store whois data if we have it
+        if (whoisData) {
+          if (whitelistEntry) {
+            // Update existing whitelist entry
+            await prisma.whitelistedDomain.update({
+              where: { domain: cleanDomain },
+              data: {
+                whoisData: whoisData,
+                lastWhoisCheck: new Date()
+              } as any
+            });
+          } else {
+            // Create new whitelist entry for whois data
+            await prisma.whitelistedDomain.create({
+              data: {
+                domain: cleanDomain,
+                name: cleanDomain,
+                category: 'unknown',
+                whoisData: whoisData,
+                lastWhoisCheck: new Date()
+              } as any
+            });
+          }
+        }
+
+        // Store SSL data if we have it
+        if (sslData) {
+          if (whitelistEntry) {
+            // Update existing whitelist entry
+            await prisma.whitelistedDomain.update({
+              where: { domain: cleanDomain },
+              data: {
+                sslData: sslData,
+                lastSSLCheck: new Date()
+              } as any
+            });
+          } else {
+            // Create new whitelist entry for SSL data (or update if created above)
+            await prisma.whitelistedDomain.upsert({
+              where: { domain: cleanDomain },
+              update: {
+                sslData: sslData,
+                lastSSLCheck: new Date()
+              } as any,
+              create: {
+                domain: cleanDomain,
+                name: cleanDomain,
+                category: 'unknown',
+                sslData: sslData,
+                lastSSLCheck: new Date()
+              } as any
+            });
+          }
+        }
+      } catch (error) {
+        // Log error but don't fail the main validation
+        console.error('Failed to store whois/ssl data to whiteDomain:', error);
+      }
     }
 
     const results = [...basicResults, exchangeResult];
@@ -222,8 +298,8 @@ export async function POST(request: NextRequest) {
     const [
       whoisResult,
       sslResult,
-      reputationResult,
-      safeBrowsingResult
+      safeBrowsingResult,
+      userReportsResult
     ] = [
       results[0],
       results[1],
@@ -240,34 +316,30 @@ export async function POST(request: NextRequest) {
     // Process results and calculate scores
     const validationResult = processValidationResults(
       cleanDomain,
+      originalInput,
       whoisResult,
       sslResult,
-      reputationResult,
       exchangeResult,
       safeBrowsingResult,
+      userReportsResult,
       // teamScamResult, cryptoExchangeResult, koreanCryptoScamResult - temporarily disabled
-      shouldSkipOtherChecks
+      shouldSkipOtherChecks,
+      currentLang
     );
 
-    // Apply whitelist bonus if applicable
-    if (whitelistBonus > 0) {
-      validationResult.finalScore = Math.min(100, validationResult.finalScore + whitelistBonus);
-
-      // Update status if score improved
-      if (validationResult.finalScore >= 80) {
-        validationResult.status = 'safe';
-        validationResult.summary = `${cleanDomain} is a verified trusted domain. ${validationResult.summary}`;
-      }
+    // AUTO-BLACKLISTING: If domain is detected as malicious, add to blacklist
+    // This helps build our threat database automatically
+    if (validationResult.status === 'danger' && validationResult.finalScore < 30) {
+      // Don't await - do this async in background
+      autoBlacklistMaliciousDomain(
+        cleanDomain,
+        validationResult,
+        { status: 'rejected' as const, reason: new Error('Reputation API disabled') },
+        safeBrowsingResult
+      ).catch(err => console.error('Auto-blacklist error:', err));
     }
 
-    // Save to database (async, don't wait)
-    saveValidationHistory(validationResult, ipAddress, userAgent);
-
-    // Save to reputation cache (async, don't wait) - 6시간 캐시
-    saveReputationCache(cleanDomain.toLowerCase(), validationResult, type, 6);
-
-    // Cache the result in memory
-    cache.set(cacheKey, validationResult, 300000); // Cache for 5 minutes
+    // No need to save validation history
 
     return NextResponse.json(validationResult);
   } catch (error) {
@@ -281,13 +353,15 @@ export async function POST(request: NextRequest) {
 
 function processValidationResults(
   domain: string,
+  originalInput: string,
   whoisResult: PromiseSettledResult<any>,
   sslResult: PromiseSettledResult<any>,
-  reputationResult: PromiseSettledResult<any>,
   exchangeResult: PromiseSettledResult<any>,
   safeBrowsingResult: PromiseSettledResult<any>,
+  userReportsResult: PromiseSettledResult<any>,
   // teamScamResult, cryptoExchangeResult, koreanCryptoScamResult: temporarily disabled
-  shouldSkipOtherChecks: boolean = false
+  shouldSkipOtherChecks: boolean = false,
+  currentLang: 'ko' | 'en' = 'en'
 ): ValidationResult {
   const checks: ValidationResult['checks'] = shouldSkipOtherChecks ? {
     // For verified exchanges, create skipped check objects
@@ -318,13 +392,28 @@ function processValidationResults(
       score: 100,
       weight: 0,
       message: 'Skipped - Exchange verified from trusted database'
+    },
+    userReports: {
+      name: 'User Reports Check',
+      passed: true,
+      score: 100,
+      weight: 0,
+      message: 'Skipped - Exchange verified from trusted database'
     }
   } : {
     // For unverified sites, show all checks (malicious site check first)
-    maliciousSite: processMaliciousSiteCheck(reputationResult),
+    maliciousSite: {
+      name: 'Malicious Site Check',
+      passed: true,
+      score: 100,
+      weight: 0.35,
+      message: 'No malicious patterns detected in database',
+      details: { isReported: false }
+    },
     whois: processWhoisCheck(whoisResult),
     ssl: processSSLCheck(sslResult),
-    safeBrowsing: processSafeBrowsingCheck(safeBrowsingResult)
+    safeBrowsing: processSafeBrowsingCheck(safeBrowsingResult),
+    userReports: processUserReportsCheck(userReportsResult, currentLang)
   };
 
   // Add exchange check if applicable (always check for legitimate exchanges)
@@ -351,10 +440,11 @@ function processValidationResults(
     koreanCryptoScam: 0
   } : {
     // For unverified sites - full security checks (malicious site check prioritized)
-    maliciousSite: 0.40,   // Malicious Site Check (40% - highest priority)
+    maliciousSite: 0.35,   // Malicious Site Check (35% - highest priority)
     whois: 0.25,           // Domain Registration (25%)
     ssl: 0.20,            // SSL Certificate (20%)
-    safeBrowsing: 0.15,   // Safe Browsing (15%)
+    safeBrowsing: 0.10,   // Safe Browsing (10%)
+    userReports: 0.10,    // User Reports Check (10%)
     exchange: 0,          // Exchange Verification (0% - disabled)
     teamScam: 0,          // Team Scam Detection (0% - disabled)
     cryptoExchange: 0,    // Crypto Exchange Impersonation (0% - disabled)
@@ -370,7 +460,8 @@ function processValidationResults(
     weightedScore += check.score * weight;
   });
 
-  let finalScore = shouldSkipOtherChecks ? 95 : Math.round(weightedScore / totalWeight);
+  let finalScore = shouldSkipOtherChecks ? 95 :
+    totalWeight > 0 ? Math.round(weightedScore / totalWeight) : 50; // Default score if no weights
 
   // For verified exchanges, set high score directly
   if (shouldSkipOtherChecks) {
@@ -385,14 +476,15 @@ function processValidationResults(
   else status = 'danger';
 
   // Generate recommendations
-  const recommendations = generateRecommendations(checks, finalScore);
+  const recommendations = generateRecommendations(checks, finalScore, currentLang);
 
   return {
     domain,
+    originalInput,
     finalScore,
     status,
     checks,
-    summary: generateSummary(domain, finalScore, status, checks),
+    summary: generateSummary(domain, finalScore, status, checks, currentLang),
     recommendations,
     timestamp: new Date().toISOString()
   };
@@ -532,14 +624,22 @@ function processSSLCheck(result: PromiseSettledResult<any>): ValidationCheck {
   };
 }
 
-function processMaliciousSiteCheck(result: PromiseSettledResult<any>): ValidationCheck {
+function processMaliciousSiteCheck(result: PromiseSettledResult<any>, currentLang: 'ko' | 'en' = 'en'): ValidationCheck {
+  // Debug logging
+  console.log('processMaliciousSiteCheck result:', {
+    status: result.status,
+    success: result.status === 'fulfilled' ? result.value?.success : 'N/A',
+    data: result.status === 'fulfilled' ? result.value?.data : 'N/A'
+  });
+
   if (result.status === 'rejected' || !result.value.success) {
+    console.log('Reputation check failed:', result.status === 'rejected' ? result.reason : result.value.error);
     return {
-      name: 'Malicious Site Check',
+      name: 'Reputation Check',
       passed: false,
       score: 50,
       weight: 0.3,
-      message: 'Unable to verify malicious site status',
+      message: 'Unable to verify reputation status',
       details: { error: result.status === 'rejected' ? result.reason : result.value.error }
     };
   }
@@ -560,20 +660,54 @@ function processMaliciousSiteCheck(result: PromiseSettledResult<any>): Validatio
       });
     }
 
-    // Simple summary message only
+    // Show detailed information when threats are detected
     if (detectedSources.length > 0) {
-      message = `Detected in ${detectedSources.length} database(s): ${detectedSources.join(', ')}`;
+      message = `Threats detected in ${detectedSources.length} database(s):\n`;
+
+      // Add detailed information from each source
+      if (data.details && Array.isArray(data.details)) {
+        const reportedDetails = data.details.filter((detail: any) => detail.isReported);
+        reportedDetails.forEach((detail: any, index: number) => {
+          message += `\n${index + 1}. ${detail.source}: ${detail.details}`;
+          if (detail.confidence) {
+            message += ` (Confidence: ${detail.confidence}%)`;
+          }
+        });
+      }
+
+      // Add "다음에서 탐지됨" section
+      if (detectedSources.length > 0) {
+        message += `\n\n다음에서 탐지됨: ${detectedSources.join(', ')}`;
+      }
     } else {
       message = 'Domain is blacklisted';
     }
   } else if (score >= 90) {
-    message = 'Excellent reputation - No threats detected in any database';
+    message = translateMessage('Excellent reputation - No threats detected across all security databases', currentLang) + '\n';
+    if (data.details && Array.isArray(data.details)) {
+      message += `Checked ${data.details.length} security databases: ${data.details.map((d: any) => d.source).join(', ')}`;
+    }
   } else if (score >= 70) {
-    message = 'Good reputation - Clean across all security databases';
+    message = translateMessage('Good reputation - Clean across all security databases', currentLang) + '\n';
+    if (data.details && Array.isArray(data.details)) {
+      message += `Verified by ${data.details.length} sources`;
+    }
   } else if (score >= 50) {
-    message = 'Mixed reputation - Some concerns detected';
+    message = translateMessage('Mixed reputation - Some minor concerns detected', currentLang) + '\n';
+    if (data.details && Array.isArray(data.details)) {
+      const concerns = data.details.filter((d: any) => d.riskLevel === 'suspicious');
+      if (concerns.length > 0) {
+        message += `Suspicious indicators: ${concerns.map((c: any) => c.source).join(', ')}`;
+      }
+    }
   } else {
-    message = 'Poor reputation - Multiple risk indicators detected';
+    message = 'Poor reputation - Multiple risk indicators detected\n';
+    if (data.details && Array.isArray(data.details)) {
+      const risks = data.details.filter((d: any) => d.riskLevel === 'suspicious' || d.riskLevel === 'malicious');
+      if (risks.length > 0) {
+        message += `Risk sources: ${risks.map((r: any) => r.source).join(', ')}`;
+      }
+    }
   }
 
   // evidenceUrls 추가
@@ -583,12 +717,40 @@ function processMaliciousSiteCheck(result: PromiseSettledResult<any>): Validatio
   };
 
   return {
-    name: 'Malicious Site Check',
+    name: 'Reputation Check',
     passed: !data.isReported && score >= 50,
     score,
     weight: 0.3,
     message,
-    details
+    details: {
+      ...details,
+      // 상세 정보 추가
+      sources: data.details ? data.details.map((d: any) => {
+        // 각 소스별 점수 계산
+        let sourceScore = 100; // 기본값
+        if (d.isReported) {
+          if (d.riskLevel === 'malicious') {
+            sourceScore = 0;
+          } else if (d.riskLevel === 'suspicious') {
+            sourceScore = 30;
+          } else {
+            sourceScore = 50;
+          }
+        }
+
+        return {
+          source: d.source,
+          isReported: d.isReported,
+          details: d.details,
+          confidence: d.confidence,
+          score: sourceScore,
+          riskLevel: d.riskLevel || 'clean',
+          reportDate: d.reportDate
+        };
+      }) : [],
+      totalSources: data.details ? data.details.length : 0,
+      reportedSources: data.details ? data.details.filter((d: any) => d.isReported).length : 0
+    }
   };
 }
 
@@ -639,6 +801,18 @@ function processSafeBrowsingCheck(result: PromiseSettledResult<any>): Validation
 
   const data = result.value.data;
 
+  // Handle case where data is null or undefined
+  if (!data) {
+    return {
+      name: 'Google Safe Browsing',
+      passed: false,
+      score: 50,
+      weight: 0.3,
+      message: 'Safe browsing data unavailable',
+      details: { error: 'No data returned from Safe Browsing API' }
+    };
+  }
+
   // Use the calculated score from the Safe Browsing API
   const score = data.score !== undefined ? data.score : (data.safe ? 100 : 0);
 
@@ -674,17 +848,23 @@ function processSafeBrowsingCheck(result: PromiseSettledResult<any>): Validation
   };
 }
 
-function generateSummary(domain: string, score: number, status: string, checks: any): string {
-  if (status === 'safe') {
-    if (checks.exchange) {
-      return `${domain} is a verified cryptocurrency exchange with excellent security credentials.`;
+function generateSummary(domain: string, score: number, status: string, checks: any, currentLang: 'ko' | 'en' = 'en'): string {
+  if (currentLang === 'en') {
+    // 영어면 그냥 원본 영어 summary 생성
+    if (status === 'safe') {
+      if (checks.exchange) {
+        return `${domain} is a verified cryptocurrency exchange with excellent security credentials.`;
+      }
+      return `${domain} appears to be safe with a trust score of ${score}/100.`;
+    } else if (status === 'warning') {
+      return `${domain} has some concerns. Proceed with caution (score: ${score}/100).`;
+    } else {
+      return `${domain} has significant security risks. Not recommended (score: ${score}/100).`;
     }
-    return `${domain} appears to be safe with a trust score of ${score}/100.`;
-  } else if (status === 'warning') {
-    return `${domain} has some concerns. Proceed with caution (score: ${score}/100).`;
-  } else {
-    return `${domain} has significant security risks. Not recommended (score: ${score}/100).`;
   }
+
+  const isExchange = !!checks.exchange;
+  return translateSummary(domain, score, status, isExchange, currentLang);
 }
 
 /* Legacy function - kept for reference but not used
@@ -981,58 +1161,205 @@ function _processKoreanCryptoScamCheck(result: PromiseSettledResult<any>): Valid
 }
 */
 
-function generateRecommendations(checks: any, score: number): string[] {
-  const recommendations: string[] = [];
+function generateRecommendations(checks: any, score: number, currentLang: 'ko' | 'en' = 'en'): string[] {
+  const baseRecommendations: string[] = [];
 
   if (score >= 80) {
-    recommendations.push('This site appears to be safe for use.');
+    baseRecommendations.push('This site appears to be safe for use.');
     if (checks.exchange) {
-      recommendations.push('This is a recognized cryptocurrency exchange.');
+      baseRecommendations.push('This is a recognized cryptocurrency exchange.');
     }
   }
 
   // Enhanced crypto scam specific recommendations
   if (checks.teamScam && !checks.teamScam.passed) {
-    recommendations.push('CRITICAL: Team scam mission detected - avoid at all costs.');
+    baseRecommendations.push('CRITICAL: Team scam mission detected - avoid at all costs.');
   }
 
   if (checks.cryptoExchange && !checks.cryptoExchange.passed) {
-    recommendations.push('CRITICAL: Cryptocurrency exchange impersonation detected.');
+    baseRecommendations.push('CRITICAL: Cryptocurrency exchange impersonation detected.');
     if (checks.cryptoExchange.details?.legitimateUrl) {
-      recommendations.push(`Use the official site instead: ${checks.cryptoExchange.details.legitimateUrl}`);
+      baseRecommendations.push(`Use the official site instead: ${checks.cryptoExchange.details.legitimateUrl}`);
     }
   }
 
   if (checks.koreanCryptoScam && !checks.koreanCryptoScam.passed) {
-    recommendations.push('WARNING: Korean cryptocurrency scam patterns detected.');
+    baseRecommendations.push('WARNING: Korean cryptocurrency scam patterns detected.');
   }
 
   if (checks.ssl && !checks.ssl.passed) {
-    recommendations.push('Avoid entering sensitive information - no valid SSL certificate.');
+    baseRecommendations.push('Avoid entering sensitive information - no valid SSL certificate.');
   }
 
   if (checks.whois && (!checks.whois.passed || checks.whois.score < 50)) {
-    recommendations.push('Be cautious - this is a very new domain.');
+    baseRecommendations.push('Be cautious - this is a very new domain.');
   }
 
   if (checks.reputation && !checks.reputation.passed) {
-    recommendations.push('High risk - domain has poor reputation or is blacklisted.');
+    baseRecommendations.push('High risk - domain has poor reputation or is blacklisted.');
   }
 
   if (checks.safeBrowsing && !checks.safeBrowsing.passed) {
-    recommendations.push('Google Safe Browsing has detected threats on this site.');
+    baseRecommendations.push('Google Safe Browsing has detected threats on this site.');
   }
 
   if (score < 50) {
-    recommendations.push('Strongly recommend avoiding this site.');
-    recommendations.push('Consider using well-known exchanges like Binance, Coinbase, or Kraken.');
+    baseRecommendations.push('Strongly recommend avoiding this site.');
+    baseRecommendations.push('Consider using well-known exchanges like Binance, Coinbase, or Kraken.');
   }
 
   // Add specific crypto security recommendations
   if (checks.teamScam || checks.cryptoExchange || checks.koreanCryptoScam) {
-    recommendations.push('For crypto safety: Only use official exchange apps and websites.');
-    recommendations.push('Verify URLs through official social media or support channels.');
+    baseRecommendations.push('For crypto safety: Only use official exchange apps and websites.');
+    baseRecommendations.push('Verify URLs through official social media or support channels.');
   }
 
-  return recommendations;
+  // 언어에 따라 번역 또는 원본 반환
+  return currentLang === 'en'
+    ? baseRecommendations
+    : baseRecommendations.map(rec => translateMessage(rec, currentLang));
+}
+
+// Auto-blacklist malicious domains detected by APIs
+async function autoBlacklistMaliciousDomain(
+  domain: string,
+  validationResult: ValidationResult,
+  reputationResult: PromiseSettledResult<any>,
+  safeBrowsingResult: PromiseSettledResult<any>
+) {
+  try {
+    // Check if already blacklisted
+    const existing = await prisma.blacklistedDomain.findUnique({
+      where: { domain: domain.toLowerCase() }
+    });
+
+    if (existing) {
+      console.log(`Domain ${domain} already in blacklist`);
+      return;
+    }
+
+    // Determine the source and reason
+    let source = 'Auto-detection';
+    let reason = 'Multiple security threats detected';
+    let category = 'malicious';
+    let virusTotalScore = null;
+
+    // Check if VirusTotal detected it
+    if (reputationResult.status === 'fulfilled' &&
+        reputationResult.value?.data?.details) {
+      const details = reputationResult.value.data.details;
+
+      // Find VirusTotal result
+      const vtResult = details.find((d: any) => d.source === 'VirusTotal');
+      if (vtResult && vtResult.isReported) {
+        source = 'VirusTotal';
+        const match = vtResult.details.match(/(\d+)\/(\d+)/);
+        if (match) {
+          virusTotalScore = parseInt(match[1]);
+        }
+
+        // Determine category based on detection
+        if (vtResult.details.toLowerCase().includes('phish')) {
+          category = 'phishing';
+          reason = 'Phishing site detected by VirusTotal';
+        } else if (vtResult.details.toLowerCase().includes('malware')) {
+          category = 'malware';
+          reason = 'Malware distribution detected by VirusTotal';
+        } else {
+          reason = vtResult.details;
+        }
+      }
+    }
+
+    // Check Google Safe Browsing
+    if (safeBrowsingResult.status === 'fulfilled' &&
+        safeBrowsingResult.value?.data?.threats?.length > 0) {
+      const threat = safeBrowsingResult.value.data.threats[0];
+      if (source === 'Auto-detection') {
+        source = 'Google Safe Browsing';
+      }
+
+      if (threat.threatType === 'SOCIAL_ENGINEERING') {
+        category = 'phishing';
+        reason = 'Phishing/Social engineering detected';
+      } else if (threat.threatType === 'MALWARE') {
+        category = 'malware';
+        reason = 'Malware detected';
+      } else if (threat.threatType === 'UNWANTED_SOFTWARE') {
+        category = 'malware';
+        reason = 'Unwanted software distribution';
+      }
+    }
+
+    // Create blacklist entry
+    await prisma.blacklistedDomain.create({
+      data: {
+        domain: domain.toLowerCase(),
+        reason,
+        severity: validationResult.finalScore < 10 ? 'critical' :
+                 validationResult.finalScore < 20 ? 'high' : 'medium',
+        reportedBy: source,
+        reportDate: new Date(),
+        isActive: true,
+        evidence: [
+          `Final security score: ${validationResult.finalScore}/100`,
+          `Detection source: ${source}`,
+          validationResult.summary
+        ],
+        riskLevel: category === 'malware' ? 'critical' : 'high',
+        category,
+        dataSources: [source],
+        verificationStatus: 'auto-detected',
+        description: `Automatically blacklisted due to detection by ${source}. ${reason}`,
+        isConfirmed: true,
+        virusTotalDetections: virusTotalScore
+      }
+    });
+
+    console.log(`✅ Auto-blacklisted ${domain} - Source: ${source}, Reason: ${reason}`);
+  } catch (error) {
+    console.error(`Failed to auto-blacklist ${domain}:`, error);
+  }
+}
+
+function processUserReportsCheck(result: PromiseSettledResult<any>, currentLang: 'ko' | 'en' = 'en'): ValidationCheck {
+  if (result.status === 'rejected') {
+    return {
+      name: 'User Reports Check',
+      passed: true,
+      score: 100,
+      weight: 0.1,
+      message: currentLang === 'ko' ? '사용자 신고 확인 불가' : 'User reports check unavailable',
+      details: { error: result.reason }
+    };
+  }
+
+  const data = result.value;
+  const score = data.score;
+  const isReported = data.isReported;
+
+  let message = '';
+  if (isReported) {
+    if (currentLang === 'ko') {
+      message = `${data.reportCount}건의 사용자 신고 (최근 30일)`;
+    } else {
+      message = `${data.reportCount} user report(s) in last 30 days`;
+    }
+  } else {
+    message = currentLang === 'ko' ? '사용자 신고 없음' : 'No user reports';
+  }
+
+  return {
+    name: 'User Reports Check',
+    passed: !isReported,
+    score,
+    weight: 0.1,
+    message,
+    details: {
+      userReports: data,
+      isReported,
+      reportCount: data.reportCount,
+      recentReports: data.recentReports
+    }
+  };
 }

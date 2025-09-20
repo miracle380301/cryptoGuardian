@@ -39,6 +39,40 @@ const messageTranslations: Record<string, { ko: string; en: string }> = {
     ko: '안전 - 위협이 감지되지 않음',
     en: 'Clean - No threats detected'
   },
+  'Excellent reputation - No threats detected across all security databases': {
+    ko: '우수한 평판 - 모든 보안 데이터베이스에서 위협이 감지되지 않음',
+    en: 'Excellent reputation - No threats detected across all security databases'
+  },
+  'Good reputation - Clean across all security databases': {
+    ko: '좋은 평판 - 모든 보안 데이터베이스에서 안전함',
+    en: 'Good reputation - Clean across all security databases'
+  },
+  'Mixed reputation - Some minor concerns detected': {
+    ko: '혼재된 평판 - 일부 경미한 우려사항 감지됨',
+    en: 'Mixed reputation - Some minor concerns detected'
+  },
+
+  // Blacklist messages
+  'Blacklisted: KISA': {
+    ko: '블랙리스트: KISA',
+    en: 'Blacklisted: KISA'
+  },
+  'Blacklisted: Security Database': {
+    ko: '블랙리스트: 보안 데이터베이스',
+    en: 'Blacklisted: Security Database'
+  },
+  'Domain is blacklisted': {
+    ko: '도메인이 블랙리스트에 등록됨',
+    en: 'Domain is blacklisted'
+  },
+  'Domain is blacklisted - SSL check skipped': {
+    ko: '도메인이 블랙리스트에 등록됨 - SSL 검사 건너뜀',
+    en: 'Domain is blacklisted - SSL check skipped'
+  },
+  'Phishing site detected': {
+    ko: '피싱 사이트 탐지됨',
+    en: 'Phishing site detected'
+  },
   'Domain on hold (suspended)': {
     ko: '도메인 보류 중 (정지됨)',
     en: 'Domain on hold (suspended)'
@@ -265,6 +299,12 @@ const messagePatterns: Array<{
     }
   },
   {
+    pattern: /Domain on hold \(suspended\)/,
+    translate: (match, lang) => {
+      return lang === 'ko' ? '도메인 보류 중 (정지됨)' : match[0];
+    }
+  },
+  {
     pattern: /^ Server hold \(critical issue\)$/,
     translate: (match, lang) => {
       return lang === 'ko' ? ' 서버 보류 (심각한 문제)' : match[0];
@@ -402,6 +442,59 @@ const messagePatterns: Array<{
       }
       return match[0];
     }
+  },
+
+  // Blacklist pattern
+  {
+    pattern: /^Blacklisted: (.+)$/,
+    translate: (match, lang) => {
+      if (lang === 'ko') {
+        let source = match[1];
+        source = source.replace(/Security Database/g, '보안 데이터베이스');
+        return `블랙리스트: ${source}`;
+      }
+      return match[0];
+    }
+  },
+
+  // Malicious Site Detection patterns
+  {
+    pattern: /^Malicious Site Detected: (.+) (have|has) flagged this domain$/,
+    translate: (match, lang) => {
+      if (lang === 'ko') {
+        let sourceText = match[1];
+        // Translate common sources
+        sourceText = sourceText.replace(/Security Database/g, '보안 데이터베이스');
+        sourceText = sourceText.replace(/KISA/g, 'KISA');
+        sourceText = sourceText.replace(/VirusTotal/g, 'VirusTotal');
+        sourceText = sourceText.replace(/ and /g, ' 및 ');
+        const verb = match[2] === 'have' ? '에서' : '가';
+        return `악성 사이트 탐지: ${sourceText}${verb} 이 도메인을 신고했습니다`;
+      }
+      return match[0];
+    }
+  },
+
+  // Impersonation Alert patterns
+  {
+    pattern: /^Impersonation Alert: This site is impersonating (.+)$/,
+    translate: (match, lang) => {
+      if (lang === 'ko') {
+        return `사칭 경고: 이 사이트는 ${match[1]}를 사칭하고 있습니다`;
+      }
+      return match[0];
+    }
+  },
+
+  // Multiple security agencies pattern
+  {
+    pattern: /^Multiple security agencies confirm this threat \((\d+) sources\)$/,
+    translate: (match, lang) => {
+      if (lang === 'ko') {
+        return `여러 보안기관이 이 위협을 확인했습니다 (${match[1]}개 기관)`;
+      }
+      return match[0];
+    }
   }
 ];
 
@@ -486,48 +579,65 @@ const recommendationTranslations: Record<string, { ko: string; en: string }> = {
   },
   // Without emojis (from updated API) - 정확한 매칭
   'CRITICAL: Team scam mission detected - avoid at all costs.': {
-    ko: '🚨 위험: 팀 스캠 미션이 감지됨 - 절대 피하세요.',
+    ko: '위험: 팀 스캠 미션이 감지됨 - 절대 피하세요.',
     en: 'CRITICAL: Team scam mission detected - avoid at all costs.'
   },
   'CRITICAL: Cryptocurrency exchange impersonation detected.': {
-    ko: '🚨 위험: 암호화폐 거래소 사칭이 감지됨.',
+    ko: '위험: 암호화폐 거래소 사칭이 감지됨.',
     en: 'CRITICAL: Cryptocurrency exchange impersonation detected.'
   },
   'WARNING: Korean cryptocurrency scam patterns detected.': {
-    ko: '⚠️ 경고: 한국 암호화폐 스캠 패턴이 감지됨.',
+    ko: '경고: 한국 암호화폐 스캠 패턴이 감지됨.',
     en: 'WARNING: Korean cryptocurrency scam patterns detected.'
   },
   'Avoid entering sensitive information - no valid SSL certificate.': {
-    ko: '⚠️ 민감한 정보 입력을 피하세요 - 유효한 SSL 인증서가 없습니다.',
+    ko: '민감한 정보 입력을 피하세요 - 유효한 SSL 인증서가 없습니다.',
     en: 'Avoid entering sensitive information - no valid SSL certificate.'
   },
   'Be cautious - this is a very new domain.': {
-    ko: '⚠️ 주의하세요 - 매우 새로운 도메인입니다.',
+    ko: '주의하세요 - 매우 새로운 도메인입니다.',
     en: 'Be cautious - this is a very new domain.'
   },
   'High risk - domain has poor reputation or is blacklisted.': {
-    ko: '🚨 고위험 - 도메인의 평판이 나쁘거나 블랙리스트에 있습니다.',
+    ko: '고위험 - 도메인의 평판이 나쁘거나 블랙리스트에 있습니다.',
     en: 'High risk - domain has poor reputation or is blacklisted.'
   },
   'Google Safe Browsing has detected threats on this site.': {
-    ko: '🚨 Google 안전 브라우징이 이 사이트에서 위협을 감지했습니다.',
+    ko: 'Google 안전 브라우징이 이 사이트에서 위협을 감지했습니다.',
     en: 'Google Safe Browsing has detected threats on this site.'
   },
   'Strongly recommend avoiding this site.': {
-    ko: '❌ 이 사이트를 피할 것을 강력히 권장합니다.',
+    ko: '이 사이트를 피할 것을 강력히 권장합니다.',
     en: 'Strongly recommend avoiding this site.'
   },
   'Consider using well-known exchanges like Binance, Coinbase, or Kraken.': {
-    ko: '💡 Binance, Coinbase, Kraken과 같은 유명 거래소 사용을 고려하세요.',
+    ko: 'Binance, Coinbase, Kraken과 같은 유명 거래소 사용을 고려하세요.',
     en: 'Consider using well-known exchanges like Binance, Coinbase, or Kraken.'
   },
   'For crypto safety: Only use official exchange apps and websites.': {
-    ko: '🔐 암호화폐 안전을 위해: 공식 거래소 앱과 웹사이트만 사용하세요.',
+    ko: '암호화폐 안전을 위해: 공식 거래소 앱과 웹사이트만 사용하세요.',
     en: 'For crypto safety: Only use official exchange apps and websites.'
   },
   'Verify URLs through official social media or support channels.': {
-    ko: '📱 공식 소셜 미디어나 지원 채널을 통해 URL을 확인하세요.',
+    ko: '공식 소셜 미디어나 지원 채널을 통해 URL을 확인하세요.',
     en: 'Verify URLs through official social media or support channels.'
+  },
+  // Blacklist specific recommendations
+  'Avoid entering any personal information on this site': {
+    ko: '이 사이트에 개인정보를 입력하지 마세요',
+    en: 'Avoid entering any personal information on this site'
+  },
+  'Phishing site - designed to steal your credentials': {
+    ko: '피싱 사이트 - 개인정보 및 자격증명을 탈취하려고 합니다',
+    en: 'Phishing site - designed to steal your credentials'
+  },
+  'Cryptocurrency scam - may steal your crypto assets': {
+    ko: '암호화폐 사기 - 암호화폐 자산을 탈취할 수 있습니다',
+    en: 'Cryptocurrency scam - may steal your crypto assets'
+  },
+  'Malicious activity detected - exercise extreme caution': {
+    ko: '악성 활동이 탐지되었습니다 - 극도로 주의하세요',
+    en: 'Malicious activity detected - exercise extreme caution'
   }
 };
 
@@ -559,22 +669,43 @@ export function translateRecommendation(recommendation: string, lang: 'ko' | 'en
 }
 
 export function translateMessage(message: string, lang: 'ko' | 'en'): string {
+  // message가 null/undefined인 경우 빈 문자열 반환
+  if (!message) {
+    return '';
+  }
+
+  // 영어인 경우 원본 그대로 반환
+  if (lang === 'en') {
+    return message;
+  }
+
+
   // 디버깅: Domain on hold 관련 메시지 로깅
   if (message.includes('Domain on hold') || message.includes('suspended')) {
     console.log('Domain status message:', JSON.stringify(message));
   }
 
-  // 1. 정확한 매칭 먼저 확인
+  // 1. 정확한 매칭 먼저 확인 (messageTranslations)
   if (messageTranslations[message]) {
     return messageTranslations[message][lang];
   }
 
-  // 2. 여러 줄 메시지 처리
+  // 2. recommendationTranslations에서도 확인
+  if (recommendationTranslations[message]) {
+    return recommendationTranslations[message][lang];
+  }
+
+  // 3. 여러 줄 메시지 처리
   const lines = message.split('\n');
   let translatedLines = lines.map(line => {
     // 각 줄에 대해 번역 시도
     if (messageTranslations[line]) {
       return messageTranslations[line][lang];
+    }
+
+    // recommendationTranslations에서도 확인
+    if (recommendationTranslations[line]) {
+      return recommendationTranslations[line][lang];
     }
 
     // 패턴 매칭 시도
@@ -588,7 +719,7 @@ export function translateMessage(message: string, lang: 'ko' | 'en'): string {
     return line; // 번역 못 찾으면 원본 반환
   });
 
-  // 3. 전체 메시지에 대한 패턴 매칭
+  // 4. 전체 메시지에 대한 패턴 매칭
   for (const { pattern, translate } of messagePatterns) {
     const match = message.match(pattern);
     if (match) {
@@ -596,6 +727,6 @@ export function translateMessage(message: string, lang: 'ko' | 'en'): string {
     }
   }
 
-  // 4. 번역이 있는 경우 합쳐서 반환, 없으면 원본 반환
+  // 5. 번역이 있는 경우 합쳐서 반환, 없으면 원본 반환
   return translatedLines.join('\n');
 }

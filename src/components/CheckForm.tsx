@@ -1,20 +1,31 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select'
 import { Loader2, Search, Shield, Globe, Bitcoin } from 'lucide-react'
 
 export function CheckForm() {
   const { t } = useTranslation()
-  const router = useRouter()
   const [url, setUrl] = useState('')
   const [searchType, setSearchType] = useState('general') // 'general' or 'crypto'
   const [loading, setLoading] = useState(false)
+
+  // Search type options configuration
+  const searchOptions = {
+    general: {
+      icon: <Globe className="h-4 w-4 text-blue-500" />,
+      label: t.main.searchTypes.general.label,
+      placeholder: t.main.searchTypes.general.placeholder
+    },
+    crypto: {
+      icon: <Bitcoin className="h-4 w-4 text-orange-500" />,
+      label: t.main.searchTypes.crypto.label,
+      placeholder: t.main.searchTypes.crypto.placeholder
+    }
+  } as const
 
   // Reset loading state when component unmounts or user navigates back
   useEffect(() => {
@@ -23,26 +34,20 @@ export function CheckForm() {
     return () => window.removeEventListener('beforeunload', handleBeforeUnload)
   }, [])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     if (!url.trim()) {
-      alert(t.errors.invalidUrl)
       return
     }
 
     setLoading(true)
 
-    try {
-      // Clean the URL/domain
-      const cleanDomain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]
+    // Clean the URL/domain for routing
+    const cleanDomain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]
 
-      // Navigate to check page with search type parameter
-      router.push(`/check/${encodeURIComponent(cleanDomain)}?type=${searchType}`)
-    } catch (error) {
-      setLoading(false)
-      alert('검색 중 오류가 발생했습니다.')
-    }
+    // Navigate to check page with full URL as query parameter
+    window.location.href = `/check/${encodeURIComponent(cleanDomain)}?type=${searchType}&url=${encodeURIComponent(url)}`
   }
 
   return (
@@ -71,32 +76,19 @@ export function CheckForm() {
           <Select value={searchType} onValueChange={setSearchType}>
             <SelectTrigger className="w-44 !h-14 border border-gray-300 rounded-lg focus:border-blue-500 bg-white" style={{height: '56px', minHeight: '56px'}}>
               <div className="flex items-center gap-2">
-                {searchType === 'crypto' ? (
-                  <>
-                    <Bitcoin className="h-4 w-4 text-orange-500" />
-                    <span>암호화폐 관련</span>
-                  </>
-                ) : (
-                  <>
-                    <Globe className="h-4 w-4 text-blue-500" />
-                    <span>일반 도메인</span>
-                  </>
-                )}
+                {searchOptions[searchType as keyof typeof searchOptions].icon}
+                <span>{searchOptions[searchType as keyof typeof searchOptions].label}</span>
               </div>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="general">
-                <div className="flex items-center gap-2">
-                  <Globe className="h-4 w-4 text-blue-500" />
-                  <span>일반 도메인</span>
-                </div>
-              </SelectItem>
-              <SelectItem value="crypto">
-                <div className="flex items-center gap-2">
-                  <Bitcoin className="h-4 w-4 text-orange-500" />
-                  <span>암호화폐 관련</span>
-                </div>
-              </SelectItem>
+              {Object.entries(searchOptions).map(([value, option]) => (
+                <SelectItem key={value} value={value}>
+                  <div className="flex items-center gap-2">
+                    {option.icon}
+                    <span>{option.label}</span>
+                  </div>
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
         </div>
@@ -106,10 +98,7 @@ export function CheckForm() {
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder={searchType === 'crypto' ?
-              "암호화폐 거래소나 관련 사이트 입력 (예: binance.com)" :
-              "URL 또는 도메인을 입력하세요 (예: example.com)"
-            }
+            placeholder={searchOptions[searchType as keyof typeof searchOptions].placeholder}
             className="pl-12 h-14 text-lg border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors bg-white flex items-center"
             disabled={loading}
           />

@@ -1,0 +1,284 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ValidationHistory 모델 제거됨 - 통계는 다른 데이터로 계산
+
+// 알려진 스캠 도메인 블랙리스트 (다중 소스 지원)
+model BlacklistedDomain {
+  id              String    @id @default(cuid())
+  domain          String    @unique
+  fullUrl         String?   // 전체 URL (단축 URL 등의 경우)
+
+  // 기본 정보
+  reason          String    @db.Text // 차단 이유 (긴 텍스트 허용)
+  severity        String    // low, medium, high, critical
+  riskLevel       String?   // malicious, suspicious, phishing, scam, crypto-scam
+  category        String?   // crypto, phishing, malware, scam, investment-fraud, etc
+
+  // 상세 정보
+  targetBrand     String?   // 사칭 대상 브랜드 (예: Binance, Coinbase 등)
+  description     String?   @db.Text // 상세 설명
+  evidence        String[]  // 증거 URL 또는 설명
+  reportDate      DateTime? // 최초 신고일
+  reportedBy      String?   // 신고자 또는 출처
+
+  // KISA 데이터
+  kisaId          String?   @unique // KISA 고유 ID
+  kisaCategory    String?   // KISA 분류 (투자사기, 피싱, 거래소사칭 등)
+  kisaReportDate  DateTime? // KISA 신고일
+  kisaStatus      String?   // KISA 처리 상태
+  kisaReference   String?   // KISA 참조 번호
+
+  // VirusTotal 정보
+  virusTotalDetections Int?     // VirusTotal 탐지 수 (positives)
+  virusTotalTotal      Int?     // VirusTotal 전체 엔진 수
+  virusTotalRatio      Float?   // VirusTotal 탐지 비율
+  virusTotalCategories String[] @default([]) // VirusTotal 탐지 카테고리들
+  virusTotalEngines    String[] @default([]) // 탐지한 엔진 목록
+  virusTotalScanDate   DateTime? // VirusTotal 스캔 날짜
+  virusTotalUrl        String?  // VirusTotal 리포트 URL
+  phishTankId          String?  // PhishTank ID
+  phishTankUrl         String?  // PhishTank URL
+  cryptoScamDBId       String?  // CryptoScamDB ID
+  fcaWarningId         String?  // FCA 경고 ID
+  secActionId          String?  // SEC 조치 ID
+
+  // 데이터 소스 관리
+  primaryDataSource    String    @default("manual") // 주요 데이터 출처: kisa, virustotal, phishtank, cryptoscamdb, fca, sec, manual
+  dataSources          String[]  @default([]) // 모든 데이터 출처 목록
+
+  // 검증 정보
+  verificationStatus   String?   @default("unverified") // verified, unverified, pending
+  verificationSources  String[]  @default([]) // 검증한 소스들
+  verificationDate     DateTime? // 마지막 검증일
+
+  // 배치 처리 정보
+  batchId         String?   // 배치 처리 ID
+  batchDate       DateTime? // 배치로 수집된 날짜
+  lastChecked     DateTime? // 마지막 확인 날짜
+  lastUpdated     DateTime? // 마지막 업데이트 날짜
+
+  // 통계 정보
+  hitCount        Int       @default(0) // 조회수
+  reportCount     Int       @default(0) // 신고 횟수
+
+  // 상태 관리
+  isActive        Boolean   @default(true)
+  isConfirmed     Boolean   @default(false) // 확인된 스캠 여부
+  priority        Int       @default(0) // 우선순위 (높을수록 위험)
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([domain])
+  @@index([isActive])
+  @@index([severity])
+  @@index([riskLevel])
+  @@index([category])
+  @@index([primaryDataSource])
+  @@index([batchDate])
+  @@index([targetBrand])
+  @@index([verificationStatus])
+  @@index([priority])
+  @@index([kisaId])
+}
+
+// 화이트리스트 (검증된 안전한 도메인)
+model WhitelistedDomain {
+  id                String    @id @default(cuid())
+  domain            String    @unique
+  name              String    // 서비스명 (예: Binance, Coinbase)
+  category          String    // exchange, wallet, defi, etc
+  trustScore        Int       @default(100)
+  verifiedBy        String?   // 검증 기관
+  officialUrl       String?
+  additionalUrls    String[]  // 관련 도메인들
+
+  // WHOIS 캐시 정보
+  whoisData         Json?     // WHOIS 상세 데이터 (등록일, 만료일, 등록자 등)
+  lastWhoisCheck    DateTime? // 마지막 WHOIS 확인 시간
+
+  // SSL 캐시 정보
+  sslData           Json?     // SSL 인증서 상세 데이터 (유효성, 만료일, 발급자 등)
+  lastSSLCheck      DateTime? // 마지막 SSL 확인 시간
+
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([domain])
+  @@index([category])
+  @@index([lastWhoisCheck])
+  @@index([lastSSLCheck])
+}
+
+// API 사용량 추적
+model ApiUsage {
+  id              String    @id @default(cuid())
+  endpoint        String    // API 엔드포인트
+  ipAddress       String?
+  userAgent       String?
+  requestBody     Json?
+  responseStatus  Int
+  responseTime    Int       // 응답 시간 (ms)
+  createdAt       DateTime  @default(now())
+
+  @@index([endpoint])
+  @@index([createdAt])
+}
+
+// 사용자 신고
+model UserReport {
+  id              String    @id @default(cuid())
+  domain          String
+  reportType      String    // phishing, scam, malware, etc
+  description     String?
+  reporterEmail   String?
+  evidence        String[]
+  status          String    @default("pending") // pending, reviewing, confirmed, rejected
+  reviewNote      String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([domain])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// 다중 소스 거래소 데이터
+model Exchange {
+  id                    String    @id // Primary ID (can be from CoinGecko or other sources)
+  name                  String    // 거래소명
+  yearEstablished       Int?      // 설립년도
+  country               String?   // 국가
+  description           String?   @db.Text // 설명 (긴 텍스트)
+  url                   String?   // 공식 웹사이트
+  refer_url             String?   // 참조 URL (CoinGecko/CryptoCompare 페이지)
+  image                 String?   // 로고 이미지 URL
+  hasTradingIncentive   Boolean   @default(false)
+
+  // CoinGecko 데이터
+  trustScore            Float?    @default(0) // 신뢰도 점수 (0-10)
+  trustScoreRank        Int?      // 신뢰도 순위
+  tradeVolume24hBtc     Float?    // 24시간 BTC 거래량
+
+  // CryptoCompare 데이터
+  cryptocompareId       String?   // CryptoCompare ID
+  cryptocompareName     String?   // CryptoCompare name
+  totalVolume24h        Float?    // 총 24시간 거래량 (USD)
+  totalTrades24h        Int?      // 24시간 총 거래 수
+  topTierVolume24h      Float?    // 상위 티어 24시간 거래량
+  totalPairs            Int?      // 총 거래 쌍 수
+  cryptocompareGrade    String?   // CryptoCompare 등급 (A, B, C, D)
+
+  // 메타데이터
+  dataSource            String    @default("coingecko") // 주요 데이터 출처
+  dataSources           String[]  @default([]) // 모든 데이터 출처 목록
+  batchDate             DateTime? // 배치 실행 날짜
+  lastUpdatedAt         DateTime  @default(now()) // 마지막 업데이트
+  isActive              Boolean   @default(true) // 활성 상태
+
+  // 추가 검증 정보
+  isVerified            Boolean   @default(false) // 검증된 거래소 여부
+  verificationSources   String[]  @default([]) // 검증 소스 목록
+  regulatoryStatus      String?   // 규제 상태 (FCA, SEC 등)
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([trustScoreRank])
+  @@index([totalVolume24h])
+  @@index([cryptocompareGrade])
+  @@index([batchDate])
+  @@index([isActive])
+  @@index([isVerified])
+}
+
+// 거래소 데이터 동기화 로그
+model ExchangeSyncLog {
+  id                String    @id @default(cuid())
+  batchDate         DateTime  // 배치 실행 시간
+  totalFetched      Int       // 가져온 거래소 수
+  totalInserted     Int       // 새로 추가된 거래소 수
+  totalUpdated      Int       // 업데이트된 거래소 수
+  totalFailed       Int       @default(0) // 실패한 거래소 수
+  status            String    // success, partial, failed
+  errorMessage      String?   // 에러 메시지
+  executionTime     Int?      // 실행 시간 (ms)
+  createdAt         DateTime  @default(now())
+
+  @@index([batchDate])
+  @@index([status])
+}
+
+// 평판 검사 결과 캐시
+model ReputationCache {
+  id                String    @id @default(cuid())
+  domain            String    @unique
+
+  // 전체 평판 점수 및 상태
+  overallScore      Int       // 0-100 종합 점수
+  riskLevel         String    // safe, warning, danger
+  isReported        Boolean   @default(false) // 위험 도메인 여부
+
+  // 각 검사별 결과 캐시
+  whoisScore        Int?      // Whois 검사 점수
+  whoisData         Json?     // Whois 상세 데이터
+
+  sslScore          Int?      // SSL 검사 점수
+  sslData           Json?     // SSL 상세 데이터
+
+  reputationScore   Int       // 평판 검사 점수
+  reputationData    Json      // 평판 검사 상세 데이터
+
+  safeBrowsingScore Int?      // Safe Browsing 점수
+  safeBrowsingData  Json?     // Safe Browsing 상세 데이터
+
+  exchangeScore     Int?      // 거래소 검증 점수
+  exchangeData      Json?     // 거래소 상세 데이터
+
+  // 탐지된 위협 정보
+  detectedThreats   String[]  @default([]) // 탐지된 위협 유형들
+  evidenceUrls      String[]  @default([]) // 증거 URL들
+  detectionSources  String[]  @default([]) // 탐지 소스들 (PhishTank, KISA 등)
+
+  // 캐시 관리
+  verificationType  String    @default("url") // url, crypto
+  cacheExpiry       DateTime  // 캐시 만료 시간
+  lastUpdated       DateTime  @default(now())
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([domain])
+  @@index([riskLevel])
+  @@index([isReported])
+  @@index([cacheExpiry])
+  @@index([verificationType])
+}
+
+// 블랙리스트 데이터 동기화 로그
+model BlacklistSyncLog {
+  id                String    @id @default(cuid())
+  batchDate         DateTime  // 배치 실행 시간
+  source            String    // kisa, virustotal, phishtank, cryptoscamdb, etc
+  totalFetched      Int       // 가져온 도메인 수
+  totalInserted     Int       // 새로 추가된 도메인 수
+  totalUpdated      Int       // 업데이트된 도메인 수
+  totalFailed       Int       @default(0) // 실패한 도메인 수
+  status            String    // success, partial, failed
+  errorMessage      String?   // 에러 메시지
+  executionTime     Int?      // 실행 시간 (ms)
+  createdAt         DateTime  @default(now())
+
+  @@index([batchDate])
+  @@index([source])
+  @@index([status])
+}
+
