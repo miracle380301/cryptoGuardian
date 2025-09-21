@@ -23,22 +23,23 @@ export default function Home() {
       </Head>
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-        {/* Hero Section */}
-        <HeroSection />
+          {/* Hero Section */}
+          <HeroSection />
 
-        {/* Main Check Form */}
-        <div className="mb-8 sm:mb-12 lg:mb-16">
-          <CheckForm />
-        </div>
+          {/* Main Check Form */}
+          <div className="mb-8 sm:mb-12 lg:mb-16">
+            <CheckForm />
+          </div>
 
-        {/* Features Section */}
-        <div className="mb-8 sm:mb-12 lg:mb-16 mt-16 sm:mt-20 lg:mt-24 max-w-3xl mx-auto">
-          <FeaturesSection />
-        </div>
+          {/* Features Section */}
+          <div className="mb-8 sm:mb-12 lg:mb-16 mt-16 sm:mt-20 lg:mt-24 max-w-3xl mx-auto">
+            <FeaturesSection />
+          </div>
 
-        {/* Statistics Section */}
-        <div className="mb-0 mt-16 sm:mt-20 lg:mt-24 max-w-3xl mx-auto">
-          <StatisticsSection />
+          {/* Statistics Section */}
+          <div className="mb-0 mt-16 sm:mt-20 lg:mt-24 max-w-3xl mx-auto">
+            <StatisticsSection />
+          </div>
         </div>
       </div>
     </>
