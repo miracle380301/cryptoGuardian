@@ -101,18 +101,6 @@ const messageTranslations: Record<string, { ko: string; en: string }> = {
     ko: '위협이 감지되지 않음',
     en: 'No threats detected'
   },
-  '✓ Typosquatting check: 40/40 points': {
-    ko: '✓ 타이포스쿼팅 검사',
-    en: '✓ Typosquatting check: 40/40 points'
-  },
-  '✓ Pattern analysis: 30/30 points': {
-    ko: '✓ 패턴 분석',
-    en: '✓ Pattern analysis: 30/30 points'
-  },
-  '✓ Google Safe Browsing: 30/30 points': {
-    ko: '✓ Google 안전 브라우징',
-    en: '✓ Google Safe Browsing: 30/30 points'
-  },
   'High confidence - likely safe': {
     ko: '높은 신뢰도 - 안전할 가능성 높음',
     en: 'High confidence - likely safe'

@@ -110,8 +110,37 @@ export function analyzePhishingPatterns(domain: string): {
   };
 }
 
+// 메시지 번역 함수
+function translateSuspiciousPattern(pattern: string, lang: 'ko' | 'en' = 'en'): string {
+  if (lang === 'ko') {
+    if (pattern.includes('High number ratio:')) {
+      const ratio = pattern.match(/(\d+)%/)?.[1];
+      return `높은 숫자 비율: ${ratio}%`;
+    }
+    if (pattern.includes('Multiple hyphens:')) {
+      const count = pattern.match(/: (\d+)/)?.[1];
+      return `다중 하이픈: ${count}개`;
+    }
+    if (pattern.includes('Very long domain:')) {
+      const length = pattern.match(/: (\d+)/)?.[1];
+      return `매우 긴 도메인: ${length}자`;
+    }
+    if (pattern.includes('Suspicious keywords:')) {
+      const keywords = pattern.replace('Suspicious keywords: ', '');
+      return `의심스러운 키워드: ${keywords}`;
+    }
+    if (pattern.includes('Unusual letter pattern detected')) {
+      return '비정상적인 문자 패턴 탐지';
+    }
+    if (pattern.includes('Repeated characters detected')) {
+      return '반복 문자 탐지';
+    }
+  }
+  return pattern;
+}
+
 // 2. 의심스러운 도메인명 AI 탐지
-export function analyzeSuspiciousDomain(domain: string): {
+export function analyzeSuspiciousDomain(domain: string, lang: 'ko' | 'en' = 'en'): {
   score: number;
   riskLevel: 'low' | 'medium' | 'high';
   details: {
@@ -205,11 +234,16 @@ export function analyzeSuspiciousDomain(domain: string): {
     riskLevel = 'medium';
   }
 
+  // 언어에 따라 패턴 메시지 번역
+  const translatedPatterns = suspiciousPatterns.map(pattern =>
+    translateSuspiciousPattern(pattern, lang)
+  );
+
   return {
     score,
     riskLevel,
     details: {
-      suspiciousPatterns,
+      suspiciousPatterns: translatedPatterns,
       riskFactors
     }
   };

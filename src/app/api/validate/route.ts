@@ -413,7 +413,7 @@ function processValidationResults(
     },
     whois: processWhoisCheck(whoisResult, currentLang),
     ssl: processSSLCheck(sslResult),
-    safeBrowsing: processSafeBrowsingCheck(safeBrowsingResult),
+    safeBrowsing: processSafeBrowsingCheck(safeBrowsingResult, currentLang),
     userReports: processUserReportsCheck(userReportsResult, currentLang),
     aiPhishing: processAIPhishingCheck(domain, currentLang),
     aiSuspiciousDomain: processAISuspiciousDomainCheck(domain, currentLang)
@@ -592,30 +592,35 @@ function processSSLCheck(result: PromiseSettledResult<any>): ValidationCheck {
   // Use the score from the SSL check if available
   const score = data.score || (data.valid ? 70 : 0);
 
-  // Build message based on score and breakdown
+  // Build clean message
   let message = '';
   if (!data.valid) {
-    message = 'Invalid SSL certificate';
-  } else if (data.scoreBreakdown && data.scoreBreakdown.length > 0) {
-    message = `✓ SSL Grade: ${data.grade}\n${data.scoreBreakdown.join('\n')}`;
-  } else if (data.grade) {
-    message = `✓ Valid SSL certificate (Grade: ${data.grade})`;
+    message = '❌ SSL 인증서\n유효하지 않은 SSL 인증서';
   } else {
-    message = '✓ Valid SSL certificate';
-  }
+    message = `✓ SSL 인증서\n유효한 SSL 인증서`;
 
-  // Add additional info if available
-  if (data.protocol) {
-    message += `\nProtocol: ${data.protocol}`;
-  }
-  if (data.issuer) {
-    message += `\nIssuer: ${data.issuer}`;
-  }
-  if (data.daysRemaining !== undefined) {
-    if (data.daysRemaining < 30) {
-      message += `\nExpires in ${data.daysRemaining} days`;
-    } else {
-      message += `\nValid for ${data.daysRemaining} days`;
+    if (data.grade) {
+      message += ` (등급: ${data.grade})`;
+    }
+
+    // Add details on separate lines
+    const details = [];
+    if (data.protocol) {
+      details.push(`프로토콜: ${data.protocol}`);
+    }
+    if (data.issuer) {
+      details.push(`발급자: ${data.issuer}`);
+    }
+    if (data.daysRemaining !== undefined) {
+      if (data.daysRemaining < 30) {
+        details.push(`만료까지 ${data.daysRemaining}일 남음`);
+      } else {
+        details.push(`만료까지 ${data.daysRemaining}일 남음`);
+      }
+    }
+
+    if (details.length > 0) {
+      message += '\n\n' + details.join('\n');
     }
   }
 
@@ -792,7 +797,7 @@ function processExchangeCheck(result: PromiseSettledResult<any>): ValidationChec
   };
 }
 
-function processSafeBrowsingCheck(result: PromiseSettledResult<any>): ValidationCheck {
+function processSafeBrowsingCheck(result: PromiseSettledResult<any>, currentLang: 'ko' | 'en' = 'en'): ValidationCheck {
   if (result.status === 'rejected' || !result.value.success) {
     return {
       name: 'Safe Browsing',
@@ -821,26 +826,88 @@ function processSafeBrowsingCheck(result: PromiseSettledResult<any>): Validation
   // Use the calculated score from the Safe Browsing API
   const score = data.score !== undefined ? data.score : (data.safe ? 100 : 0);
 
-  // Build message based on score and breakdown
+  // Build clean message
   let message = '';
   if (data.safe && score >= 70) {
-    message = 'No threats detected';
+    message = currentLang === 'ko'
+      ? '위협이 감지되지 않음'
+      : 'No threats detected';
   } else if (data.threats && data.threats.length > 0) {
     const threatTypes = data.threats.map((t: any) => t.threatType).join(', ');
-    message = `Threats detected: ${threatTypes}`;
+    message = currentLang === 'ko'
+      ? `위협 탐지: ${threatTypes}`
+      : `Threats detected: ${threatTypes}`;
+
+    // Add threat details on separate lines
+    if (data.threats.length > 0) {
+      const threatDetails = data.threats.map((t: any) => `• ${t.threatType} (${t.platformType})`);
+      message += currentLang === 'ko'
+        ? `\n위협 상세:\n${threatDetails.join('\n')}`
+        : `\nThreat details:\n${threatDetails.join('\n')}`;
+    }
   } else {
-    message = 'Suspicious patterns detected';
+    message = currentLang === 'ko'
+      ? '의심스러운 패턴 탐지'
+      : 'Suspicious patterns detected';
   }
 
-  // Add score breakdown if available
+  // Add score breakdown on separate lines if available
   if (data.scoreBreakdown && data.scoreBreakdown.length > 0) {
-    message += `\n${data.scoreBreakdown.join('\n')}`;
-  }
+    message += currentLang === 'ko' ? '\n\n검사 상세:' : '\n\nCheck details:';
 
-  // Add threat details if any
-  if (data.threats && data.threats.length > 0) {
-    const threatDetails = data.threats.map((t: any) => `${t.threatType} (${t.platformType})`);
-    message += `\nThreat details: ${threatDetails.join(', ')}`;
+    data.scoreBreakdown.forEach((breakdown: string) => {
+      let processedBreakdown = breakdown;
+
+      if (currentLang === 'ko') {
+        // Korean translation and score removal
+        processedBreakdown = breakdown
+          .replace(/• ✓ Typosquatting check: \d+\/\d+ points/, '• 타이포스쿼팅 검사: 통과')
+          .replace(/• Suspicious patterns: -?\d+ points \(Score: \d+\/\d+\)/, '• 의심스러운 패턴: 탐지됨')
+          .replace(/• ✓ Google Safe Browsing: \d+\/\d+ points/, '') // 삭제
+          .replace(/• ✓ Google 안전 브라우징: \d+\/\d+ points/, '') // 삭제
+          .replace(/• Medium confidence - exercise caution/, '• 신뢰도: 중간 (주의 필요)')
+          .replace(/• High confidence - proceed with caution/, '• 신뢰도: 높음 (주의해서 진행)')
+          .replace(/• Low confidence - likely safe/, '• 신뢰도: 낮음 (안전할 가능성)')
+          .replace(/Typosquatting check/, '타이포스쿼팅 검사')
+          .replace(/Suspicious patterns/, '의심스러운 패턴')
+          .replace(/Medium confidence - exercise caution/, '신뢰도: 중간 (주의 필요)')
+          .replace(/High confidence - proceed with caution/, '신뢰도: 높음 (주의해서 진행)')
+          .replace(/Low confidence - likely safe/, '신뢰도: 낮음 (안전할 가능성)')
+          .replace(/Google Safe Browsing/, '')
+          .replace(/Google 안전 브라우징/, '')
+          .replace(/✓/g, '•') // 모든 체크마크를 불릿 포인트로 변경
+          .replace(/: \d+\/\d+ points/g, '') // 모든 점수 제거
+          .replace(/\(Score: \d+\/\d+\)/g, '') // 스코어 제거
+          .replace(/-?\d+ points/g, '') // 개별 점수 제거
+          .replace(/• •/g, '•') // 중복된 불릿 포인트 제거
+          .trim();
+      } else {
+        // English - remove scores but keep English text
+        processedBreakdown = breakdown
+          .replace(/• ✓ Typosquatting check: \d+\/\d+ points/, '• Typosquatting check: Passed')
+          .replace(/• Suspicious patterns: -?\d+ points \(Score: \d+\/\d+\)/, '• Suspicious patterns: Detected')
+          .replace(/• ✓ Google Safe Browsing: \d+\/\d+ points/, '') // 삭제
+          .replace(/• Medium confidence - exercise caution/, '• Confidence: Medium (exercise caution)')
+          .replace(/• High confidence - proceed with caution/, '• Confidence: High (proceed with caution)')
+          .replace(/• Low confidence - likely safe/, '• Confidence: Low (likely safe)')
+          .replace(/Typosquatting check/, 'Typosquatting check')
+          .replace(/Suspicious patterns/, 'Suspicious patterns')
+          .replace(/Medium confidence - exercise caution/, 'Confidence: Medium (exercise caution)')
+          .replace(/High confidence - proceed with caution/, 'Confidence: High (proceed with caution)')
+          .replace(/Low confidence - likely safe/, 'Confidence: Low (likely safe)')
+          .replace(/✓/g, '•') // 모든 체크마크를 불릿 포인트로 변경
+          .replace(/: \d+\/\d+ points/g, '') // 모든 점수 제거
+          .replace(/\(Score: \d+\/\d+\)/g, '') // 스코어 제거
+          .replace(/-?\d+ points/g, '') // 개별 점수 제거
+          .replace(/• •/g, '•') // 중복된 불릿 포인트 제거
+          .trim();
+      }
+
+      // Skip empty lines after removing Google Safe Browsing
+      if (processedBreakdown && !processedBreakdown.match(/^•?\s*$/)) {
+        message += `\n${processedBreakdown}`;
+      }
+    });
   }
 
   return {
@@ -1390,10 +1457,17 @@ function processAIPhishingCheck(domain: string, currentLang: 'ko' | 'en' = 'en')
     message = currentLang === 'ko'
       ? `부분적 유사성 탐지: 정당한 사이트와 ${analysis.details.maxSimilarity}% 유사`
       : `Partial similarity detected: ${analysis.details.maxSimilarity}% similar to legitimate site`;
+
+    if (analysis.details.similarSites.length > 0) {
+      const topMatch = analysis.details.similarSites[0];
+      message += currentLang === 'ko'
+        ? `\n유사한 사이트: ${topMatch.site}`
+        : `\nSimilar to: ${topMatch.site}`;
+    }
   } else {
     message = currentLang === 'ko'
-      ? '정당한 암호화폐 사이트와 유사성 없음'
-      : 'No similarity to known legitimate crypto sites';
+      ? '✓ 정당한 암호화폐 사이트와 유사성 없음'
+      : '✓ No similarity to known legitimate crypto sites';
   }
 
   return {
@@ -1408,7 +1482,7 @@ function processAIPhishingCheck(domain: string, currentLang: 'ko' | 'en' = 'en')
 
 // AI 기반 의심스러운 도메인명 탐지 처리
 function processAISuspiciousDomainCheck(domain: string, currentLang: 'ko' | 'en' = 'en'): ValidationCheck {
-  const analysis = analyzeSuspiciousDomain(domain);
+  const analysis = analyzeSuspiciousDomain(domain, currentLang);
 
   let message = '';
   if (analysis.riskLevel === 'high') {
@@ -1417,18 +1491,26 @@ function processAISuspiciousDomainCheck(domain: string, currentLang: 'ko' | 'en'
       : `Suspicious domain patterns detected: ${analysis.details.suspiciousPatterns.length} risk factors`;
 
     if (analysis.details.suspiciousPatterns.length > 0) {
+      const patterns = analysis.details.suspiciousPatterns.slice(0, 3);
       message += currentLang === 'ko'
-        ? `\n탐지된 패턴: ${analysis.details.suspiciousPatterns.slice(0, 2).join(', ')}`
-        : `\nDetected patterns: ${analysis.details.suspiciousPatterns.slice(0, 2).join(', ')}`;
+        ? `\n탐지된 패턴:\n• ${patterns.join('\n• ')}`
+        : `\nDetected patterns:\n• ${patterns.join('\n• ')}`;
     }
   } else if (analysis.riskLevel === 'medium') {
     message = currentLang === 'ko'
       ? `일부 의심스러운 패턴 탐지: ${analysis.details.suspiciousPatterns.length}개 주의 요소`
       : `Some suspicious patterns detected: ${analysis.details.suspiciousPatterns.length} caution factors`;
+
+    if (analysis.details.suspiciousPatterns.length > 0) {
+      const patterns = analysis.details.suspiciousPatterns.slice(0, 3);
+      message += currentLang === 'ko'
+        ? `\n탐지된 패턴:\n• ${patterns.join('\n• ')}`
+        : `\nDetected patterns:\n• ${patterns.join('\n• ')}`;
+    }
   } else {
     message = currentLang === 'ko'
-      ? '도메인명에서 의심스러운 패턴 없음'
-      : 'No suspicious patterns detected in domain name';
+      ? '✓ 도메인명에서 의심스러운 패턴 없음'
+      : '✓ No suspicious patterns detected in domain name';
   }
 
   return {

@@ -430,7 +430,7 @@ export class SafeBrowsingAPI {
               timestamp: new Date().toISOString()
             };
           } else {
-            scoreBreakdown.push('✓ Google Safe Browsing: 30/30 points');
+            // Google Safe Browsing 통과 (점수는 API 라우트에서 처리)
             console.log(`[SAFE_BROWSING DEBUG] No Google threats detected`);
           }
         } else {

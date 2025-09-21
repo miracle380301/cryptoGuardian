@@ -136,6 +136,8 @@ export interface ValidationResult {
     cryptoExchange?: ValidationCheck;
     koreanCryptoScam?: ValidationCheck;
     userReports?: ValidationCheck;
+    aiPhishing?: ValidationCheck;
+    aiSuspiciousDomain?: ValidationCheck;
     // Keep reputation for backward compatibility
     reputation?: ValidationCheck;
   };
