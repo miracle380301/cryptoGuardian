@@ -215,7 +215,9 @@ export const translations = {
         'User Reports Check': '사용자 신고 검사',
         'Team Scam Detection': '팀 스캠 감지',
         'Exchange Impersonation Check': '거래소 사칭 검사',
-        'Korean Crypto Scam Check': '한국 크립토 스캠 검사'
+        'Korean Crypto Scam Check': '한국 크립토 스캠 검사',
+        'AI Phishing Pattern Analysis': 'AI 피싱 패턴 분석',
+        'AI Suspicious Domain Detection': 'AI 의심 도메인 탐지'
       },
       hardcodedTexts: {
         error: '오류',
@@ -986,7 +988,9 @@ export const translations = {
         'User Reports Check': 'User Reports Check',
         'Team Scam Detection': 'Team Scam Detection',
         'Exchange Impersonation Check': 'Exchange Impersonation Check',
-        'Korean Crypto Scam Check': 'Korean Crypto Scam Check'
+        'Korean Crypto Scam Check': 'Korean Crypto Scam Check',
+        'AI Phishing Pattern Analysis': 'AI Phishing Pattern Analysis',
+        'AI Suspicious Domain Detection': 'AI Suspicious Domain Detection'
       },
       hardcodedTexts: {
         error: 'Error',

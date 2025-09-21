@@ -329,11 +329,26 @@ export default function CheckResultPage() {
                 return true;
               })
               .sort(([keyA], [keyB]) => {
-                if (keyA === 'maliciousSite') return -1;
-                if (keyB === 'maliciousSite') return 1;
+                // 검사 항목 순서 정의
+                const order = [
+                  'maliciousSite',    // 1. 악성 사이트 검사
+                  'whois',           // 2. 도메인 등록 정보
+                  'ssl',             // 3. SSL 인증서
+                  'aiPhishing',      // 4. AI 피싱 패턴 분석
+                  'aiSuspiciousDomain', // 5. AI 의심 도메인 탐지
+                  'safeBrowsing',    // 6. 안전 브라우징
+                  'userReports',     // 7. 사용자 신고
+                  'exchange'         // 8. 거래소 검증
+                ];
 
-                // 나머지는 기본 순서 유지
-                return 0;
+                const indexA = order.indexOf(keyA);
+                const indexB = order.indexOf(keyB);
+
+                // 정의된 순서가 있으면 해당 순서로, 없으면 맨 뒤로
+                const priorityA = indexA !== -1 ? indexA : 999;
+                const priorityB = indexB !== -1 ? indexB : 999;
+
+                return priorityA - priorityB;
               })
               .map(([key, check]) => (
                 <Card key={key} className="overflow-hidden">

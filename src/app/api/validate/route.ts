@@ -5,6 +5,7 @@ import { PhishingReportCheckAPI } from '@/lib/apis/reputation-check';
 import { CoinGeckoAPI } from '@/lib/apis/coingecko';
 import { SafeBrowsingAPI } from '@/lib/apis/safe-browsing';
 import { translateMessage, translateSummary } from '@/lib/i18n/translateMessage';
+import { analyzePhishingPatterns, analyzeSuspiciousDomain } from '@/lib/ai/phishingDetection';
 // Note: Enhanced scam detection modules are temporarily disabled
 // import { TeamScamDetector } from '@/lib/apis/team-scam-detector';
 // import { CryptoExchangeDetector } from '@/lib/apis/crypto-exchange-detector';
@@ -413,7 +414,9 @@ function processValidationResults(
     whois: processWhoisCheck(whoisResult, currentLang),
     ssl: processSSLCheck(sslResult),
     safeBrowsing: processSafeBrowsingCheck(safeBrowsingResult),
-    userReports: processUserReportsCheck(userReportsResult, currentLang)
+    userReports: processUserReportsCheck(userReportsResult, currentLang),
+    aiPhishing: processAIPhishingCheck(domain, currentLang),
+    aiSuspiciousDomain: processAISuspiciousDomainCheck(domain, currentLang)
   };
 
   // Add exchange check if applicable (always check for legitimate exchanges)
@@ -440,11 +443,13 @@ function processValidationResults(
     koreanCryptoScam: 0
   } : {
     // For unverified sites - full security checks (malicious site check prioritized)
-    maliciousSite: 0.35,   // Malicious Site Check (35% - highest priority)
-    whois: 0.25,           // Domain Registration (25%)
-    ssl: 0.20,            // SSL Certificate (20%)
+    maliciousSite: 0.25,   // Malicious Site Check (25% - highest priority)
+    whois: 0.20,           // Domain Registration (20%)
+    ssl: 0.15,            // SSL Certificate (15%)
     safeBrowsing: 0.10,   // Safe Browsing (10%)
-    userReports: 0.10,    // User Reports Check (10%)
+    userReports: 0.05,    // User Reports Check (5%)
+    aiPhishing: 0.15,     // AI Phishing Pattern Analysis (15%)
+    aiSuspiciousDomain: 0.10, // AI Suspicious Domain Detection (10%)
     exchange: 0,          // Exchange Verification (0% - disabled)
     teamScam: 0,          // Team Scam Detection (0% - disabled)
     cryptoExchange: 0,    // Crypto Exchange Impersonation (0% - disabled)
@@ -1362,5 +1367,76 @@ function processUserReportsCheck(result: PromiseSettledResult<any>, currentLang:
       reportCount: data.reportCount,
       recentReports: data.recentReports
     }
+  };
+}
+
+// AI 기반 피싱 패턴 분석 처리
+function processAIPhishingCheck(domain: string, currentLang: 'ko' | 'en' = 'en'): ValidationCheck {
+  const analysis = analyzePhishingPatterns(domain);
+
+  let message = '';
+  if (analysis.riskLevel === 'high') {
+    message = currentLang === 'ko'
+      ? `피싱 위험 탐지: 정당한 사이트와 ${analysis.details.maxSimilarity}% 유사`
+      : `Phishing risk detected: ${analysis.details.maxSimilarity}% similar to legitimate site`;
+
+    if (analysis.details.similarSites.length > 0) {
+      const topMatch = analysis.details.similarSites[0];
+      message += currentLang === 'ko'
+        ? `\n가장 유사한 사이트: ${topMatch.site}`
+        : `\nMost similar to: ${topMatch.site}`;
+    }
+  } else if (analysis.riskLevel === 'medium') {
+    message = currentLang === 'ko'
+      ? `부분적 유사성 탐지: 정당한 사이트와 ${analysis.details.maxSimilarity}% 유사`
+      : `Partial similarity detected: ${analysis.details.maxSimilarity}% similar to legitimate site`;
+  } else {
+    message = currentLang === 'ko'
+      ? '정당한 암호화폐 사이트와 유사성 없음'
+      : 'No similarity to known legitimate crypto sites';
+  }
+
+  return {
+    name: 'AI Phishing Pattern Analysis',
+    passed: analysis.score >= 70,
+    score: analysis.score,
+    weight: 0.15,
+    message,
+    details: analysis.details
+  };
+}
+
+// AI 기반 의심스러운 도메인명 탐지 처리
+function processAISuspiciousDomainCheck(domain: string, currentLang: 'ko' | 'en' = 'en'): ValidationCheck {
+  const analysis = analyzeSuspiciousDomain(domain);
+
+  let message = '';
+  if (analysis.riskLevel === 'high') {
+    message = currentLang === 'ko'
+      ? `의심스러운 도메인 패턴 탐지: ${analysis.details.suspiciousPatterns.length}개 위험 요소`
+      : `Suspicious domain patterns detected: ${analysis.details.suspiciousPatterns.length} risk factors`;
+
+    if (analysis.details.suspiciousPatterns.length > 0) {
+      message += currentLang === 'ko'
+        ? `\n탐지된 패턴: ${analysis.details.suspiciousPatterns.slice(0, 2).join(', ')}`
+        : `\nDetected patterns: ${analysis.details.suspiciousPatterns.slice(0, 2).join(', ')}`;
+    }
+  } else if (analysis.riskLevel === 'medium') {
+    message = currentLang === 'ko'
+      ? `일부 의심스러운 패턴 탐지: ${analysis.details.suspiciousPatterns.length}개 주의 요소`
+      : `Some suspicious patterns detected: ${analysis.details.suspiciousPatterns.length} caution factors`;
+  } else {
+    message = currentLang === 'ko'
+      ? '도메인명에서 의심스러운 패턴 없음'
+      : 'No suspicious patterns detected in domain name';
+  }
+
+  return {
+    name: 'AI Suspicious Domain Detection',
+    passed: analysis.score >= 70,
+    score: analysis.score,
+    weight: 0.10,
+    message,
+    details: analysis.details
   };
 }
