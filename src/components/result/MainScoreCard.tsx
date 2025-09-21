@@ -44,8 +44,8 @@ export function MainScoreCard({ result }: MainScoreCardProps) {
                 <Users className="w-4 h-4" />
                 <span className="text-sm font-medium">
                   {currentLang === 'ko'
-                    ? `⚠️ ${result.checks.userReports.details.userReports.reportCount}명의 사용자가 이 사이트를 신고했습니다`
-                    : `⚠️ ${result.checks.userReports.details.userReports.reportCount} users reported this site`
+                    ? ` ${result.checks.userReports.details.userReports.reportCount}명의 사용자가 이 사이트를 신고했습니다`
+                    : ` ${result.checks.userReports.details.userReports.reportCount} users reported this site`
                   }
                 </span>
               </div>
