@@ -14,7 +14,7 @@ export const translations = {
       nav: {
         home: '홈',
         about: '소개',
-        api: 'API',
+        faq: 'FAQ',
         contact: '문의'
       }
     },
@@ -245,7 +245,440 @@ export const translations = {
       contact: '문의하기'
     },
 
+    // Privacy Policy page
+    privacy: {
+      title: '개인정보처리방침',
+      sections: {
+        collection: {
+          title: '1. 개인정보 수집 및 이용',
+          description: 'CryptoGuardian은 기본적으로 개인정보를 수집하지 않으며, 신고 기능 사용 시에만 최소한의 정보를 수집합니다.',
+          items: ['일반 사용: 개인정보 수집 없음 (쿠키를 통한 언어 설정만 저장)', '신고 기능 사용 시 수집 항목: 신고 내용, IP 주소 (스팸 방지용)', '수집 목적: 악성 사이트 차단 및 스팸 방지', '보유 기간: 30일 (이후 자동 삭제)']
+        },
+        report: {
+          title: '2. 신고 기능 상세',
+          description: '사이트 신고 기능 사용 시 수집되는 정보:',
+          items: ['이메일 주소 (선택사항)', '신고 내용 및 증거 자료', '신고 일시', 'IP 주소 (스팸 방지 및 중복 신고 확인용)'],
+          note: '신고 정보는 악성 사이트 차단 목적으로만 사용되며, 제3자에게 제공되지 않습니다. IP 주소는 익명화되어 저장됩니다.'
+        },
+        cookies: {
+          title: '3. 쿠키 및 로컬 저장소 사용',
+          description: '본 서비스는 다음과 같은 목적으로 쿠키와 로컬 저장소를 사용합니다:',
+          items: ['언어 설정 저장 (로컬 저장소)', '최근 검증 내역 저장 (로컬 저장소, 사용자 기기에만 저장)', '개인정보를 포함하지 않는 기능적 쿠키만 사용']
+        },
+        security: {
+          title: '4. 데이터 보안',
+          description: '모든 데이터 전송은 HTTPS를 통해 암호화되며, 서버에 저장되는 데이터는 최소화됩니다. 사용자의 개인정보는 암호화되어 저장되며, 정기적인 보안 점검을 실시합니다.'
+        },
+        thirdParty: {
+          title: '5. 제3자 제공',
+          description: 'CryptoGuardian은 다음의 경우를 제외하고 사용자의 개인정보를 제3자에게 제공하지 않습니다:',
+          items: ['사용자의 동의가 있는 경우', '법령에 따른 요구가 있는 경우', '수사기관의 적법한 요청이 있는 경우']
+        },
+        rights: {
+          title: '6. 사용자의 권리',
+          description: '사용자는 언제든지 다음과 같은 권리를 행사할 수 있습니다:',
+          items: ['개인정보 열람 요구', '개인정보 정정 및 삭제 요구', '개인정보 처리 정지 요구'],
+          note: '권리 행사를 위해서는 문의하기 페이지를 통해 요청해 주시기 바랍니다.'
+        },
+        officer: {
+          title: '7. 개인정보 보호책임자',
+          email: '이메일: cryptoguardian380301@gmail.com',
+          description: '개인정보 처리와 관련한 문의사항이 있으시면 위 연락처로 문의해 주시기 바랍니다.'
+        },
+        revision: {
+          title: '8. 개정 안내',
+          effectiveDate: '본 방침은 2025년 9월 21일부터 시행됩니다.',
+          description: '법령이나 서비스 변경사항을 반영하기 위해 개정될 수 있으며, 개정 시 웹사이트를 통해 공지합니다.'
+        }
+      },
+      backToHome: '홈으로 돌아가기'
+    },
+
+    // Terms of Service page
+    terms: {
+      title: '이용약관',
+      sections: {
+        purpose: {
+          title: '제 1조 (목적)',
+          content: '본 약관은 CryptoGuardian(이하 "서비스")이 제공하는 암호화폐 사이트 보안 검증 서비스의 이용에 관한 조건 및 절차, 서비스 제공자와 이용자의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.'
+        },
+        service: {
+          title: '제 2조 (서비스의 내용)',
+          description: '서비스는 다음과 같은 기능을 제공합니다:',
+          items: ['암호화폐 관련 웹사이트의 보안 상태 검증', '도메인 정보 및 SSL 인증서 확인', '블랙리스트 데이터베이스 조회', '거래소 정보 제공', '악성 사이트 신고 기능']
+        },
+        usage: {
+          title: '제 3조 (서비스 이용)',
+          items: ['서비스는 무료로 제공되며, 누구나 이용할 수 있습니다.', '서비스 이용 시 하루 검증 횟수에 제한이 있을 수 있습니다.', '자동화된 방법(봇, 스크립트 등)을 통한 대량 검증은 금지됩니다.', '서비스를 악용하여 타인에게 피해를 주는 행위는 금지됩니다.']
+        },
+        disclaimer: {
+          title: '제 4조 (면책조항)',
+          items: ['본 서비스는 참고 정보를 제공하는 것이며, 투자 조언이 아닙니다.', '검증 결과는 100% 정확하지 않을 수 있으며, 최종 투자 결정은 이용자의 책임입니다.'],
+          notLiable: '서비스 제공자는 다음의 경우 책임을 지지 않습니다:',
+          notLiableItems: ['검증 결과를 맹신하여 발생한 손실', '제3자 데이터 소스의 오류로 인한 잘못된 정보', '천재지변, 시스템 장애 등으로 인한 서비스 중단', '이용자의 귀책사유로 인한 손해']
+        },
+        intellectual: {
+          title: '제 5조 (지적재산권)',
+          items: ['서비스에서 제공하는 모든 콘텐츠의 저작권은 CryptoGuardian에 있습니다.', '이용자는 서비스를 통해 얻은 정보를 상업적 목적으로 사용할 수 없습니다.', 'API를 통한 데이터 수집은 별도의 허가가 필요합니다.']
+        },
+        obligations: {
+          title: '제 6조 (이용자의 의무)',
+          description: '이용자는 다음 행위를 하여서는 안 됩니다:',
+          items: ['허위 정보로 악성 사이트 신고', '서비스의 정상적인 운영을 방해하는 행위', '다른 이용자의 개인정보 수집 시도', '서비스를 이용한 영리 행위', '서비스의 보안 취약점을 악용하는 행위']
+        },
+        changes: {
+          title: '제 7조 (서비스의 변경 및 중단)',
+          items: ['서비스 제공자는 운영상 필요에 따라 서비스를 변경하거나 중단할 수 있습니다.', '중요한 변경사항은 웹사이트를 통해 사전 공지합니다.', '서비스 중단으로 인한 손해에 대해서는 책임지지 않습니다.']
+        },
+        compensation: {
+          title: '제 8조 (손해배상)',
+          content: '이용자가 본 약관을 위반하여 서비스 제공자에게 손해를 입힌 경우, 이용자는 그 손해를 배상할 책임이 있습니다.'
+        },
+        dispute: {
+          title: '제 9조 (분쟁 해결)',
+          items: ['본 약관은 대한민국 법률에 따라 해석되고 집행됩니다.', '서비스 이용과 관련된 분쟁은 서울중앙지방법원을 관할법원으로 합니다.']
+        },
+        amendment: {
+          title: '제 10조 (약관의 개정)',
+          items: ['본 약관은 필요에 따라 개정될 수 있습니다.', '개정된 약관은 웹사이트에 공지한 날로부터 7일 후 효력이 발생합니다.', '개정된 약관에 동의하지 않는 경우 서비스 이용을 중단할 수 있습니다.']
+        },
+        dates: {
+          effective: '시행일: 2025년 9월 21일',
+          lastModified: '최종 수정일: 2025년 9월 21일'
+        }
+      },
+      backToHome: '홈으로 돌아가기'
+    },
+
+    // Contact page
+    contactPage: {
+      title: '문의하기',
+      subtitle: 'CryptoGuardian 서비스에 대한 문의사항이나 제안사항을 보내주세요.',
+      inquiryType: '문의 유형',
+      inquiryTypes: {
+        general: '일반 문의',
+        report: '악성 사이트 신고',
+        bug: '버그 제보',
+        feature: '기능 제안',
+        partnership: '제휴 문의'
+      },
+      form: {
+        name: '이름',
+        email: '이메일',
+        subject: '제목',
+        message: '메시지',
+        submit: '메시지 보내기',
+        sending: '전송 중...',
+        success: '✓ 메시지가 전송되었습니다.',
+        error: '✗ 전송에 실패했습니다.'
+      },
+      directContact: {
+        title: '직접 연락처',
+        general: '일반 문의',
+        partnership: '제휴 문의',
+        security: '보안 신고'
+      },
+      responseTime: {
+        title: '응답 시간',
+        description: '보통 1-2 영업일 내에 답변 드립니다. 보안 관련 긴급 사항은 cryptoguardian380301@gmail.com으로 직접 연락 주시기 바랍니다.'
+      },
+      notes: {
+        title: '참고 사항',
+        items: ['• 투자 조언은 제공하지 않습니다', '• 개인 자산 관련 상담 불가', '• 기술 지원은 평일만 가능']
+      },
+      backToHome: '홈으로 돌아가기'
+    },
+
     // About page
+    title: 'CryptoGuardian 소개',
+    subtitle: '암호화폐 사이트 보안의 새로운 기준',
+    problem: {
+      title: '매년 수십억 원의 피해가 발생합니다',
+      description1: '2023년 한국에서만 암호화폐 사기로 인한 피해액이 1,000억원을 넘어섰습니다. 가짜 거래소, 피싱 사이트, 스캠 코인 등 수법은 갈수록 정교해지고 있죠.',
+      description2: '특히 초보 투자자들은 공식 사이트와 사칭 사이트를 구별하기 어려워 큰 피해를 입고 있습니다. "바이낸스"를 검색했는데 "binance-kr.com" 같은 가짜 사이트에 접속하는 경우가 빈번합니다.'
+    },
+    solution: {
+      title: '우리가 해결하는 방법',
+      realtime: {
+        title: '실시간 다중 검증',
+        description: 'KISA, VirusTotal, URLhaus 등 국내외 주요 보안 데이터베이스를 실시간으로 조회해 위험도를 평가합니다.'
+      },
+      exchange: {
+        title: '거래소 정보 제공',
+        description: 'CoinGecko와 CryptoCompare에서 검증된 정식 거래소 정보만 제공. 신뢰도 점수와 거래량으로 안전한 거래소를 추천합니다.'
+      },
+      community: {
+        title: '커뮤니티 신고 시스템',
+        description: '사용자들이 직접 의심 사이트를 신고하고 공유. 새로운 사기 수법도 빠르게 차단됩니다.'
+      },
+      weekly: {
+        title: '주간 업데이트',
+        description: '매주 자동으로 최신 블랙리스트와 거래소 정보를 업데이트. 항상 최신 정보로 여러분을 보호합니다.'
+      }
+    },
+    partners: {
+      title: '신뢰할 수 있는 데이터 파트너',
+      kisa: '한국인터넷진흥원',
+      exchange: '거래소 데이터',
+      malicious: '악성 URL DB'
+    },
+    stats: {
+      title: '현재까지의 성과',
+      blocked: '차단된 악성 도메인',
+      verified: '검증된 정식 거래소',
+      monitoring: '24/7 모니터링'
+    },
+    howto: {
+      title: '간단한 사용법',
+      step1: {
+        title: '의심되는 URL 입력',
+        description: '암호화폐 거래소, 투자 플랫폼, ICO 사이트 등의 웹사이트 주소를 입력하세요.'
+      },
+      step2: {
+        title: '즉시 검증 결과 확인',
+        description: '안전, 주의, 위험 3단계로 명확하게 표시됩니다.'
+      },
+      step3: {
+        title: '상세 정보 확인',
+        description: '보안 점수, 도메인 정보, 블랙리스트 등록 여부 등을 확인할 수 있습니다.'
+      }
+    },
+    mission: {
+      title: '우리의 목표',
+      description1: 'CryptoGuardian은 한국의 암호화폐 및 투자자들이 안전하게 자산을 지킬 수 있도록 돕기 위해 만들어졌습니다. 복잡한 보안 지식 없이도 누구나 거래하는 사이트가 신뢰할 수 있는지 확인할 수 있도록 지원합니다.',
+      description2: '완벽한 보안은 없지만, 우리는 최신 위협 정보를 지속적으로 수집하고, 가장 빠르고 정확한 검증 서비스를 제공하기 위해 최선을 다하고 있습니다.',
+      whyTitle: '왜 만들었나',
+      whyDescription1: '현재 우리나라에는 암호화폐와 투자 사이트의 신뢰성을 한눈에 확인할 수 있는 공신력 있는 플랫폼이 없습니다. 사용자들은 어디서부터 정보를 찾아야 할지 혼란스러워하며, 특히 해외 가상화폐 거래소는 더욱 접근하기 어렵습니다.',
+      whyDescription2: 'CryptoGuardian은 이런 문제를 해결하고, 사기 피해를 예방할 수 있는 도구가 되고자 합니다. 나아가 이 서비스가 널리 알려져 경찰청, 금융감독원 등 공신력 있는 기관의 인증을 받게 되면, 한국 투자자들의 안전을 지키는 데 큰 도움이 될 것이라 믿습니다.',
+      disclaimer: '면책 조항: 본 서비스는 참고용이며, 투자 결정에 대한 최종 책임은 이용자에게 있습니다. 항상 복수의 출처를 확인하고 신중하게 투자하세요.'
+    },
+    cta: '지금 바로 검증하기',
+    // FAQ page
+    faq: {
+      title: '자주 묻는 질문 (FAQ)',
+      subtitle: '암호화폐 사기 피해 대응 가이드',
+      emergency: {
+        title: '🚨 긴급상황 대응',
+        description: '암호화폐 사기 피해를 당하셨나요? 즉시 다음 조치를 취하세요.',
+        steps: [
+          '거래를 즉시 중단하고 계정 비밀번호를 변경하세요',
+          '가능하다면 남은 자산을 안전한 곳으로 즉시 이전하세요',
+          '사기 사이트의 스크린샷과 거래 내역을 보존하세요',
+          '관련 기관에 즉시 신고하세요 (경찰서, 금융감독원)',
+          '은행 및 카드사에 연락하여 추가 결제를 차단하세요'
+        ]
+      },
+      reporting: {
+        title: '📋 신고 절차',
+        description: '암호화폐 사기 피해 신고 방법을 안내합니다.',
+        agencies: {
+          title: '신고 기관',
+          police: {
+            name: '사이버수사과 (경찰서)',
+            contact: '국번없이 112',
+            description: '사기 피해 신고 및 수사 의뢰',
+            online: 'https://ecrm.police.go.kr (사이버경찰청)'
+          },
+          fss: {
+            name: '금융감독원',
+            contact: '국번없이 1332',
+            description: '금융 관련 피해 신고',
+            online: 'https://www.fss.or.kr'
+          },
+          kisa: {
+            name: '한국인터넷진흥원 (KISA)',
+            contact: '국번없이 118',
+            description: '인터넷 사기 및 악성 사이트 신고',
+            online: 'https://privacy.go.kr'
+          },
+          ftc: {
+            name: '공정거래위원회',
+            contact: '국번없이 1372',
+            description: '소비자 피해 신고',
+            online: 'https://www.consumer.go.kr'
+          }
+        }
+      },
+      documents: {
+        title: '📄 필요 서류',
+        description: '신고 및 법적 절차에 필요한 서류를 준비하세요.',
+        required: [
+          '피해 신고서 (경찰서에서 작성)',
+          '거래 내역서 (은행, 거래소 등)',
+          '사기 사이트 스크린샷',
+          '피해자와 사기범 간의 대화 내용',
+          '송금 증빙 자료 (계좌이체 확인서 등)',
+          '신분증 사본',
+          '통장 사본 (피해 계좌)'
+        ],
+        tips: [
+          '모든 증거는 원본과 사본을 각각 준비하세요',
+          '스크린샷은 날짜와 시간이 표시되도록 촬영하세요',
+          '카카오톡, 텔레그램 등 대화 내용도 백업하세요',
+          '거래소에서 거래 내역을 미리 다운로드하세요'
+        ]
+      },
+      legal: {
+        title: '⚖️ 법적 절차',
+        description: '사기 피해 구제를 위한 법적 절차를 안내합니다.',
+        procedures: {
+          criminal: {
+            title: '형사 고발',
+            description: '사기범에 대한 형사처벌을 요구',
+            steps: [
+              '경찰서 방문하여 피해 신고서 작성',
+              '수사기관의 조사 협조',
+              '검찰 송치 및 기소 여부 결정',
+              '법원 재판 진행'
+            ]
+          },
+          civil: {
+            title: '민사 소송',
+            description: '피해 금액 배상을 요구',
+            steps: [
+              '변호사 상담',
+              '소장 작성 및 법원 제출',
+              '상대방 소재 파악',
+              '재판 진행 및 판결'
+            ]
+          },
+          compensation: {
+            title: '피해 구제',
+            description: '금융기관을 통한 피해 구제 신청',
+            steps: [
+              '해당 금융기관에 피해 구제 신청',
+              '금융감독원 분쟁조정 신청',
+              '예금보험공사 피해구제 신청 (해당시)',
+              '집단소송 참여 검토'
+            ]
+          }
+        }
+      },
+      contacts: {
+        title: '📞 주요 연락처',
+        description: '암호화폐 사기 피해 관련 주요 연락처입니다.',
+        numbers: [
+          '경찰서 신고: 112',
+          '금융감독원: 1332',
+          '한국인터넷진흥원: 118',
+          '소비자신고센터: 1372',
+          '법률구조공단: 132',
+          '대한변협 법률상담: 02-3476-4472'
+        ]
+      },
+      prevention: {
+        title: '🛡️ 예방 수칙',
+        description: '암호화폐 사기를 예방하기 위한 필수 수칙입니다.',
+        rules: [
+          '공식 웹사이트만 이용하고 URL을 정확히 확인하세요',
+          '너무 좋은 조건의 투자는 의심하세요',
+          '개인키, 시드구문은 절대 남에게 알려주지 마세요',
+          '2단계 인증(2FA)을 반드시 설정하세요',
+          '의심스러운 링크는 클릭하지 마세요',
+          '투자 전 충분한 조사와 검증을 하세요',
+          '소액으로 먼저 테스트해보세요',
+          '감정적 투자보다는 신중한 판단을 하세요'
+        ]
+      },
+      recovery: {
+        title: '💰 자산 회복',
+        description: '피해 자산 회복 가능성과 절차를 안내합니다.',
+        reality: {
+          title: '회복 가능성',
+          description: '안타깝게도 암호화폐 사기 피해금 회복은 매우 어려운 것이 현실입니다.',
+          stats: [
+            '국내 암호화폐 사기 피해금 회복률: 약 5-10%',
+            '해외 거래소 관련 피해: 회복 더욱 어려움',
+            '개인간 거래 피해: 회복 가능성 매우 낮음'
+          ]
+        },
+        methods: [
+          '거래소를 통한 계정 동결 요청',
+          '블록체인 추적을 통한 자금 흐름 파악',
+          '해외 수사기관과의 공조 수사',
+          '민사소송을 통한 배상 명령',
+          '집단소송 참여',
+          '금융기관 피해구제 신청'
+        ]
+      },
+      support: {
+        title: '🤝 지원 기관',
+        description: '피해자를 위한 지원 기관과 서비스입니다.',
+        organizations: [
+          {
+            name: '법률구조공단',
+            service: '무료 법률 상담 및 소송 지원',
+            contact: '국번없이 132',
+            website: 'https://www.klac.or.kr'
+          },
+          {
+            name: '대한변호사협회',
+            service: '변호사 소개 및 법률 상담',
+            contact: '02-3476-4472',
+            website: 'https://www.koreanbar.or.kr'
+          },
+          {
+            name: '소비자분쟁조정위원회',
+            service: '소비자 피해 분쟁 조정',
+            contact: '국번없이 1372',
+            website: 'https://www.consumer.go.kr'
+          }
+        ]
+      },
+      backToHome: '홈으로 돌아가기',
+      questions: [
+        {
+          question: "암호화폐 사기를 당했습니다. 지금 당장 무엇을 해야 하나요?",
+          answer: "즉시 다음 조치를 취하세요: 1) 거래를 즉시 중단하고 계정 비밀번호를 변경하세요, 2) 가능하다면 남은 자산을 안전한 곳으로 즉시 이전하세요, 3) 사기 사이트의 스크린샷과 거래 내역을 보존하세요, 4) 관련 기관에 즉시 신고하세요 (경찰서, 금융감독원), 5) 은행 및 카드사에 연락하여 추가 결제를 차단하세요."
+        },
+        {
+          question: "사기 피해를 어디에 신고해야 하나요?",
+          answer: "다음 기관에 신고할 수 있습니다: 사이버수사과 (경찰서) - 국번없이 112, 사기 피해 신고 및 수사 의뢰; 금융감독원 - 국번없이 1332, 금융 관련 피해 신고; 한국인터넷진흥원 (KISA) - 국번없이 118, 인터넷 사기 및 악성 사이트 신고; 공정거래위원회 - 국번없이 1372, 소비자 피해 신고."
+        },
+        {
+          question: "신고할 때 어떤 서류가 필요한가요?",
+          answer: "다음 서류를 준비하세요: 피해 신고서 (경찰서에서 작성), 거래 내역서 (은행, 거래소 등), 사기 사이트 스크린샷, 피해자와 사기범 간의 대화 내용, 송금 증빙 자료 (계좌이체 확인서 등), 신분증 사본, 통장 사본 (피해 계좌). 준비 팁: 모든 증거는 원본과 사본을 각각 준비하고, 스크린샷은 날짜와 시간이 표시되도록 촬영하며, 카카오톡, 텔레그램 등 대화 내용도 백업하고, 거래소에서 거래 내역을 미리 다운로드하세요."
+        },
+        {
+          question: "피해금을 돌려받을 수 있나요?",
+          answer: "안타깝게도 암호화폐 사기 피해금 회복은 매우 어려운 것이 현실입니다. 국내 암호화폐 사기 피해금 회복률은 약 5-10%이며, 해외 거래소 관련 피해는 회복이 더욱 어렵습니다. 시도해볼 수 있는 방법: 거래소를 통한 계정 동결 요청, 블록체인 추적을 통한 자금 흐름 파악, 해외 수사기관과의 공조 수사, 민사소송을 통한 배상 명령, 집단소송 참여, 금융기관 피해구제 신청."
+        },
+        {
+          question: "어떤 법적 절차를 밟을 수 있나요?",
+          answer: "세 가지 주요 옵션이 있습니다: 1) 형사 고발 - 경찰서 방문하여 피해 신고서 작성, 수사기관의 조사 협조, 검찰 송치 및 기소 여부 결정, 법원 재판 진행; 2) 민사 소송 - 변호사 상담, 소장 작성 및 법원 제출, 상대방 소재 파악, 재판 진행 및 판결; 3) 피해 구제 - 해당 금융기관에 피해 구제 신청, 금융감독원 분쟁조정 신청, 예금보험공사 피해구제 신청 (해당시), 집단소송 참여 검토."
+        },
+        {
+          question: "무료 법률 상담을 받을 수 있는 곳이 있나요?",
+          answer: "다음 기관에서 무료 상담을 받을 수 있습니다: 법률구조공단 (국번없이 132) - 무료 법률 상담 및 소송 지원; 대한변호사협회 (02-3476-4472) - 변호사 소개 및 법률 상담; 소비자분쟁조정위원회 (국번없이 1372) - 소비자 피해 분쟁 조정."
+        },
+        {
+          question: "긴급 연락처를 알려주세요",
+          answer: "주요 긴급 연락처: 경찰서 신고: 112, 금융감독원: 1332, 한국인터넷진흥원: 118, 소비자신고센터: 1372, 법률구조공단: 132, 대한변협 법률상담: 02-3476-4472"
+        },
+        {
+          question: "앞으로 사기를 당하지 않으려면 어떻게 해야 하나요?",
+          answer: "다음 예방 수칙을 반드시 지키세요: 공식 웹사이트만 이용하고 URL을 정확히 확인하세요, 너무 좋은 조건의 투자는 의심하세요, 개인키, 시드구문은 절대 남에게 알려주지 마세요, 2단계 인증(2FA)을 반드시 설정하세요, 의심스러운 링크는 클릭하지 마세요, 투자 전 충분한 조사와 검증을 하세요, 소액으로 먼저 테스트해보세요, 감정적 투자보다는 신중한 판단을 하세요."
+        },
+        {
+          question: "가짜 거래소와 진짜 거래소를 어떻게 구별하나요?",
+          answer: "공식 웹사이트 URL을 정확히 확인하고, 도메인이 올바른지 검증하세요. CryptoGuardian과 같은 검증 서비스를 이용하여 사이트의 안전성을 먼저 확인하는 것이 좋습니다. 또한 금융감독원이나 거래소 협회에서 인증된 거래소 목록을 참고하세요."
+        },
+        {
+          question: "텔레그램이나 카카오톡에서 투자 제안을 받았는데 믿어도 될까요?",
+          answer: "절대 믿지 마세요. 대부분의 암호화폐 사기는 메신저를 통해 시작됩니다. 정식 투자회사나 거래소는 무작위로 개인에게 투자 제안을 하지 않습니다. 의심스러운 제안은 즉시 차단하고 신고하세요."
+        },
+        {
+          question: "피해 신고 후 경찰에서 연락이 없어요. 정상인가요?",
+          answer: "암호화폐 사기 수사는 시간이 오래 걸릴 수 있습니다. 특히 해외 거래소가 연관된 경우 더욱 복잡해집니다. 정기적으로 담당 수사관에게 진행 상황을 문의하고, 추가 증거가 있다면 제출하세요. 동시에 민사소송도 검토해보시기 바랍니다."
+        },
+        {
+          question: "가족이 사기를 당했는데 본인이 신고를 거부해요",
+          answer: "본인이 직접 신고해야 효과적입니다. 하지만 가족이 거부한다면, 우선 사기의 심각성을 설명하고 전문가 상담을 받도록 설득하세요. 필요시 법률구조공단(132)에 상황을 상담하여 도움을 요청할 수 있습니다."
+        }
+      ]
+    },
+
+    // Legacy about structure for compatibility
     about: {
       title: 'CryptoGuardian',
       subtitle: '암호화폐 투자자를 위한 실시간 보안 검증 플랫폼',
@@ -325,7 +758,7 @@ export const translations = {
       nav: {
         home: 'Home',
         about: 'About',
-        api: 'API',
+        faq: 'FAQ',
         contact: 'Contact'
       }
     },
@@ -554,6 +987,440 @@ export const translations = {
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
       contact: 'Contact Us'
+    },
+
+    // Privacy Policy page
+    privacy: {
+      title: 'Privacy Policy',
+      sections: {
+        collection: {
+          title: '1. Information We Collect',
+          description: 'CryptoGuardian does not collect personal information by default. We only collect minimal information when the reporting function is used.',
+          items: ['General use: No personal information collected (only language settings stored via cookies)', 'When using report function: Report content, IP address (for spam prevention)', 'Purpose: Blocking malicious sites and spam prevention', 'Retention period: 30 days (automatically deleted thereafter)']
+        },
+        report: {
+          title: '2. Report Function Details',
+          description: 'Information collected when using the site reporting function:',
+          items: ['Email address (optional)', 'Report details and evidence', 'Report date and time', 'IP address (for spam prevention and duplicate report verification)'],
+          note: 'Report information is used solely for blocking malicious sites and is not shared with third parties. IP addresses are stored in anonymized form.'
+        },
+        cookies: {
+          title: '3. Cookies and Local Storage',
+          description: 'This service uses cookies and local storage for the following purposes:',
+          items: ['Saving language preferences (local storage)', 'Storing recent verification history (local storage, stored only on user device)', 'Only functional cookies that do not contain personal information are used']
+        },
+        security: {
+          title: '4. Data Security',
+          description: 'All data transmission is encrypted via HTTPS, and data stored on servers is minimized. User personal information is stored encrypted, and regular security checks are conducted.'
+        },
+        thirdParty: {
+          title: '5. Third Party Sharing',
+          description: 'CryptoGuardian does not share user personal information with third parties except in the following cases:',
+          items: ['With user consent', 'When required by law', 'Upon legitimate request by law enforcement']
+        },
+        rights: {
+          title: '6. User Rights',
+          description: 'Users may exercise the following rights at any time:',
+          items: ['Request to view personal information', 'Request to correct or delete personal information', 'Request to stop processing personal information'],
+          note: 'To exercise these rights, please submit a request through the Contact page.'
+        },
+        officer: {
+          title: '7. Privacy Officer',
+          email: 'Email: cryptoguardian380301@gmail.com',
+          description: 'For any questions regarding personal information processing, please contact us at the above address.'
+        },
+        revision: {
+          title: '8. Policy Updates',
+          effectiveDate: 'This policy is effective as of September 21, 2025.',
+          description: 'It may be revised to reflect changes in laws or services, and any revisions will be announced on the website.'
+        }
+      },
+      backToHome: 'Back to Home'
+    },
+
+    // Terms of Service page
+    terms: {
+      title: 'Terms of Service',
+      sections: {
+        purpose: {
+          title: 'Article 1 (Purpose)',
+          content: 'These terms govern the conditions, procedures, rights, obligations, and responsibilities between the service provider and users of the cryptocurrency site security verification service provided by CryptoGuardian (the "Service").'
+        },
+        service: {
+          title: 'Article 2 (Service Content)',
+          description: 'The Service provides the following features:',
+          items: ['Security status verification of cryptocurrency-related websites', 'Domain information and SSL certificate verification', 'Blacklist database queries', 'Exchange information provision', 'Malicious site reporting function']
+        },
+        usage: {
+          title: 'Article 3 (Service Usage)',
+          items: ['The Service is provided free of charge and is available to everyone.', 'There may be daily verification limits.', 'Mass verification through automated methods (bots, scripts, etc.) is prohibited.', 'Using the Service to harm others is prohibited.']
+        },
+        disclaimer: {
+          title: 'Article 4 (Disclaimer)',
+          items: ['This Service provides reference information and is not investment advice.', 'Verification results may not be 100% accurate, and final investment decisions are the user\'s responsibility.'],
+          notLiable: 'The service provider is not liable for:',
+          notLiableItems: ['Losses from blindly trusting verification results', 'Incorrect information due to third-party data source errors', 'Service interruptions due to force majeure or system failures', 'Damages attributable to user negligence']
+        },
+        intellectual: {
+          title: 'Article 5 (Intellectual Property)',
+          items: ['Copyright for all content provided by the Service belongs to CryptoGuardian.', 'Users may not use information obtained through the Service for commercial purposes.', 'Data collection via API requires separate permission.']
+        },
+        obligations: {
+          title: 'Article 6 (User Obligations)',
+          description: 'Users must not:',
+          items: ['Report malicious sites with false information', 'Interfere with normal Service operations', 'Attempt to collect other users\' personal information', 'Use the Service for profit', 'Exploit security vulnerabilities in the Service']
+        },
+        changes: {
+          title: 'Article 7 (Service Changes and Termination)',
+          items: ['The service provider may change or terminate the Service as operationally necessary.', 'Important changes will be announced in advance on the website.', 'We are not liable for damages due to Service termination.']
+        },
+        compensation: {
+          title: 'Article 8 (Damages)',
+          content: 'Users who cause damage to the service provider by violating these terms are responsible for compensating for such damage.'
+        },
+        dispute: {
+          title: 'Article 9 (Dispute Resolution)',
+          items: ['These terms are interpreted and enforced according to the laws of the Republic of Korea.', 'Disputes related to Service use shall be under the jurisdiction of the Seoul Central District Court.']
+        },
+        amendment: {
+          title: 'Article 10 (Amendment of Terms)',
+          items: ['These terms may be amended as necessary.', 'Amended terms become effective 7 days after posting on the website.', 'Users who disagree with amended terms may discontinue Service use.']
+        },
+        dates: {
+          effective: 'Effective Date: September 21, 2025',
+          lastModified: 'Last Modified: September 21, 2025'
+        }
+      },
+      backToHome: 'Back to Home'
+    },
+
+    // Contact page
+    contactPage: {
+      title: 'Contact Us',
+      subtitle: 'Send us your inquiries or suggestions about the CryptoGuardian service.',
+      inquiryType: 'Inquiry Type',
+      inquiryTypes: {
+        general: 'General Inquiry',
+        report: 'Report Malicious Site',
+        bug: 'Bug Report',
+        feature: 'Feature Request',
+        partnership: 'Partnership Inquiry'
+      },
+      form: {
+        name: 'Name',
+        email: 'Email',
+        subject: 'Subject',
+        message: 'Message',
+        submit: 'Send Message',
+        sending: 'Sending...',
+        success: '✓ Message sent successfully.',
+        error: '✗ Failed to send message.'
+      },
+      directContact: {
+        title: 'Direct Contact',
+        general: 'General',
+        partnership: 'Partnership',
+        security: 'Security'
+      },
+      responseTime: {
+        title: 'Response Time',
+        description: 'We typically respond within 1-2 business days. For urgent security matters, please contact cryptoguardian380301@gmail.com directly.'
+      },
+      notes: {
+        title: 'Note',
+        items: ['• We do not provide investment advice', '• No personal asset consultation', '• Technical support on weekdays only']
+      },
+      backToHome: 'Back to Home'
+    },
+
+    // About page
+    title: 'About CryptoGuardian',
+    subtitle: 'The New Standard for Crypto Site Security',
+    problem: {
+      title: 'Billions in Losses Every Year',
+      description1: 'In 2023 alone, cryptocurrency fraud losses exceeded 100 billion won in Korea. Fake exchanges, phishing sites, and scam coins are becoming increasingly sophisticated.',
+      description2: 'Especially novice investors find it difficult to distinguish between official sites and impersonation sites, resulting in significant losses. Searching for "Binance" often leads to fake sites like "binance-kr.com".'
+    },
+    solution: {
+      title: 'How We Solve It',
+      realtime: {
+        title: 'Real-time Multi-Verification',
+        description: 'We evaluate risk by querying major domestic and international security databases including KISA, VirusTotal, and URLhaus in real-time.'
+      },
+      exchange: {
+        title: 'Exchange Information',
+        description: 'Only providing verified official exchange information from CoinGecko and CryptoCompare. Recommending safe exchanges based on trust scores and trading volumes.'
+      },
+      community: {
+        title: 'Community Reporting System',
+        description: 'Users directly report and share suspicious sites. New scam methods are quickly blocked.'
+      },
+      weekly: {
+        title: 'Weekly Updates',
+        description: 'Automatically updating the latest blacklists and exchange information every week. Always protecting you with the latest information.'
+      }
+    },
+    partners: {
+      title: 'Trusted Data Partners',
+      kisa: 'Korea Internet & Security Agency',
+      exchange: 'Exchange Data',
+      malicious: 'Malicious URL DB'
+    },
+    stats: {
+      title: 'Our Achievements',
+      blocked: 'Blocked Malicious Domains',
+      verified: 'Verified Official Exchanges',
+      monitoring: '24/7 Monitoring'
+    },
+    howto: {
+      title: 'Simple Usage',
+      step1: {
+        title: 'Enter Suspicious URL',
+        description: 'Enter website addresses of cryptocurrency exchanges, investment platforms, ICO sites, etc.'
+      },
+      step2: {
+        title: 'Check Results Instantly',
+        description: 'Clearly displayed in 3 levels: Safe, Warning, Danger.'
+      },
+      step3: {
+        title: 'View Detailed Information',
+        description: 'Check security scores, domain information, blacklist status, and more.'
+      }
+    },
+    mission: {
+      title: 'Our Mission',
+      description1: 'CryptoGuardian was created to help Korean cryptocurrency and investors protect their assets safely. We support anyone to check if the trading site is trustworthy without complex security knowledge.',
+      description2: 'While perfect security does not exist, we are continuously collecting the latest threat information and doing our best to provide the fastest and most accurate verification service.',
+      whyTitle: 'Why We Created This',
+      whyDescription1: 'Currently, there is no authoritative platform in Korea where users can easily verify the trustworthiness of cryptocurrency and investment sites at a glance. Users are confused about where to start looking for information, and overseas cryptocurrency exchanges are particularly difficult to access.',
+      whyDescription2: 'CryptoGuardian aims to solve these problems and become a tool to prevent fraud. We believe that if this service becomes widely known and receives certification from authoritative institutions such as the Korean National Police Agency and the Financial Supervisory Service, it will greatly help protect Korean investors.',
+      disclaimer: 'Disclaimer: This service is for reference only, and the final responsibility for investment decisions lies with the user. Always verify multiple sources and invest carefully.'
+    },
+    cta: 'Verify Now',
+
+    // FAQ page
+    faq: {
+      title: 'Frequently Asked Questions (FAQ)',
+      subtitle: 'Cryptocurrency Scam Victim Response Guide',
+      emergency: {
+        title: '🚨 Emergency Response',
+        description: 'Are you a victim of cryptocurrency fraud? Take these immediate actions.',
+        steps: [
+          'Immediately stop trading and change your account passwords',
+          'If possible, transfer remaining assets to a safe place immediately',
+          'Preserve screenshots and transaction records of the scam site',
+          'Report immediately to relevant authorities (police, financial authorities)',
+          'Contact your bank and card companies to block additional payments'
+        ]
+      },
+      reporting: {
+        title: '📋 Reporting Procedures',
+        description: 'Guide for reporting cryptocurrency fraud.',
+        agencies: {
+          title: 'Reporting Agencies',
+          police: {
+            name: 'Cyber Investigation Unit (Police)',
+            contact: 'Dial 112',
+            description: 'Report fraud and request investigation',
+            online: 'https://ecrm.police.go.kr (Cyber Police)'
+          },
+          fss: {
+            name: 'Financial Supervisory Service',
+            contact: 'Dial 1332',
+            description: 'Report financial-related damages',
+            online: 'https://www.fss.or.kr'
+          },
+          kisa: {
+            name: 'Korea Internet & Security Agency (KISA)',
+            contact: 'Dial 118',
+            description: 'Report internet fraud and malicious sites',
+            online: 'https://privacy.go.kr'
+          },
+          ftc: {
+            name: 'Fair Trade Commission',
+            contact: 'Dial 1372',
+            description: 'Report consumer damages',
+            online: 'https://www.consumer.go.kr'
+          }
+        }
+      },
+      documents: {
+        title: '📄 Required Documents',
+        description: 'Prepare necessary documents for reporting and legal procedures.',
+        required: [
+          'Damage report (completed at police station)',
+          'Transaction records (bank, exchange, etc.)',
+          'Screenshots of scam sites',
+          'Communication records between victim and scammer',
+          'Money transfer evidence (account transfer confirmation, etc.)',
+          'Copy of ID',
+          'Copy of bank account (victim account)'
+        ],
+        tips: [
+          'Prepare both originals and copies of all evidence',
+          'Take screenshots showing date and time',
+          'Backup conversations from KakaoTalk, Telegram, etc.',
+          'Download transaction history from exchanges in advance'
+        ]
+      },
+      legal: {
+        title: '⚖️ Legal Procedures',
+        description: 'Guide for legal procedures to remedy fraud damages.',
+        procedures: {
+          criminal: {
+            title: 'Criminal Complaint',
+            description: 'Request criminal punishment for fraudsters',
+            steps: [
+              'Visit police station to file damage report',
+              'Cooperate with investigation by authorities',
+              'Prosecution decision on indictment',
+              'Court trial proceedings'
+            ]
+          },
+          civil: {
+            title: 'Civil Lawsuit',
+            description: 'Request compensation for damages',
+            steps: [
+              'Lawyer consultation',
+              'Prepare and submit complaint to court',
+              'Identify defendant location',
+              'Trial proceedings and judgment'
+            ]
+          },
+          compensation: {
+            title: 'Damage Relief',
+            description: 'Apply for damage relief through financial institutions',
+            steps: [
+              'Apply for damage relief to relevant financial institution',
+              'Apply for dispute mediation to Financial Supervisory Service',
+              'Apply for damage relief to Korea Deposit Insurance Corporation (if applicable)',
+              'Consider participating in class action lawsuits'
+            ]
+          }
+        }
+      },
+      contacts: {
+        title: '📞 Key Contacts',
+        description: 'Key contact numbers for cryptocurrency fraud victims.',
+        numbers: [
+          'Police Report: 112',
+          'Financial Supervisory Service: 1332',
+          'Korea Internet & Security Agency: 118',
+          'Consumer Report Center: 1372',
+          'Korea Legal Aid Corporation: 132',
+          'Korean Bar Association Legal Consultation: 02-3476-4472'
+        ]
+      },
+      prevention: {
+        title: '🛡️ Prevention Rules',
+        description: 'Essential rules to prevent cryptocurrency fraud.',
+        rules: [
+          'Only use official websites and verify URLs carefully',
+          'Be suspicious of investment opportunities that seem too good to be true',
+          'Never share your private keys or seed phrases with others',
+          'Always set up two-factor authentication (2FA)',
+          'Do not click on suspicious links',
+          'Conduct thorough research and verification before investing',
+          'Test with small amounts first',
+          'Make prudent decisions rather than emotional investments'
+        ]
+      },
+      recovery: {
+        title: '💰 Asset Recovery',
+        description: 'Guide on the possibility and procedures for recovering victim assets.',
+        reality: {
+          title: 'Recovery Possibility',
+          description: 'Unfortunately, recovering cryptocurrency fraud victim funds is very difficult in reality.',
+          stats: [
+            'Domestic cryptocurrency fraud fund recovery rate: about 5-10%',
+            'Overseas exchange-related damages: recovery even more difficult',
+            'Peer-to-peer trading damages: very low recovery possibility'
+          ]
+        },
+        methods: [
+          'Request account freezing through exchanges',
+          'Track fund flow through blockchain analysis',
+          'Cooperative investigation with overseas law enforcement',
+          'Compensation orders through civil lawsuits',
+          'Participation in class action lawsuits',
+          'Apply for financial institution damage relief'
+        ]
+      },
+      support: {
+        title: '🤝 Support Organizations',
+        description: 'Support organizations and services for victims.',
+        organizations: [
+          {
+            name: 'Korea Legal Aid Corporation',
+            service: 'Free legal consultation and litigation support',
+            contact: 'Dial 132',
+            website: 'https://www.klac.or.kr'
+          },
+          {
+            name: 'Korean Bar Association',
+            service: 'Lawyer referral and legal consultation',
+            contact: '02-3476-4472',
+            website: 'https://www.koreanbar.or.kr'
+          },
+          {
+            name: 'Consumer Dispute Mediation Committee',
+            service: 'Consumer damage dispute mediation',
+            contact: 'Dial 1372',
+            website: 'https://www.consumer.go.kr'
+          }
+        ]
+      },
+      backToHome: 'Back to Home',
+      questions: [
+        {
+          question: "I've been scammed by cryptocurrency fraud. What should I do right now?",
+          answer: "Take these immediate actions: 1) Stop all trading immediately and change your passwords, 2) Transfer any remaining assets to a secure location if possible, 3) Save screenshots and transaction records of the scam site, 4) Report to authorities immediately (police, financial supervisors), 5) Contact your bank and card companies to block additional payments."
+        },
+        {
+          question: "Where should I report cryptocurrency fraud?",
+          answer: "You can report to these agencies: Cyber Investigation Unit (Police) - Dial 112 for fraud reports and investigation requests; Financial Supervisory Service - Dial 1332 for financial-related damages; Korea Internet & Security Agency (KISA) - Dial 118 for internet fraud and malicious sites; Fair Trade Commission - Dial 1372 for consumer damages."
+        },
+        {
+          question: "What documents do I need when reporting?",
+          answer: "Prepare these documents: damage report (completed at police station), transaction records (bank, exchange, etc.), screenshots of scam sites, communication records between you and the scammer, money transfer evidence, copy of ID, copy of bank account. Tips: prepare both originals and copies, take screenshots with date/time visible, backup all conversations, download exchange transaction history in advance."
+        },
+        {
+          question: "Can I recover my lost funds?",
+          answer: "Unfortunately, cryptocurrency fraud fund recovery is very difficult. The domestic recovery rate is only about 5-10%, and overseas exchange-related damages are even harder to recover. However, you can try: requesting account freezing through exchanges, tracking fund flow through blockchain analysis, cooperative investigation with overseas law enforcement, civil lawsuits for compensation, participating in class action lawsuits, applying for financial institution damage relief."
+        },
+        {
+          question: "What legal procedures can I take?",
+          answer: "You have three main options: 1) Criminal Complaint - visit police station, cooperate with investigation, await prosecution decision and trial; 2) Civil Lawsuit - consult lawyer, prepare court complaint, identify defendant, proceed with trial; 3) Damage Relief - apply to financial institutions, request FSS dispute mediation, consider Korea Deposit Insurance Corporation relief, join class action lawsuits."
+        },
+        {
+          question: "Where can I get free legal consultation?",
+          answer: "You can get free consultation from: Korea Legal Aid Corporation (Dial 132) for free legal consultation and litigation support; Korean Bar Association (02-3476-4472) for lawyer referral and legal consultation; Consumer Dispute Mediation Committee (Dial 1372) for consumer damage dispute mediation."
+        },
+        {
+          question: "What are the emergency contact numbers?",
+          answer: "Key emergency contacts: Police Report: 112, Financial Supervisory Service: 1332, Korea Internet & Security Agency: 118, Consumer Report Center: 1372, Korea Legal Aid Corporation: 132, Korean Bar Association Legal Consultation: 02-3476-4472"
+        },
+        {
+          question: "How can I prevent cryptocurrency scams in the future?",
+          answer: "Follow these prevention rules: only use official websites and verify URLs carefully, be suspicious of investment opportunities that seem too good to be true, never share private keys or seed phrases, always set up two-factor authentication (2FA), don't click suspicious links, conduct thorough research before investing, test with small amounts first, make prudent rather than emotional decisions."
+        },
+        {
+          question: "How do I distinguish between fake and real exchanges?",
+          answer: "Verify the official website URL accurately and check if the domain is correct. Use verification services like CryptoGuardian to check site safety first. Also refer to the list of exchanges certified by the Financial Supervisory Service or exchange associations."
+        },
+        {
+          question: "Should I trust investment offers from Telegram or KakaoTalk?",
+          answer: "Never trust them. Most cryptocurrency scams start through messengers. Legitimate investment companies or exchanges do not randomly make investment offers to individuals. Block and report suspicious offers immediately."
+        },
+        {
+          question: "The police haven't contacted me after my report. Is this normal?",
+          answer: "Cryptocurrency fraud investigations can take a long time, especially when overseas exchanges are involved. Regularly contact the investigating officer about progress and submit additional evidence if available. Also consider civil litigation simultaneously."
+        },
+        {
+          question: "My family member was scammed but refuses to report it",
+          answer: "Direct reporting by the victim is most effective. If your family member refuses, first explain the seriousness of the fraud and persuade them to get professional consultation. If necessary, contact Korea Legal Aid Corporation (132) to consult about the situation and request help."
+        }
+      ]
     }
   }
 }

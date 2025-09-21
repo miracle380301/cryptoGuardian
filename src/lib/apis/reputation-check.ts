@@ -266,7 +266,7 @@ export class PhishingReportCheckAPI {
     // Company Tickers JSON 파일에서 등록된 회사 정보 확인
     const response = await fetch('https://www.sec.gov/files/company_tickers.json', {
       headers: {
-        'User-Agent': 'CryptoGuardian contact@cryptoguardian.com',
+        'User-Agent': 'CryptoGuardian cryptoguardian380301@gmail.com',
         'Accept': 'application/json'
       }
     });

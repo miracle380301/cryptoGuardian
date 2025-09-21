@@ -41,11 +41,6 @@ export function Footer() {
                   {t.header.nav.about}
                 </Link>
               </li>
-              <li>
-                <Link href="/api" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  {t.header.nav.api}
-                </Link>
-              </li>
             </ul>
           </div>
 
@@ -64,9 +59,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
+                <a href="mailto:cryptoguardian380301@gmail.com?subject=CryptoGuardian 문의" className="text-gray-600 hover:text-blue-600 transition-colors">
                   {t.footer.contact}
-                </Link>
+                </a>
               </li>
             </ul>
           </div>
@@ -89,7 +84,7 @@ export function Footer() {
               <Github className="h-4 w-4" />
             </a>
             <a
-              href="mailto:support@cryptoguardian.com"
+              href="mailto:cryptoguardian380301@gmail.com?subject=CryptoGuardian 문의"
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
               <Mail className="h-4 w-4" />

@@ -22,15 +22,15 @@ export function Header() {
             </div>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-6">
+          <nav className="hidden md:flex items-center space-x-6 mr-24">
             <Link href="/" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
               🏠 {t.header.nav.home}
             </Link>
             <Link href="/about" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
               {t.header.nav.about}
             </Link>
-            <Link href="/api" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-              {t.header.nav.api}
+            <Link href="/faq" className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
+              {t.header.nav.faq}
             </Link>
           </nav>
 
