@@ -12,6 +12,28 @@ interface AccordionItemProps {
   onToggle: () => void
 }
 
+function convertLinksToJSX(text: string) {
+  const linkRegex = /\[LINK\](https?:\/\/[^\s\[]+)\[\/LINK\]/g;
+  const parts = text.split(linkRegex);
+
+  return parts.map((part, index) => {
+    if (part.startsWith('http')) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:underline"
+        >
+          {part}
+        </a>
+      );
+    }
+    return part;
+  });
+}
+
 function AccordionItem({ question, answer, isOpen, onToggle }: AccordionItemProps) {
   return (
     <div className="border border-gray-200 rounded-lg mb-3 overflow-hidden">
@@ -30,7 +52,11 @@ function AccordionItem({ question, answer, isOpen, onToggle }: AccordionItemProp
         <div className="px-6 py-4 bg-white border-t border-gray-200">
           <div className="text-gray-800">
             <span className="font-semibold text-green-700 mr-2">A.</span>
-            {typeof answer === 'string' ? <span>{answer}</span> : answer}
+            {typeof answer === 'string' ? (
+              <span className="whitespace-pre-line">{convertLinksToJSX(answer)}</span>
+            ) : (
+              answer
+            )}
           </div>
         </div>
       )}

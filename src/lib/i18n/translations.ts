@@ -629,35 +629,35 @@ export const translations = {
       questions: [
         {
           question: "암호화폐 사기를 당했습니다. 지금 당장 무엇을 해야 하나요?",
-          answer: "즉시 다음 조치를 취하세요: 1) 거래를 즉시 중단하고 계정 비밀번호를 변경하세요, 2) 가능하다면 남은 자산을 안전한 곳으로 즉시 이전하세요, 3) 사기 사이트의 스크린샷과 거래 내역을 보존하세요, 4) 관련 기관에 즉시 신고하세요 (경찰서, 금융감독원), 5) 은행 및 카드사에 연락하여 추가 결제를 차단하세요."
+          answer: "즉시 다음 조치를 취하세요:\n\n1) 거래를 즉시 중단하고 계정 비밀번호를 변경하세요\n\n2) 가능하다면 남은 자산을 안전한 곳으로 즉시 이전하세요\n\n3) 사기 사이트의 스크린샷과 거래 내역을 보존하세요\n\n4) 관련 기관에 즉시 신고하세요 (경찰서, 금융감독원)\n\n5) 은행 및 카드사에 연락하여 추가 결제를 차단하세요"
         },
         {
           question: "사기 피해를 어디에 신고해야 하나요?",
-          answer: "다음 기관에 신고할 수 있습니다: 사이버수사과 (경찰서) - 국번없이 112, 사기 피해 신고 및 수사 의뢰; 금융감독원 - 국번없이 1332, 금융 관련 피해 신고; 한국인터넷진흥원 (KISA) - 국번없이 118, 인터넷 사기 및 악성 사이트 신고; 공정거래위원회 - 국번없이 1372, 소비자 피해 신고."
+          answer: "다음 기관에 신고할 수 있습니다:\n\n• 사이버수사과 (경찰서) - 국번없이 112\n  → 사기 피해 신고 및 수사 의뢰\n  → [LINK]https://ecrm.police.go.kr[/LINK] (사이버경찰청)\n\n• 금융감독원 - 국번없이 1332\n  → 금융 관련 피해 신고\n  → [LINK]https://www.fss.or.kr[/LINK]\n\n• 한국인터넷진흥원 (KISA) - 국번없이 118\n  → 인터넷 사기 및 악성 사이트 신고\n  → [LINK]https://privacy.go.kr[/LINK]\n\n• 공정거래위원회 - 국번없이 1372\n  → 소비자 피해 신고\n  → [LINK]https://www.consumer.go.kr[/LINK]"
         },
         {
           question: "신고할 때 어떤 서류가 필요한가요?",
-          answer: "다음 서류를 준비하세요: 피해 신고서 (경찰서에서 작성), 거래 내역서 (은행, 거래소 등), 사기 사이트 스크린샷, 피해자와 사기범 간의 대화 내용, 송금 증빙 자료 (계좌이체 확인서 등), 신분증 사본, 통장 사본 (피해 계좌). 준비 팁: 모든 증거는 원본과 사본을 각각 준비하고, 스크린샷은 날짜와 시간이 표시되도록 촬영하며, 카카오톡, 텔레그램 등 대화 내용도 백업하고, 거래소에서 거래 내역을 미리 다운로드하세요."
+          answer: "다음 서류를 준비하세요:\n\n[필수 서류]\n• 피해 신고서 (경찰서에서 작성)\n• 거래 내역서 (은행, 거래소 등)\n• 사기 사이트 스크린샷\n• 피해자와 사기범 간의 대화 내용\n• 송금 증빙 자료 (계좌이체 확인서 등)\n• 신분증 사본\n• 통장 사본 (피해 계좌)\n\n[준비 팁]\n• 모든 증거는 원본과 사본을 각각 준비하세요\n• 스크린샷은 날짜와 시간이 표시되도록 촬영하세요\n• 카카오톡, 텔레그램 등 대화 내용도 백업하세요\n• 거래소에서 거래 내역을 미리 다운로드하세요"
         },
         {
           question: "피해금을 돌려받을 수 있나요?",
-          answer: "안타깝게도 암호화폐 사기 피해금 회복은 매우 어려운 것이 현실입니다. 국내 암호화폐 사기 피해금 회복률은 약 5-10%이며, 해외 거래소 관련 피해는 회복이 더욱 어렵습니다. 시도해볼 수 있는 방법: 거래소를 통한 계정 동결 요청, 블록체인 추적을 통한 자금 흐름 파악, 해외 수사기관과의 공조 수사, 민사소송을 통한 배상 명령, 집단소송 참여, 금융기관 피해구제 신청."
+          answer: "[회복 가능성]\n안타깝게도 암호화폐 사기 피해금 회복은 매우 어려운 것이 현실입니다.\n\n[회복률 통계]\n• 국내 암호화폐 사기 피해금 회복률: 약 5-10%\n• 해외 거래소 관련 피해: 회복 더욱 어려움\n• 개인간 거래 피해: 회복 가능성 매우 낮음\n\n[시도해볼 수 있는 방법]\n• 거래소를 통한 계정 동결 요청\n• 블록체인 추적을 통한 자금 흐름 파악\n• 해외 수사기관과의 공조 수사\n• 민사소송을 통한 배상 명령\n• 집단소송 참여\n• 금융기관 피해구제 신청"
         },
         {
           question: "어떤 법적 절차를 밟을 수 있나요?",
-          answer: "세 가지 주요 옵션이 있습니다: 1) 형사 고발 - 경찰서 방문하여 피해 신고서 작성, 수사기관의 조사 협조, 검찰 송치 및 기소 여부 결정, 법원 재판 진행; 2) 민사 소송 - 변호사 상담, 소장 작성 및 법원 제출, 상대방 소재 파악, 재판 진행 및 판결; 3) 피해 구제 - 해당 금융기관에 피해 구제 신청, 금융감독원 분쟁조정 신청, 예금보험공사 피해구제 신청 (해당시), 집단소송 참여 검토."
+          answer: "세 가지 주요 옵션이 있습니다:\n\n1) 형사 고발:\n• 경찰서 방문하여 피해 신고서 작성\n• 수사기관의 조사 협조\n• 검찰 송치 및 기소 여부 결정\n• 법원 재판 진행\n\n2) 민사 소송:\n• 변호사 상담\n• 소장 작성 및 법원 제출\n• 상대방 소재 파악\n• 재판 진행 및 판결\n\n3) 피해 구제:\n• 해당 금융기관에 피해 구제 신청\n• 금융감독원 분쟁조정 신청\n• 예금보험공사 피해구제 신청 (해당시)\n• 집단소송 참여 검토"
         },
         {
           question: "무료 법률 상담을 받을 수 있는 곳이 있나요?",
-          answer: "다음 기관에서 무료 상담을 받을 수 있습니다: 법률구조공단 (국번없이 132) - 무료 법률 상담 및 소송 지원; 대한변호사협회 (02-3476-4472) - 변호사 소개 및 법률 상담; 소비자분쟁조정위원회 (국번없이 1372) - 소비자 피해 분쟁 조정."
+          answer: "다음 기관에서 무료 상담을 받을 수 있습니다:\n\n법률구조공단\n• 연락처: 국번없이 132\n• 서비스: 무료 법률 상담 및 소송 지원\n• 웹사이트: [LINK]https://www.klac.or.kr[/LINK]\n\n대한변호사협회\n• 연락처: 02-3476-4472\n• 서비스: 변호사 소개 및 법률 상담\n• 웹사이트: [LINK]https://www.koreanbar.or.kr[/LINK]\n\n소비자분쟁조정위원회\n• 연락처: 국번없이 1372\n• 서비스: 소비자 피해 분쟁 조정\n• 웹사이트: [LINK]https://www.consumer.go.kr[/LINK]"
         },
         {
           question: "긴급 연락처를 알려주세요",
-          answer: "주요 긴급 연락처: 경찰서 신고: 112, 금융감독원: 1332, 한국인터넷진흥원: 118, 소비자신고센터: 1372, 법률구조공단: 132, 대한변협 법률상담: 02-3476-4472"
+          answer: "주요 긴급 연락처:\n\n경찰서 신고: 112\n금융감독원: 1332\n한국인터넷진흥원: 118\n소비자신고센터: 1372\n법률구조공단: 132\n대한변협 법률상담: 02-3476-4472"
         },
         {
           question: "앞으로 사기를 당하지 않으려면 어떻게 해야 하나요?",
-          answer: "다음 예방 수칙을 반드시 지키세요: 공식 웹사이트만 이용하고 URL을 정확히 확인하세요, 너무 좋은 조건의 투자는 의심하세요, 개인키, 시드구문은 절대 남에게 알려주지 마세요, 2단계 인증(2FA)을 반드시 설정하세요, 의심스러운 링크는 클릭하지 마세요, 투자 전 충분한 조사와 검증을 하세요, 소액으로 먼저 테스트해보세요, 감정적 투자보다는 신중한 판단을 하세요."
+          answer: "다음 예방 수칙을 반드시 지키세요:\n\n[기본 보안 수칙]\n• 공식 웹사이트만 이용하고 URL을 정확히 확인하세요\n• 너무 좋은 조건의 투자는 의심하세요\n• 개인키, 시드구문은 절대 남에게 알려주지 마세요\n• 2단계 인증(2FA)을 반드시 설정하세요\n\n[주의사항]\n• 의심스러운 링크는 클릭하지 마세요\n• 투자 전 충분한 조사와 검증을 하세요\n• 소액으로 먼저 테스트해보세요\n• 감정적 투자보다는 신중한 판단을 하세요"
         },
         {
           question: "가짜 거래소와 진짜 거래소를 어떻게 구별하나요?",
@@ -1203,7 +1203,7 @@ export const translations = {
       title: 'Frequently Asked Questions (FAQ)',
       subtitle: 'Cryptocurrency Scam Victim Response Guide',
       emergency: {
-        title: '🚨 Emergency Response',
+        title: 'Emergency Response',
         description: 'Are you a victim of cryptocurrency fraud? Take these immediate actions.',
         steps: [
           'Immediately stop trading and change your account passwords',
@@ -1214,7 +1214,7 @@ export const translations = {
         ]
       },
       reporting: {
-        title: '📋 Reporting Procedures',
+        title: 'Reporting Procedures',
         description: 'Guide for reporting cryptocurrency fraud.',
         agencies: {
           title: 'Reporting Agencies',
@@ -1245,7 +1245,7 @@ export const translations = {
         }
       },
       documents: {
-        title: '📄 Required Documents',
+        title: 'Required Documents',
         description: 'Prepare necessary documents for reporting and legal procedures.',
         required: [
           'Damage report (completed at police station)',
@@ -1264,7 +1264,7 @@ export const translations = {
         ]
       },
       legal: {
-        title: '⚖️ Legal Procedures',
+        title: 'Legal Procedures',
         description: 'Guide for legal procedures to remedy fraud damages.',
         procedures: {
           criminal: {
@@ -1300,7 +1300,7 @@ export const translations = {
         }
       },
       contacts: {
-        title: '📞 Key Contacts',
+        title: 'Key Contacts',
         description: 'Key contact numbers for cryptocurrency fraud victims.',
         numbers: [
           'Police Report: 112',
@@ -1312,7 +1312,7 @@ export const translations = {
         ]
       },
       prevention: {
-        title: '🛡️ Prevention Rules',
+        title: 'Prevention Rules',
         description: 'Essential rules to prevent cryptocurrency fraud.',
         rules: [
           'Only use official websites and verify URLs carefully',
@@ -1326,7 +1326,7 @@ export const translations = {
         ]
       },
       recovery: {
-        title: '💰 Asset Recovery',
+        title: 'Asset Recovery',
         description: 'Guide on the possibility and procedures for recovering victim assets.',
         reality: {
           title: 'Recovery Possibility',
@@ -1347,7 +1347,7 @@ export const translations = {
         ]
       },
       support: {
-        title: '🤝 Support Organizations',
+        title: 'Support Organizations',
         description: 'Support organizations and services for victims.',
         organizations: [
           {
@@ -1374,35 +1374,35 @@ export const translations = {
       questions: [
         {
           question: "I've been scammed by cryptocurrency fraud. What should I do right now?",
-          answer: "Take these immediate actions: 1) Stop all trading immediately and change your passwords, 2) Transfer any remaining assets to a secure location if possible, 3) Save screenshots and transaction records of the scam site, 4) Report to authorities immediately (police, financial supervisors), 5) Contact your bank and card companies to block additional payments."
+          answer: "Take these immediate actions:\n\n1) Stop all trading immediately and change your passwords\n\n2) Transfer any remaining assets to a secure location if possible\n\n3) Save screenshots and transaction records of the scam site\n\n4) Report to authorities immediately (police, financial supervisors)\n\n5) Contact your bank and card companies to block additional payments"
         },
         {
           question: "Where should I report cryptocurrency fraud?",
-          answer: "You can report to these agencies: Cyber Investigation Unit (Police) - Dial 112 for fraud reports and investigation requests; Financial Supervisory Service - Dial 1332 for financial-related damages; Korea Internet & Security Agency (KISA) - Dial 118 for internet fraud and malicious sites; Fair Trade Commission - Dial 1372 for consumer damages."
+          answer: "You can report to these agencies:\n\n• Cyber Investigation Unit (Police) - Dial 112\n  → Fraud reports and investigation requests\n  → [LINK]https://ecrm.police.go.kr[/LINK] (Cyber Police)\n\n• Financial Supervisory Service - Dial 1332\n  → Financial-related damages\n  → [LINK]https://www.fss.or.kr[/LINK]\n\n• Korea Internet & Security Agency (KISA) - Dial 118\n  → Internet fraud and malicious sites\n  → [LINK]https://privacy.go.kr[/LINK]\n\n• Fair Trade Commission - Dial 1372\n  → Consumer damages\n  → [LINK]https://www.consumer.go.kr[/LINK]"
         },
         {
           question: "What documents do I need when reporting?",
-          answer: "Prepare these documents: damage report (completed at police station), transaction records (bank, exchange, etc.), screenshots of scam sites, communication records between you and the scammer, money transfer evidence, copy of ID, copy of bank account. Tips: prepare both originals and copies, take screenshots with date/time visible, backup all conversations, download exchange transaction history in advance."
+          answer: "Prepare these documents:\n\n[Required Documents]\n• Damage report (completed at police station)\n• Transaction records (bank, exchange, etc.)\n• Screenshots of scam sites\n• Communication records between you and the scammer\n• Money transfer evidence\n• Copy of ID\n• Copy of bank account\n\n[Preparation Tips]\n• Prepare both originals and copies\n• Take screenshots with date/time visible\n• Backup all conversations\n• Download exchange transaction history in advance"
         },
         {
           question: "Can I recover my lost funds?",
-          answer: "Unfortunately, cryptocurrency fraud fund recovery is very difficult. The domestic recovery rate is only about 5-10%, and overseas exchange-related damages are even harder to recover. However, you can try: requesting account freezing through exchanges, tracking fund flow through blockchain analysis, cooperative investigation with overseas law enforcement, civil lawsuits for compensation, participating in class action lawsuits, applying for financial institution damage relief."
+          answer: "[Recovery Possibility]\nUnfortunately, cryptocurrency fraud fund recovery is very difficult in reality.\n\n[Recovery Statistics]\n• Domestic cryptocurrency fraud fund recovery rate: about 5-10%\n• Overseas exchange-related damages: recovery even more difficult\n• Peer-to-peer trading damages: very low recovery possibility\n\n[Methods to Try]\n• Request account freezing through exchanges\n• Track fund flow through blockchain analysis\n• Cooperative investigation with overseas law enforcement\n• Civil lawsuits for compensation\n• Participate in class action lawsuits\n• Apply for financial institution damage relief"
         },
         {
           question: "What legal procedures can I take?",
-          answer: "You have three main options: 1) Criminal Complaint - visit police station, cooperate with investigation, await prosecution decision and trial; 2) Civil Lawsuit - consult lawyer, prepare court complaint, identify defendant, proceed with trial; 3) Damage Relief - apply to financial institutions, request FSS dispute mediation, consider Korea Deposit Insurance Corporation relief, join class action lawsuits."
+          answer: "You have three main options:\n\n1) Criminal Complaint:\n• Visit police station to file damage report\n• Cooperate with investigation by authorities\n• Await prosecution decision and trial\n\n2) Civil Lawsuit:\n• Consult with lawyer\n• Prepare and submit court complaint\n• Identify defendant location\n• Proceed with trial and judgment\n\n3) Damage Relief:\n• Apply to relevant financial institutions\n• Request FSS dispute mediation\n• Consider Korea Deposit Insurance Corporation relief\n• Join class action lawsuits"
         },
         {
           question: "Where can I get free legal consultation?",
-          answer: "You can get free consultation from: Korea Legal Aid Corporation (Dial 132) for free legal consultation and litigation support; Korean Bar Association (02-3476-4472) for lawyer referral and legal consultation; Consumer Dispute Mediation Committee (Dial 1372) for consumer damage dispute mediation."
+          answer: "You can get free consultation from:\n\nKorea Legal Aid Corporation\n• Contact: Dial 132\n• Service: Free legal consultation and litigation support\n• Website: [LINK]https://www.klac.or.kr[/LINK]\n\nKorean Bar Association\n• Contact: 02-3476-4472\n• Service: Lawyer referral and legal consultation\n• Website: [LINK]https://www.koreanbar.or.kr[/LINK]\n\nConsumer Dispute Mediation Committee\n• Contact: Dial 1372\n• Service: Consumer damage dispute mediation\n• Website: [LINK]https://www.consumer.go.kr[/LINK]"
         },
         {
           question: "What are the emergency contact numbers?",
-          answer: "Key emergency contacts: Police Report: 112, Financial Supervisory Service: 1332, Korea Internet & Security Agency: 118, Consumer Report Center: 1372, Korea Legal Aid Corporation: 132, Korean Bar Association Legal Consultation: 02-3476-4472"
+          answer: "Key Emergency Contacts:\n\nPolice Report: 112\nFinancial Supervisory Service: 1332\nKorea Internet & Security Agency: 118\nConsumer Report Center: 1372\nKorea Legal Aid Corporation: 132\nKorean Bar Association Legal Consultation: 02-3476-4472"
         },
         {
           question: "How can I prevent cryptocurrency scams in the future?",
-          answer: "Follow these prevention rules: only use official websites and verify URLs carefully, be suspicious of investment opportunities that seem too good to be true, never share private keys or seed phrases, always set up two-factor authentication (2FA), don't click suspicious links, conduct thorough research before investing, test with small amounts first, make prudent rather than emotional decisions."
+          answer: "Follow these prevention rules:\n\n[Basic Security Rules]\n• Only use official websites and verify URLs carefully\n• Be suspicious of investment opportunities that seem too good to be true\n• Never share private keys or seed phrases with others\n• Always set up two-factor authentication (2FA)\n\n[Precautions]\n• Don't click suspicious links\n• Conduct thorough research before investing\n• Test with small amounts first\n• Make prudent rather than emotional decisions"
         },
         {
           question: "How do I distinguish between fake and real exchanges?",
