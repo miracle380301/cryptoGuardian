@@ -3,12 +3,14 @@
 import { useEffect, useState } from 'react'
 import { Shield, Search, Database, Lock, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
+import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface LoadingPageProps {
   domain?: string
 }
 
 export function LoadingPage({ domain }: LoadingPageProps) {
+  const { t } = useTranslation()
   const [currentStep, setCurrentStep] = useState(0)
   const [progress, setProgress] = useState(0)
   const [currentPoliceImage, setCurrentPoliceImage] = useState(0)
@@ -18,28 +20,28 @@ export function LoadingPage({ domain }: LoadingPageProps) {
   const steps = [
     {
       icon: Search,
-      title: '도메인 정보 수집 중...',
-      description: 'DNS 레코드 및 도메인 정보를 조회하고 있습니다.'
+      title: t.main.loading.steps.domainInfo.title,
+      description: t.main.loading.steps.domainInfo.description
     },
     {
       icon: Database,
-      title: '보안 데이터베이스 확인 중...',
-      description: '악성 사이트 데이터베이스에서 위협 정보를 확인하고 있습니다.'
+      title: t.main.loading.steps.securityDatabase.title,
+      description: t.main.loading.steps.securityDatabase.description
     },
     {
       icon: Lock,
-      title: 'SSL 인증서 검증 중...',
-      description: '보안 인증서의 유효성과 암호화 강도를 검사하고 있습니다.'
+      title: t.main.loading.steps.sslVerification.title,
+      description: t.main.loading.steps.sslVerification.description
     },
     {
       icon: Shield,
-      title: '평판 정보 분석 중...',
-      description: '다양한 보안 기관의 평판 정보를 종합 분석하고 있습니다.'
+      title: t.main.loading.steps.reputationAnalysis.title,
+      description: t.main.loading.steps.reputationAnalysis.description
     },
     {
       icon: CheckCircle,
-      title: '최종 결과 생성 중...',
-      description: '수집된 모든 정보를 바탕으로 보안 점수를 계산하고 있습니다.'
+      title: t.main.loading.steps.finalResults.title,
+      description: t.main.loading.steps.finalResults.description
     }
   ]
 
@@ -73,7 +75,7 @@ export function LoadingPage({ domain }: LoadingPageProps) {
         {domain && (
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">{domain}</h1>
-            <p className="text-gray-600">보안 검증 중...</p>
+            <p className="text-gray-600">{t.main.loading.subtitle}</p>
           </div>
         )}
 
@@ -83,7 +85,7 @@ export function LoadingPage({ domain }: LoadingPageProps) {
             <div className="w-32 h-32 mx-auto mb-4 relative">
               <Image
                 src={policeImages[currentPoliceImage]}
-                alt="Security Check in Progress"
+                alt={t.main.loading.title}
                 width={128}
                 height={128}
                 className="transition-opacity duration-500"
@@ -93,17 +95,17 @@ export function LoadingPage({ domain }: LoadingPageProps) {
           </div>
 
           <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            {steps[currentStep]?.title || '보안 검사 중...'}
+            {steps[currentStep]?.title || t.main.loading.title}
           </h2>
           <p className="text-gray-600 text-sm leading-relaxed max-w-md mx-auto">
-            {steps[currentStep]?.description || '도메인 보안성을 분석하고 있습니다.'}
+            {steps[currentStep]?.description || t.main.loading.subtitle}
           </p>
         </div>
 
         {/* Progress bar */}
         <div className="mb-6">
           <div className="flex justify-between text-xs text-gray-500 mb-2">
-            <span>진행률</span>
+            <span>{t.main.loading.progress}</span>
             <span>{Math.round(progress)}%</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">

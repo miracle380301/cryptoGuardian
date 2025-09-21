@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,6 +10,7 @@ import { Loader2, Search } from 'lucide-react'
 
 export function CheckForm() {
   const { t } = useTranslation()
+  const router = useRouter()
   const [url, setUrl] = useState('')
   const [searchType, setSearchType] = useState('crypto') // 'general' or 'crypto'
   const [loading, setLoading] = useState(false)
@@ -45,7 +47,7 @@ export function CheckForm() {
     const cleanDomain = url.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0]
 
     // Navigate to check page with full URL as query parameter
-    window.location.href = `/check/${encodeURIComponent(cleanDomain)}?type=${searchType}&url=${encodeURIComponent(url)}`
+    router.push(`/check/${encodeURIComponent(cleanDomain)}?type=${searchType}&url=${encodeURIComponent(url)}`)
   }
 
   return (

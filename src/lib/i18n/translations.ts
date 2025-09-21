@@ -26,6 +26,33 @@ export const translations = {
       inputPlaceholder: 'URL 또는 도메인을 입력하세요 (예: binance.com)',
       checkButton: '보안 검증하기',
       checkingButton: '검증 중...',
+      loading: {
+        title: '보안 검사 진행 중',
+        subtitle: '도메인 보안성을 분석하고 있습니다',
+        progress: '진행률',
+        steps: {
+          domainInfo: {
+            title: '도메인 정보 수집 중...',
+            description: 'DNS 레코드 및 도메인 정보를 조회하고 있습니다.'
+          },
+          securityDatabase: {
+            title: '보안 데이터베이스 확인 중...',
+            description: '악성 사이트 데이터베이스에서 위협 정보를 확인하고 있습니다.'
+          },
+          sslVerification: {
+            title: 'SSL 인증서 검증 중...',
+            description: '보안 인증서의 유효성과 암호화 강도를 검사하고 있습니다.'
+          },
+          reputationAnalysis: {
+            title: '평판 정보 분석 중...',
+            description: '다양한 보안 기관의 평판 정보를 종합 분석하고 있습니다.'
+          },
+          finalResults: {
+            title: '최종 결과 생성 중...',
+            description: '수집된 모든 정보를 바탕으로 보안 점수를 계산하고 있습니다.'
+          }
+        }
+      },
       searchTypes: {
         general: {
           label: '일반 도메인',
@@ -770,6 +797,33 @@ export const translations = {
       inputPlaceholder: 'Enter website URL or domain (e.g., binance.com)',
       checkButton: 'Check Website',
       checkingButton: 'Checking...',
+      loading: {
+        title: 'Security Check in Progress',
+        subtitle: 'Analyzing domain security',
+        progress: 'Progress',
+        steps: {
+          domainInfo: {
+            title: 'Gathering domain information...',
+            description: 'Retrieving DNS records and domain registration details.'
+          },
+          securityDatabase: {
+            title: 'Checking security databases...',
+            description: 'Verifying against malicious site databases for threat information.'
+          },
+          sslVerification: {
+            title: 'Validating SSL certificate...',
+            description: 'Examining security certificate validity and encryption strength.'
+          },
+          reputationAnalysis: {
+            title: 'Analyzing reputation data...',
+            description: 'Comprehensive analysis of reputation information from security agencies.'
+          },
+          finalResults: {
+            title: 'Generating final results...',
+            description: 'Calculating security score based on all collected information.'
+          }
+        }
+      },
       searchTypes: {
         general: {
           label: 'General Domain',

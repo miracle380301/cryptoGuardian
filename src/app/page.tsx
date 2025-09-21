@@ -17,7 +17,6 @@ export default function Home() {
           <CheckForm />
         </div>
 
-
         {/* Features Section */}
         <div className="mb-8 sm:mb-12 lg:mb-16 mt-16 sm:mt-20 lg:mt-24 max-w-3xl mx-auto">
           <FeaturesSection />
