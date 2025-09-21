@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description: "암호화폐 거래소 및 관련 웹사이트의 보안과 신뢰도를 실시간으로 검증합니다",
     images: [
       {
-        url: "/police.png",
+        url: "https://cryptoguardian.vercel.app/police.png",
         width: 1200,
         height: 630,
         alt: "크립토가디언 보안 검증 서비스",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "크립토가디언 - 암호화폐 사이트 보안 검증",
     description: "암호화폐 거래소 및 관련 웹사이트의 보안과 신뢰도를 실시간으로 검증합니다",
-    images: ["/police.png"],
+    images: ["https://cryptoguardian.vercel.app/police.png"],
   },
 };
 
