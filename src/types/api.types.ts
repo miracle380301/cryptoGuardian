@@ -135,6 +135,7 @@ export interface ValidationResult {
     teamScam?: ValidationCheck;
     cryptoExchange?: ValidationCheck;
     koreanCryptoScam?: ValidationCheck;
+    userReports?: ValidationCheck;
     // Keep reputation for backward compatibility
     reputation?: ValidationCheck;
   };

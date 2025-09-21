@@ -410,7 +410,7 @@ function processValidationResults(
       message: 'No malicious patterns detected in database',
       details: { isReported: false }
     },
-    whois: processWhoisCheck(whoisResult),
+    whois: processWhoisCheck(whoisResult, currentLang),
     ssl: processSSLCheck(sslResult),
     safeBrowsing: processSafeBrowsingCheck(safeBrowsingResult),
     userReports: processUserReportsCheck(userReportsResult, currentLang)
@@ -490,7 +490,7 @@ function processValidationResults(
   };
 }
 
-function processWhoisCheck(result: PromiseSettledResult<any>): ValidationCheck {
+function processWhoisCheck(result: PromiseSettledResult<any>, language: 'ko' | 'en' = 'en'): ValidationCheck {
   if (result.status === 'rejected' || !result.value.success) {
     return {
       name: 'Domain Registration',
@@ -530,7 +530,7 @@ function processWhoisCheck(result: PromiseSettledResult<any>): ValidationCheck {
   }
 
   // 2. Domain Status Score (70% weight)
-  const statusResult = calculateDomainStatusScoreV2(data.status || []);
+  const statusResult = calculateDomainStatusScoreV2(data.status || [], language);
 
   // Combine scores: 30% age + 70% status
   const finalScore = Math.round((ageScore * 0.3) + (statusResult.score * 0.7));
@@ -927,11 +927,12 @@ function _calculateDomainStatusScore(statuses: string[]): { adjustment: number; 
 */
 
 // New version with scoring system instead of adjustments
-function calculateDomainStatusScoreV2(statuses: string[]): { score: number; statusMessages: string[] } {
+function calculateDomainStatusScoreV2(statuses: string[], language: 'ko' | 'en' = 'en'): { score: number; statusMessages: string[] } {
   const statusMessages: string[] = [];
 
   if (!statuses || statuses.length === 0) {
-    return { score: 50, statusMessages: ['No status information available'] };
+    const message = language === 'ko' ? '상태 정보를 사용할 수 없음' : 'No status information available';
+    return { score: 50, statusMessages: [message] };
   }
 
   // Convert to lowercase and join if it's an array

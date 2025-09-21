@@ -151,6 +151,30 @@ model UserReport {
   @@index([createdAt])
 }
 
+// 문의하기 (Contact)
+model ContactInquiry {
+  id              String    @id @default(cuid())
+  type            String    // general, report, bug, feature, partnership
+  name            String
+  email           String
+  subject         String
+  message         String    @db.Text
+  status          String    @default("pending") // pending, in_progress, resolved, closed
+  priority        String    @default("normal") // low, normal, high, urgent
+  assignedTo      String?   // 담당자 (관리자용)
+  adminNotes      String?   @db.Text // 관리자 메모
+  resolution      String?   @db.Text // 해결 내용
+  resolvedAt      DateTime? // 해결 완료 시간
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([priority])
+  @@index([email])
+  @@index([createdAt])
+}
+
 // 다중 소스 거래소 데이터
 model Exchange {
   id                    String    @id // Primary ID (can be from CoinGecko or other sources)

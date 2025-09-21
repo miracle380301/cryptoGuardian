@@ -1,13 +1,17 @@
 'use client'
 
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { LanguageProvider } from "@/lib/i18n/useTranslation";
 
-const inter = Inter({ subsets: ["latin"] });
+const notoSansKR = Noto_Sans_KR({
+  subsets: ["latin", "latin-ext"],
+  weight: ["100", "300", "400", "500", "700", "900"],
+  display: "swap"
+});
 
 export default function RootLayout({
   children,
@@ -16,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${inter.className} antialiased min-h-screen flex flex-col bg-gray-50`}>
+      <body className={`${notoSansKR.className} antialiased min-h-screen flex flex-col bg-gray-50`}>
         <LanguageProvider>
           <Header />
           <main className="flex-1">

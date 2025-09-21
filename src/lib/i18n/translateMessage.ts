@@ -142,6 +142,14 @@ const messageTranslations: Record<string, { ko: string; en: string }> = {
   'No Korean crypto scam patterns detected': {
     ko: '한국 암호화폐 스캠 패턴이 감지되지 않음',
     en: 'No Korean crypto scam patterns detected'
+  },
+  'No malicious patterns detected in database': {
+    ko: '데이터베이스에서 악성 패턴이 감지되지 않음',
+    en: 'No malicious patterns detected in database'
+  },
+  'No status information available': {
+    ko: '상태 정보를 사용할 수 없음',
+    en: 'No status information available'
   }
 };
 

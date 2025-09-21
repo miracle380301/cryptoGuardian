@@ -455,7 +455,7 @@ export const translations = {
     cta: '지금 바로 검증하기',
     // FAQ page
     faq: {
-      title: '자주 묻는 질문 (FAQ)',
+      title: '자주 묻는 질문',
       subtitle: '암호화폐 사기 피해 대응 가이드',
       emergency: {
         title: '🚨 긴급상황 대응',
@@ -1200,7 +1200,7 @@ export const translations = {
 
     // FAQ page
     faq: {
-      title: 'Frequently Asked Questions (FAQ)',
+      title: 'Frequently Asked Questions',
       subtitle: 'Cryptocurrency Scam Victim Response Guide',
       emergency: {
         title: 'Emergency Response',

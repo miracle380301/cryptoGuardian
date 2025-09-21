@@ -19,10 +19,10 @@ export function FeatureBadges() {
   ]
 
   return (
-    <div className="flex justify-center items-center space-x-8 mb-16 text-sm">
+    <div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 lg:gap-8 text-xs sm:text-sm">
       {badges.map((badge, index) => (
         <div key={index} className="flex items-center space-x-2">
-          <div className={`w-3 h-3 ${badge.color} rounded-full`}></div>
+          <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${badge.color} rounded-full`}></div>
           <span className="text-gray-600">{badge.text}</span>
         </div>
       ))}

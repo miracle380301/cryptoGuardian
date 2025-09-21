@@ -67,6 +67,16 @@
   --trust-safe: oklch(0.65 0.18 142.495);
   --trust-warning: oklch(0.75 0.18 85.87);
   --trust-danger: oklch(0.577 0.245 27.325);
+
+  /* CryptoGuardian Brand Colors */
+  --brand-primary: oklch(0.65 0.18 142.495); /* Green-600 equivalent */
+  --brand-primary-light: oklch(0.75 0.15 142.495); /* Lighter green */
+  --brand-primary-dark: oklch(0.55 0.20 142.495); /* Darker green */
+  --brand-secondary: oklch(0.533 0.192 242.09); /* Blue-600 equivalent */
+  --brand-secondary-light: oklch(0.633 0.17 242.09); /* Lighter blue */
+  --brand-secondary-dark: oklch(0.433 0.22 242.09); /* Darker blue */
+  --brand-danger: oklch(0.577 0.245 27.325); /* Red-600 equivalent */
+  --brand-danger-light: oklch(0.677 0.22 27.325); /* Lighter red */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);

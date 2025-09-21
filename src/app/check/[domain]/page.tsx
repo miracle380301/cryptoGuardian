@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, RefreshCw, Share2, Shield, XCircle, CheckCircle, Info, ExternalLink, Flag } from 'lucide-react'
 import { ValidationResult } from '@/types/api.types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
-import { translateRecommendation } from '@/lib/i18n/translateMessage'
+import { translateRecommendation, translateMessage } from '@/lib/i18n/translateMessage'
 import { MainScoreCard } from '@/components/result/MainScoreCard'
 import { MaliciousSiteEvidence } from '@/components/result/MaliciousSiteEvidence'
 import { UserReportsSection } from '@/components/result/UserReportsSection'
@@ -15,6 +15,7 @@ import { ExchangeInformation } from '@/components/result/ExchangeInformation'
 import CheckExternalLinks from '@/components/CheckExternalLinks'
 import { ReportModal } from '@/components/ReportModal'
 import { ShareModal } from '@/components/ShareModal'
+import { LoadingPage } from '@/components/LoadingPage'
 
 export default function CheckResultPage() {
   const { t, language: currentLang } = useTranslation()
@@ -73,7 +74,7 @@ export default function CheckResultPage() {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <Button
               variant="ghost"
               onClick={() => router.push('/')}
@@ -83,24 +84,8 @@ export default function CheckResultPage() {
               {t.results.backButton}
             </Button>
 
-            <Card className="mb-8 animate-pulse">
-              <CardHeader className="text-center pb-8">
-                <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto mb-4"></div>
-                <div className="h-24 bg-gray-200 rounded-full w-24 mx-auto mb-4"></div>
-                <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto"></div>
-              </CardHeader>
-            </Card>
-
-            <div className="grid gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardContent className="p-6">
-                    <div className="h-6 bg-gray-200 rounded w-1/3 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            {/* Loading content that matches result page structure */}
+            <LoadingPage domain={domain} />
           </div>
         </div>
       </div>
@@ -111,7 +96,7 @@ export default function CheckResultPage() {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <Button
               variant="ghost"
               onClick={() => router.push('/')}
@@ -165,7 +150,7 @@ export default function CheckResultPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-12">
       <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           {/* Navigation */}
           <div className="flex justify-between items-center mb-8">
             <Button
@@ -224,7 +209,7 @@ export default function CheckResultPage() {
                         </h3>
                       </div>
                       <p className="text-sm text-gray-600 mb-2 whitespace-pre-line">
-                        {result.checks.maliciousSite.message}
+                        {translateMessage(result.checks.maliciousSite.message, currentLang)}
                       </p>
                       <div className="flex items-center gap-4 text-sm">
                         <span className={`font-medium ${result.checks.maliciousSite.passed ? 'text-green-600' : 'text-red-600'}`}>
@@ -280,7 +265,7 @@ export default function CheckResultPage() {
                         </h3>
                       </div>
                       <p className="text-sm text-gray-600 mb-2 whitespace-pre-line">
-                        {result.checks.userReports.message}
+                        {translateMessage(result.checks.userReports.message, currentLang)}
                       </p>
                       <div className="flex items-center gap-4 text-sm">
                         <span className={`font-medium ${result.checks.userReports.passed ? 'text-green-600' : 'text-orange-600'}`}>
@@ -372,7 +357,7 @@ export default function CheckResultPage() {
                             />
                           </div>
                           <p className="text-sm text-gray-600 mb-2 whitespace-pre-line">
-                            {check.message}
+                            {translateMessage(check.message, currentLang)}
                           </p>
                           <div className="flex items-center gap-4 text-sm">
                             <span className={`font-medium ${check.passed ? 'text-green-600' : 'text-red-600'}`}>
