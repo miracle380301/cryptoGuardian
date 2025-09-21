@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     let successCount = 0
     let updateCount = 0
     let errorCount = 0
-    const errors: any[] = []
+    const errors: Array<{ domain: string; error: string }> = []
 
     for (const item of data) {
       try {
@@ -90,11 +90,11 @@ export async function POST(request: NextRequest) {
           })
           successCount++
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         errorCount++
         errors.push({
           domain: item.domain,
-          error: error.message
+          error: error instanceof Error ? error.message : 'Unknown error'
         })
       }
     }
@@ -135,14 +135,14 @@ export async function POST(request: NextRequest) {
 }
 
 // 소스별 특정 필드 매핑
-function getSourceSpecificData(source: string, item: any): any {
-  const data: any = {}
+function getSourceSpecificData(source: string, item: Record<string, unknown>): Record<string, unknown> {
+  const data: Record<string, unknown> = {}
 
   switch (source.toLowerCase()) {
     case 'kisa':
       if (item.kisaId) data.kisaId = item.kisaId
       if (item.kisaCategory) data.kisaCategory = item.kisaCategory
-      if (item.kisaReportDate) data.kisaReportDate = new Date(item.kisaReportDate)
+      if (item.kisaReportDate && typeof item.kisaReportDate === 'string') data.kisaReportDate = new Date(item.kisaReportDate)
       if (item.kisaStatus) data.kisaStatus = item.kisaStatus
       if (item.kisaReference) data.kisaReference = item.kisaReference
       break
@@ -181,7 +181,7 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '100')
     const offset = parseInt(searchParams.get('offset') || '0')
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       isActive: true
     }
 
