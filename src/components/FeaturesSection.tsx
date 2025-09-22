@@ -33,8 +33,8 @@ export function FeaturesSection() {
       {features.map((feature, index) => {
         const Icon = feature.icon
         return (
-          <div key={index} className="text-left">
-            <div className="w-16 h-16 flex items-center justify-center mb-4">
+          <div key={index} className="text-center">
+            <div className="w-16 h-16 flex items-center justify-center mb-4 mx-auto">
               <Icon className={`h-12 w-12 ${feature.iconColor}`} strokeWidth={1.5} />
             </div>
             <h3 className="font-bold text-xl mb-3 text-gray-900">{feature.title}</h3>

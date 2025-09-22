@@ -12,10 +12,7 @@
     "db:studio": "dotenv -e .env.local -- prisma studio",
     "db:generate": "dotenv -e .env.local -- prisma generate",
     "collect-exchanges": "dotenv -e .env.local -- tsx scripts/collect-exchanges.ts",
-    "collect-cryptocompare": "dotenv -e .env.local -- tsx scripts/collect-cryptocompare.ts",
-    "db:seed:kisa": "dotenv -e .env.local -- tsx scripts/import-kisa-blacklist.ts",
-    "collect-reputation": "dotenv -e .env.local -- tsx scripts/collect-reputation-data.ts",
-    "update-kisa-dates": "dotenv -e .env.local -- tsx scripts/update-kisa-dates.ts"
+    "collect-cryptocompare": "dotenv -e .env.local -- tsx scripts/collect-cryptocompare.ts"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",

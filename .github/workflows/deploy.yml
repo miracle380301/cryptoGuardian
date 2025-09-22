@@ -1,0 +1,51 @@
+name: Sync Blacklist Data to Neon DB
+
+on:
+  schedule:
+    # Run every Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  sync-blacklist:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Import KISA blacklist
+        run: npx tsx scripts/import-real-kisa-data.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          KISA_API_KEY: ${{ secrets.KISA_API_KEY }}
+        continue-on-error: true
+
+      - name: Import URLHaus data
+        run: npx tsx scripts/import-urlhaus.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        continue-on-error: true
+
+      - name: Import CryptoScamDB data
+        run: npx tsx scripts/import-cryptoscamdb.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Clean expired cache
+        run: npx tsx scripts/clean-expired-cache.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        continue-on-error: true

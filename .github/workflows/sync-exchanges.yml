@@ -1,0 +1,37 @@
+name: Sync Exchange Data to Neon DB
+
+on:
+  schedule:
+    # Run every Wednesday at 2 AM UTC
+    - cron: '0 2 * * 3'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  sync-exchanges:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Collect exchange data from CoinGecko
+        run: npx tsx scripts/collect-exchanges.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+
+      - name: Collect CryptoCompare data
+        run: npx tsx scripts/collect-cryptocompare.ts
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          CRYPTOCOMPARE_API_KEY: ${{ secrets.CRYPTOCOMPARE_API_KEY }}
+        continue-on-error: true
