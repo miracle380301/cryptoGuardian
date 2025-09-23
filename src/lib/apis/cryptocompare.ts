@@ -46,7 +46,7 @@ export class CryptoCompareAPI {
   async getExchanges(): Promise<ApiResponse<CryptoCompareExchange[]>> {
     try {
       const url = `${this.baseUrl}/exchanges/general`;
-      const headers = this.apiKey ? { authorization: `Apikey ${this.apiKey}` } : {};
+      const headers: Record<string, string> = this.apiKey ? { authorization: `Apikey ${this.apiKey}` } : {};
 
       const response = await fetch(url, { headers });
 
@@ -99,7 +99,7 @@ export class CryptoCompareAPI {
   async getExchangeStats(exchangeName: string): Promise<ApiResponse<CryptoCompareExchangeStats | null>> {
     try {
       const url = `${this.baseUrl}/exchange/histoday?e=${exchangeName}&limit=1`;
-      const headers = this.apiKey ? { authorization: `Apikey ${this.apiKey}` } : {};
+      const headers: Record<string, string> = this.apiKey ? { authorization: `Apikey ${this.apiKey}` } : {};
 
       const response = await fetch(url, { headers });
 
@@ -158,7 +158,7 @@ export class CryptoCompareAPI {
   async getTopExchangesByVolume(limit: number = 50): Promise<ApiResponse<any[]>> {
     try {
       const url = `${this.baseUrl}/top/exchanges/full?limit=${limit}&tsym=USD`;
-      const headers = this.apiKey ? { authorization: `Apikey ${this.apiKey}` } : {};
+      const headers: Record<string, string> = this.apiKey ? { authorization: `Apikey ${this.apiKey}` } : {};
 
       const response = await fetch(url, { headers });
 
