@@ -21,6 +21,7 @@ class CryptoCompareCollector {
 
   async collectCryptoCompareData() {
     console.log('🔍 Starting CryptoCompare data collection...');
+    const startTime = Date.now();
 
     try {
       // Step 1: Fetch all exchanges from CryptoCompare
@@ -43,6 +44,7 @@ class CryptoCompareCollector {
       let matched = 0;
       let updated = 0;
       let newCryptoCompareData = 0;
+      let failed = 0;
 
       for (const dbExchange of existingExchanges) {
         try {
@@ -94,6 +96,7 @@ class CryptoCompareCollector {
 
         } catch (error) {
           console.error(`❌ Failed to process ${dbExchange.name}:`, error);
+          failed++;
         }
       }
 
@@ -137,13 +140,46 @@ class CryptoCompareCollector {
 
         } catch (error) {
           console.error(`❌ Failed to create ${newExchange.name}:`, error);
+          failed++;
         }
       }
 
+      const executionTime = Date.now() - startTime;
+
+      // Log sync results to ExchangeSyncLog
+      await this.prisma.exchangeSyncLog.create({
+        data: {
+          batchDate: new Date(),
+          totalFetched: exchangesResult.data.length,
+          totalInserted: newCryptoCompareData,
+          totalUpdated: updated,
+          totalFailed: failed,
+          status: failed === 0 ? 'success' : (failed < exchangesResult.data.length ? 'partial' : 'failed'),
+          executionTime: executionTime
+        }
+      });
+
       console.log('✅ CryptoCompare data collection completed!');
-      console.log(`📈 Matched: ${matched}, Updated: ${updated}, New: ${newCryptoCompareData}`);
+      console.log(`📈 Matched: ${matched}, Updated: ${updated}, New: ${newCryptoCompareData}, Failed: ${failed}`);
+      console.log(`⏱️ Execution time: ${executionTime}ms`);
 
     } catch (error) {
+      const executionTime = Date.now() - startTime;
+
+      // Log failed sync to ExchangeSyncLog
+      await this.prisma.exchangeSyncLog.create({
+        data: {
+          batchDate: new Date(),
+          totalFetched: 0,
+          totalInserted: 0,
+          totalUpdated: 0,
+          totalFailed: 0,
+          status: 'failed',
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+          executionTime: executionTime
+        }
+      });
+
       console.error('❌ CryptoCompare collection failed:', error);
       throw error;
     } finally {

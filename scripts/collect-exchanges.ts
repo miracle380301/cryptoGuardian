@@ -37,6 +37,7 @@ class ExchangeCollector {
 
   async collectExchanges() {
     console.log('🚀 Starting CoinGecko exchange data collection...');
+    const startTime = Date.now();
 
     try {
       // Fetch exchanges list from CoinGecko
@@ -48,6 +49,7 @@ class ExchangeCollector {
       let processed = 0;
       let created = 0;
       let updated = 0;
+      let failed = 0;
 
       for (let i = 0; i < exchanges.length; i += batchSize) {
         const batch = exchanges.slice(i, i + batchSize);
@@ -63,16 +65,49 @@ class ExchangeCollector {
             await this.sleep(200); // 200ms delay
           } catch (error) {
             console.error(`❌ Failed to process exchange ${exchange.id}:`, error);
+            failed++;
           }
         }
 
         console.log(`⏳ Processed ${processed}/${exchanges.length} exchanges...`);
       }
 
+      const executionTime = Date.now() - startTime;
+
+      // Log sync results to ExchangeSyncLog
+      await this.prisma.exchangeSyncLog.create({
+        data: {
+          batchDate: new Date(),
+          totalFetched: exchanges.length,
+          totalInserted: created,
+          totalUpdated: updated,
+          totalFailed: failed,
+          status: failed === 0 ? 'success' : (failed < exchanges.length ? 'partial' : 'failed'),
+          executionTime: executionTime
+        }
+      });
+
       console.log('✅ Exchange data collection completed!');
-      console.log(`📈 Created: ${created}, Updated: ${updated}, Total: ${processed}`);
+      console.log(`📈 Created: ${created}, Updated: ${updated}, Failed: ${failed}, Total: ${processed}`);
+      console.log(`⏱️ Execution time: ${executionTime}ms`);
 
     } catch (error) {
+      const executionTime = Date.now() - startTime;
+
+      // Log failed sync to ExchangeSyncLog
+      await this.prisma.exchangeSyncLog.create({
+        data: {
+          batchDate: new Date(),
+          totalFetched: 0,
+          totalInserted: 0,
+          totalUpdated: 0,
+          totalFailed: 0,
+          status: 'failed',
+          errorMessage: error instanceof Error ? error.message : 'Unknown error',
+          executionTime: executionTime
+        }
+      });
+
       console.error('❌ Exchange collection failed:', error);
       throw error;
     } finally {
