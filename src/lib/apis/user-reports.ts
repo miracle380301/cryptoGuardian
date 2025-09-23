@@ -9,7 +9,7 @@ export interface UserReportCheck {
     createdAt: Date
     status: string
     evidence: string[]
-    reporterEmail: string
+    reporterEmail: string | null
   }>
   score: number
 }
