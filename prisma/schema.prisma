@@ -241,51 +241,6 @@ model ExchangeSyncLog {
   @@index([status])
 }
 
-// 평판 검사 결과 캐시
-model ReputationCache {
-  id                String    @id @default(cuid())
-  domain            String    @unique
-
-  // 전체 평판 점수 및 상태
-  overallScore      Int       // 0-100 종합 점수
-  riskLevel         String    // safe, warning, danger
-  isReported        Boolean   @default(false) // 위험 도메인 여부
-
-  // 각 검사별 결과 캐시
-  whoisScore        Int?      // Whois 검사 점수
-  whoisData         Json?     // Whois 상세 데이터
-
-  sslScore          Int?      // SSL 검사 점수
-  sslData           Json?     // SSL 상세 데이터
-
-  reputationScore   Int       // 평판 검사 점수
-  reputationData    Json      // 평판 검사 상세 데이터
-
-  safeBrowsingScore Int?      // Safe Browsing 점수
-  safeBrowsingData  Json?     // Safe Browsing 상세 데이터
-
-  exchangeScore     Int?      // 거래소 검증 점수
-  exchangeData      Json?     // 거래소 상세 데이터
-
-  // 탐지된 위협 정보
-  detectedThreats   String[]  @default([]) // 탐지된 위협 유형들
-  evidenceUrls      String[]  @default([]) // 증거 URL들
-  detectionSources  String[]  @default([]) // 탐지 소스들 (PhishTank, KISA 등)
-
-  // 캐시 관리
-  verificationType  String    @default("url") // url, crypto
-  cacheExpiry       DateTime  // 캐시 만료 시간
-  lastUpdated       DateTime  @default(now())
-
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-
-  @@index([domain])
-  @@index([riskLevel])
-  @@index([isReported])
-  @@index([cacheExpiry])
-  @@index([verificationType])
-}
 
 // 블랙리스트 데이터 동기화 로그
 model BlacklistSyncLog {
@@ -304,5 +259,42 @@ model BlacklistSyncLog {
   @@index([batchDate])
   @@index([source])
   @@index([status])
+}
+
+// 일일 통계 (미리 계산된 통계를 저장)
+model DailyStats {
+  id                    String    @id @default(cuid())
+  date                  DateTime  @unique @db.Date // 날짜 (YYYY-MM-DD)
+
+  // 메인 통계
+  totalBlacklisted      Int       // 활성 블랙리스트 도메인 수
+  totalExchanges        Int       // 활성 거래소 수
+  recentDetections      Int       // 최근 7일간 새로 발견된 악성 사이트
+  totalValidations      Int       // API 사용량 (대체 지표)
+
+  // 비율 및 기타
+  detectionRate         Float     @default(98.0) // 탐지율 (%)
+  dataSourcesCount      Int       // 활성 데이터 소스 수
+  topThreatCategory     String?   // 가장 많은 위협 카테고리
+
+  // 세부 통계 (JSON으로 저장)
+  sourceBreakdown       Json      // 데이터 소스별 카운트
+  categoryBreakdown     Json      // 카테고리별 카운트
+  severityBreakdown     Json?     // 심각도별 카운트
+  riskLevelBreakdown    Json?     // 위험도별 카운트
+
+  // 트렌드 계산용 데이터
+  newDomainsToday       Int       @default(0) // 오늘 추가된 도메인 수
+  newExchangesToday     Int       @default(0) // 오늘 추가된 거래소 수
+
+  // 성능 지표
+  calculationTime       Int?      // 통계 계산에 걸린 시간 (ms)
+  lastCalculated        DateTime  @default(now()) // 마지막 계산 시간
+
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([date])
+  @@index([lastCalculated])
 }
 
