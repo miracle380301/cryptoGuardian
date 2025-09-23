@@ -68,8 +68,18 @@ class StatsCacheManager {
    * 캐시된 통계 반환 (매우 빠름)
    */
   async getStats(): Promise<CachedStats> {
-    // 캐시가 없거나 만료된 경우 새로고침
+    const requestStart = Date.now();
+
+    // 캐시 상태 확인
+    if (this.stats && !this.isCacheExpired()) {
+      console.log(`⚡ [StatsCache] Returning from MEMORY cache (${Date.now() - requestStart}ms)`);
+      return this.stats;
+    }
+
+    // 캐시가 없거나 만료된 경우
     if (!this.stats || this.isCacheExpired()) {
+      console.log('🔄 [StatsCache] Cache expired or missing, refreshing...');
+
       if (!this.isLoading) {
         // 백그라운드에서 새로고침 (non-blocking)
         this.refreshCache().catch(console.error);
@@ -77,10 +87,14 @@ class StatsCacheManager {
 
       // 캐시가 없으면 즉석에서 로드
       if (!this.stats) {
+        console.log('⏳ [StatsCache] No cache available, loading immediately...');
         await this.refreshCache();
+      } else {
+        console.log('📁 [StatsCache] Using existing cache while refreshing in background');
       }
     }
 
+    console.log(`📊 [StatsCache] Stats retrieved in ${Date.now() - requestStart}ms`);
     return this.stats!;
   }
 

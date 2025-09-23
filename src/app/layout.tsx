@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   title: "크립토가디언 - 암호화폐 사이트 보안 검증",
   description: "암호화폐 거래소 및 관련 웹사이트의 보안과 신뢰도를 실시간으로 검증합니다",
   metadataBase: new URL('https://cryptoguardian.vercel.app'),
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
   openGraph: {
     title: "크립토가디언 - 암호화폐 사이트 보안 검증",
     description: "암호화폐 거래소 및 관련 웹사이트의 보안과 신뢰도를 실시간으로 검증합니다",
