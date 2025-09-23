@@ -1,47 +1,47 @@
 import prisma from './prisma'
 import { ValidationResult } from '@/types/api.types'
 
-// 검증 기록 저장
-export async function saveValidationHistory(
-  result: ValidationResult,
-  ipAddress?: string,
-  userAgent?: string
-) {
-  try {
-    const history = await prisma.validationHistory.create({
-      data: {
-        domain: result.domain,
-        verificationType: 'url', // 추후 파라미터로 받을 수 있음
-        finalScore: result.finalScore,
-        status: result.status,
-        checks: result.checks as any,
-        recommendations: result.recommendations,
-        summary: result.summary,
-        ipAddress,
-        userAgent
-      }
-    })
-    return history
-  } catch (error) {
-    console.error('Failed to save validation history:', error)
-    return null
-  }
-}
+// 검증 기록 저장 - validationHistory 테이블이 제거되어 주석 처리
+// export async function saveValidationHistory(
+//   result: ValidationResult,
+//   ipAddress?: string,
+//   userAgent?: string
+// ) {
+//   try {
+//     const history = await prisma.validationHistory.create({
+//       data: {
+//         domain: result.domain,
+//         verificationType: 'url', // 추후 파라미터로 받을 수 있음
+//         finalScore: result.finalScore,
+//         status: result.status,
+//         checks: result.checks as any,
+//         recommendations: result.recommendations,
+//         summary: result.summary,
+//         ipAddress,
+//         userAgent
+//       }
+//     })
+//     return history
+//   } catch (error) {
+//     console.error('Failed to save validation history:', error)
+//     return null
+//   }
+// }
 
-// 도메인 검증 기록 조회
-export async function getValidationHistory(domain: string, limit = 10) {
-  try {
-    const history = await prisma.validationHistory.findMany({
-      where: { domain },
-      orderBy: { createdAt: 'desc' },
-      take: limit
-    })
-    return history
-  } catch (error) {
-    console.error('Failed to fetch validation history:', error)
-    return []
-  }
-}
+// 도메인 검증 기록 조회 - validationHistory 테이블이 제거되어 주석 처리
+// export async function getValidationHistory(domain: string, limit = 10) {
+//   try {
+//     const history = await prisma.validationHistory.findMany({
+//       where: { domain },
+//       orderBy: { createdAt: 'desc' },
+//       take: limit
+//     })
+//     return history
+//   } catch (error) {
+//     console.error('Failed to fetch validation history:', error)
+//     return []
+//   }
+// }
 
 // 블랙리스트 확인
 export async function checkBlacklist(domain: string) {
@@ -177,32 +177,32 @@ export async function createUserReport(
   }
 }
 
-// 최근 검증된 도메인 통계
+// 최근 검증된 도메인 통계 (ReputationCache 기반)
 export async function getRecentStatistics(days = 7) {
   const dateFrom = new Date()
   dateFrom.setDate(dateFrom.getDate() - days)
 
   try {
     const [totalChecks, safeCount, warningCount, dangerCount] = await Promise.all([
-      prisma.validationHistory.count({
+      prisma.reputationCache.count({
         where: { createdAt: { gte: dateFrom } }
       }),
-      prisma.validationHistory.count({
+      prisma.reputationCache.count({
         where: {
           createdAt: { gte: dateFrom },
-          status: 'safe'
+          riskLevel: 'safe'
         }
       }),
-      prisma.validationHistory.count({
+      prisma.reputationCache.count({
         where: {
           createdAt: { gte: dateFrom },
-          status: 'warning'
+          riskLevel: 'warning'
         }
       }),
-      prisma.validationHistory.count({
+      prisma.reputationCache.count({
         where: {
           createdAt: { gte: dateFrom },
-          status: 'danger'
+          riskLevel: 'danger'
         }
       })
     ])
