@@ -191,7 +191,7 @@ class StatsCacheManager {
           createdAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
         }
       }),
-      prisma.apiUsage.count(),
+      Promise.resolve(0), // ApiUsage 테이블이 없으므로 0으로 설정
       prisma.blacklistedDomain.groupBy({
         by: ['primaryDataSource'],
         _count: true,
@@ -221,7 +221,7 @@ class StatsCacheManager {
       topThreatCategory: topCategory.category,
       breakdown: {
         sources: dataSources.map(s => ({ source: s.primaryDataSource, count: s._count })),
-        categories: categoryCounts.map(c => ({ category: c.category, count: c._count })),
+        categories: categoryCounts.map(c => ({ category: c.category || 'unknown', count: c._count })),
         severity: [],
         riskLevel: []
       },

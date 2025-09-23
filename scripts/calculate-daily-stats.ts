@@ -59,8 +59,8 @@ class DailyStatsCalculator {
           }
         }),
 
-        // API 사용량 (대체 지표)
-        prisma.apiUsage.count(),
+        // API 사용량 (대체 지표) - ApiUsage 테이블이 없으므로 0으로 설정
+        Promise.resolve(0),
 
         // 데이터 소스별 통계
         prisma.blacklistedDomain.groupBy({
@@ -82,10 +82,10 @@ class DailyStatsCalculator {
         }),
 
         // 심각도별 통계
-        Promise.resolve([]).catch(() => []), // severity 통계는 일시적으로 비활성화
+        Promise.resolve([]).then(() => [] as Array<{ severity: string; _count: number }>),
 
         // 위험도별 통계
-        Promise.resolve([]).catch(() => []), // riskLevel 통계는 일시적으로 비활성화
+        Promise.resolve([]).then(() => [] as Array<{ riskLevel: string; _count: number }>),
 
         // 오늘 추가된 도메인 수
         prisma.blacklistedDomain.count({
