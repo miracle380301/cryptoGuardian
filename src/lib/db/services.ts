@@ -221,13 +221,13 @@ export async function getRecentStatistics(days = 7) {
   }
 }
 
-// 인기 도메인 조회 (많이 검사된 도메인)
+// 인기 도메인 조회 (많이 검사된 도메인 - ReputationCache 기반)
 export async function getPopularDomains(limit = 10, days = 30) {
   const dateFrom = new Date()
   dateFrom.setDate(dateFrom.getDate() - days)
 
   try {
-    const popularDomains = await prisma.validationHistory.groupBy({
+    const popularDomains = await prisma.reputationCache.groupBy({
       by: ['domain'],
       where: { createdAt: { gte: dateFrom } },
       _count: { domain: true },
@@ -235,7 +235,7 @@ export async function getPopularDomains(limit = 10, days = 30) {
       take: limit
     })
 
-    return popularDomains.map(item => ({
+    return popularDomains.map((item: { domain: string; _count: { domain: number } }) => ({
       domain: item.domain,
       count: item._count.domain
     }))
