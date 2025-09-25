@@ -70,9 +70,9 @@ export function StatisticsSection() {
 
   const stats = [
     {
-      value: realData?.totalBlacklisted || '15,432',
+      value: realData?.totalValidations || '15,432',
       label: t.main.liveStats.sitesAnalyzed,
-      numeric: parseNumericValue(realData?.totalBlacklisted || '15432'),
+      numeric: parseNumericValue(realData?.totalValidations || '15432'),
       suffix: '',
       color: 'text-blue-600'
     },
