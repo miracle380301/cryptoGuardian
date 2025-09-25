@@ -183,9 +183,6 @@ async function importURLhaus() {
         riskLevel = 'malicious';
       }
 
-      // 활성 상태 확인
-      const isActive = latestEntry.url_status === 'online';
-
       if (existing) {
         // 업데이트할 도메인
         updateEntries.push({
@@ -197,7 +194,7 @@ async function importURLhaus() {
             severity: existing.severity === 'critical' ? 'critical' : 'high',
             riskLevel: riskLevel === 'critical' ? 'critical' : existing.riskLevel || riskLevel,
             category: existing.category || category,
-            isActive: isActive
+            isActive: true  // 항상 활성 상태로 유지
           }
         });
       } else {
@@ -220,7 +217,7 @@ async function importURLhaus() {
           batchDate: new Date(),
           lastChecked: new Date(),
           lastUpdated: new Date(),
-          isActive: isActive,
+          isActive: true,  // 항상 활성 상태로 유지
           isConfirmed: true,
           priority: riskLevel === 'critical' ? 10 : 8,
           description: `Threat: ${latestEntry.threat}, Tags: ${latestEntry.tags}, Status: ${latestEntry.url_status}`
