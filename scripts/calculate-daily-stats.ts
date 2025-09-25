@@ -50,17 +50,17 @@ class DailyStatsCalculator {
           where: { isActive: true }
         }),
 
-        // 최근 7일간 새로 발견된 악성 사이트
+        // 전체 탐지된 스캠 (총 블랙리스트 도메인 수와 동일)
         prisma.blacklistedDomain.count({
-          where: {
-            createdAt: {
-              gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-            }
-          }
+          where: { isActive: true }
         }),
 
-        // API 사용량 (대체 지표) - ApiUsage 테이블이 없으므로 0으로 설정
-        Promise.resolve(0),
+        // 전체 분석된 사이트 수 (BlacklistedDomain + WhitelistedDomain + UserReport)
+        Promise.all([
+          prisma.blacklistedDomain.count(),
+          prisma.whitelistedDomain.count(),
+          prisma.userReport.count()
+        ]).then(([black, white, report]) => black + white + report),
 
         // 데이터 소스별 통계
         prisma.blacklistedDomain.groupBy({
@@ -137,6 +137,11 @@ class DailyStatsCalculator {
 
       const executionTime = Date.now() - startTime;
 
+      // 3.5. 탐지율 계산 (블랙리스트 / 전체 분석 사이트 × 100)
+      const calculatedDetectionRate = totalValidations > 0
+        ? Math.round((totalBlacklisted / totalValidations) * 100 * 10) / 10  // 소수점 1자리까지
+        : 0.0;
+
       // 4. DailyStats에 저장 (upsert)
       console.log('💾 Saving statistics to database...');
 
@@ -148,7 +153,7 @@ class DailyStatsCalculator {
           totalExchanges,
           recentDetections,
           totalValidations,
-          detectionRate: totalBlacklisted > 0 ? 98.0 : 0.0,
+          detectionRate: calculatedDetectionRate,
           dataSourcesCount: sourceBreakdown.length,
           topThreatCategory: topCategory.category,
           sourceBreakdown: sourceBreakdownJson,
@@ -164,7 +169,7 @@ class DailyStatsCalculator {
           totalExchanges,
           recentDetections,
           totalValidations,
-          detectionRate: totalBlacklisted > 0 ? 98.0 : 0.0,
+          detectionRate: calculatedDetectionRate,
           dataSourcesCount: sourceBreakdown.length,
           topThreatCategory: topCategory.category,
           sourceBreakdown: sourceBreakdownJson,
@@ -183,7 +188,9 @@ class DailyStatsCalculator {
       console.log(`📈 Statistics Summary:`);
       console.log(`  - Total Blacklisted: ${totalBlacklisted.toLocaleString()}`);
       console.log(`  - Total Exchanges: ${totalExchanges.toLocaleString()}`);
-      console.log(`  - Recent Detections (7d): ${recentDetections.toLocaleString()}`);
+      console.log(`  - Total Detections: ${recentDetections.toLocaleString()}`);
+      console.log(`  - Total Analyzed Sites: ${totalValidations.toLocaleString()}`);
+      console.log(`  - Detection Rate: ${calculatedDetectionRate}%`);
       console.log(`  - New Domains Today: ${newDomainsToday.toLocaleString()}`);
       console.log(`  - New Exchanges Today: ${newExchangesToday.toLocaleString()}`);
       console.log(`  - Data Sources: ${sourceBreakdown.length}`);
