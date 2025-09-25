@@ -8,8 +8,20 @@
  */
 
 import { PrismaClient } from '@prisma/client';
+import { Redis } from '@upstash/redis';
 
 const prisma = new PrismaClient();
+
+// Initialize Redis if environment variables are available
+const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
+  ? new Redis({
+      url: process.env.KV_REST_API_URL,
+      token: process.env.KV_REST_API_TOKEN,
+    })
+  : null;
+
+const CACHE_KEY = 'crypto-stats';
+const CACHE_TTL = 60 * 60; // 1 hour in seconds
 
 class DailyStatsCalculator {
   private today: Date;
@@ -183,7 +195,41 @@ class DailyStatsCalculator {
         }
       });
 
-      // 5. 결과 출력
+      // 5. Redis 캐시 업데이트
+      if (redis) {
+        try {
+          const statsForCache = {
+            totalBlacklisted: totalBlacklisted.toLocaleString(),
+            totalExchanges: totalExchanges.toLocaleString(),
+            recentDetections: recentDetections.toLocaleString(),
+            totalValidations: totalValidations.toLocaleString(),
+            detectionRate: `${calculatedDetectionRate}%`,
+            dataSources: sourceBreakdown.length,
+            topThreatCategory: topCategory.category,
+            breakdown: {
+              sources: sourceBreakdownJson,
+              categories: categoryBreakdownJson,
+              severity: severityBreakdownJson,
+              riskLevel: riskLevelBreakdownJson
+            },
+            newDomainsToday: newDomainsToday.toLocaleString(),
+            newExchangesToday: newExchangesToday.toLocaleString(),
+            lastUpdated: dailyStats.lastCalculated.toISOString(),
+            cached: true,
+            calculationTime: executionTime,
+            cacheLoadedAt: new Date().toISOString()
+          };
+
+          await redis.set(CACHE_KEY, statsForCache, { ex: CACHE_TTL });
+          console.log('💾 Redis cache updated with new statistics');
+        } catch (redisError) {
+          console.error('❌ Failed to update Redis cache:', redisError);
+        }
+      } else {
+        console.log('⚠️ Redis not configured, skipping cache update');
+      }
+
+      // 6. 결과 출력
       console.log('✅ Daily statistics calculation completed!');
       console.log(`📈 Statistics Summary:`);
       console.log(`  - Total Blacklisted: ${totalBlacklisted.toLocaleString()}`);
@@ -197,7 +243,7 @@ class DailyStatsCalculator {
       console.log(`  - Top Category: ${topCategory.category} (${topCategory._count})`);
       console.log(`⏱️ Calculation time: ${executionTime}ms`);
 
-      // 6. 선택적: 30일 이상 된 통계 데이터 정리
+      // 7. 선택적: 30일 이상 된 통계 데이터 정리
       await this.cleanOldStats();
 
       return dailyStats;
