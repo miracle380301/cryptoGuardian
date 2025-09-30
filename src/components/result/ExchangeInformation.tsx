@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Shield, ExternalLink, Info } from 'lucide-react'
-import { ValidationResult } from '@/types/api.types'
+import { ValidationResult } from '@/types/validation.types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 
 interface ExchangeInformationProps {
@@ -11,8 +11,8 @@ interface ExchangeInformationProps {
 export function ExchangeInformation({ result, verificationType }: ExchangeInformationProps) {
   const { t, language: currentLang } = useTranslation()
 
-  // Only render for crypto verification type and when exchange data exists
-  if (verificationType !== 'crypto' || !result.checks?.exchange) {
+  // Only render for crypto verification type and when exchange is verified
+  if (verificationType !== 'crypto' || !result.checks?.exchange || !result.checks.exchange.passed) {
     return null
   }
 

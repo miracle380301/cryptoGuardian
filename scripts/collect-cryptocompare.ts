@@ -8,7 +8,7 @@
  */
 
 import { PrismaClient } from '@prisma/client';
-import { CryptoCompareAPI, CryptoCompareExchange, CryptoCompareExchangeStats } from '../src/lib/apis/cryptocompare';
+import { CryptoCompareAPI, CryptoCompareExchange, CryptoCompareExchangeStats } from './lib/cryptocompare';
 
 class CryptoCompareCollector {
   private prisma: PrismaClient;

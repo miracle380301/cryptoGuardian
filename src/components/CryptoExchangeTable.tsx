@@ -1,6 +1,6 @@
 'use client'
 
-import { ValidationResult } from '@/types/api.types'
+import { ValidationResult } from '@/types/validation.types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { CheckCircle, XCircle, AlertTriangle, ExternalLink, Shield, Globe, Calendar, TrendingUp } from 'lucide-react'

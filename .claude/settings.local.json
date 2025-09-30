@@ -6,7 +6,8 @@
       "WebFetch(domain:phishtank.org)",
       "Bash(npx prisma:*)",
       "Bash(timeout 30 npx prisma generate --force-color)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": []

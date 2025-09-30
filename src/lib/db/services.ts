@@ -1,47 +1,6 @@
 import prisma from './prisma'
-import { ValidationResult } from '@/types/api.types'
-
-// 검증 기록 저장 - validationHistory 테이블이 제거되어 주석 처리
-// export async function saveValidationHistory(
-//   result: ValidationResult,
-//   ipAddress?: string,
-//   userAgent?: string
-// ) {
-//   try {
-//     const history = await prisma.validationHistory.create({
-//       data: {
-//         domain: result.domain,
-//         verificationType: 'url', // 추후 파라미터로 받을 수 있음
-//         finalScore: result.finalScore,
-//         status: result.status,
-//         checks: result.checks as any,
-//         recommendations: result.recommendations,
-//         summary: result.summary,
-//         ipAddress,
-//         userAgent
-//       }
-//     })
-//     return history
-//   } catch (error) {
-//     console.error('Failed to save validation history:', error)
-//     return null
-//   }
-// }
-
-// 도메인 검증 기록 조회 - validationHistory 테이블이 제거되어 주석 처리
-// export async function getValidationHistory(domain: string, limit = 10) {
-//   try {
-//     const history = await prisma.validationHistory.findMany({
-//       where: { domain },
-//       orderBy: { createdAt: 'desc' },
-//       take: limit
-//     })
-//     return history
-//   } catch (error) {
-//     console.error('Failed to fetch validation history:', error)
-//     return []
-//   }
-// }
+import { ValidationResult } from '@/types/validation.types'
+import { logger } from '@/lib/logger'
 
 // 블랙리스트 확인
 export async function checkBlacklist(domain: string) {
@@ -54,7 +13,7 @@ export async function checkBlacklist(domain: string) {
     })
     return blacklisted
   } catch (error) {
-    console.error('Failed to check blacklist:', error)
+    logger.error('Failed to check blacklist', error instanceof Error ? error : undefined, { domain })
     return null
   }
 }
@@ -70,7 +29,7 @@ export async function checkWhitelist(domain: string) {
     })
     return whitelisted
   } catch (error) {
-    console.error('Failed to check whitelist:', error)
+    logger.error('Failed to check whitelist', error instanceof Error ? error : undefined, { domain })
     return null
   }
 }
@@ -95,7 +54,7 @@ export async function addToBlacklist(
     })
     return blacklisted
   } catch (error) {
-    console.error('Failed to add to blacklist:', error)
+    logger.error('Failed to add to blacklist', error instanceof Error ? error : undefined, { domain })
     return null
   }
 }
@@ -122,7 +81,7 @@ export async function addToWhitelist(
     })
     return whitelisted
   } catch (error) {
-    console.error('Failed to add to whitelist:', error)
+    logger.error('Failed to add to whitelist', error instanceof Error ? error : undefined, { domain })
     return null
   }
 }
@@ -148,7 +107,7 @@ export async function trackApiUsage(
       }
     })
   } catch (error) {
-    console.error('Failed to track API usage:', error)
+    logger.error('Failed to track API usage', error instanceof Error ? error : undefined)
   }
 }
 
@@ -172,7 +131,7 @@ export async function createUserReport(
     })
     return report
   } catch (error) {
-    console.error('Failed to create user report:', error)
+    logger.error('Failed to create user report', error instanceof Error ? error : undefined, { domain })
     return null
   }
 }

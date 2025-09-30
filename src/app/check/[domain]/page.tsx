@@ -5,13 +5,14 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ArrowLeft, RefreshCw, Share2, Shield, XCircle, CheckCircle, Info, ExternalLink, Flag } from 'lucide-react'
-import { ValidationResult } from '@/types/api.types'
+import { ValidationResult } from '@/types/validation.types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { translateRecommendation, translateMessage } from '@/lib/i18n/translateMessage'
 import { MainScoreCard } from '@/components/result/MainScoreCard'
 import { MaliciousSiteEvidence } from '@/components/result/MaliciousSiteEvidence'
 import { UserReportsSection } from '@/components/result/UserReportsSection'
 import { ExchangeInformation } from '@/components/result/ExchangeInformation'
+import { CheckEvidence } from '@/components/CheckEvidence'
 import CheckExternalLinks from '@/components/CheckExternalLinks'
 import { ReportModal } from '@/components/ReportModal'
 import { ShareModal } from '@/components/ShareModal'
@@ -32,12 +33,22 @@ export default function CheckResultPage() {
   const [error, setError] = useState<string | null>(null)
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
   const [isShareModalOpen, setIsShareModalOpen] = useState(false)
+  const [isCheckingInProgress, setIsCheckingInProgress] = useState(false)
 
   useEffect(() => {
-    checkDomain()
-  }, [fullUrl, currentLang])
+    if (!isCheckingInProgress) {
+      checkDomain()
+    }
+  }, [fullUrl])
 
   const checkDomain = async () => {
+    if (isCheckingInProgress) {
+      console.log('🚫 중복 요청 방지: 이미 검사 중입니다.')
+      return
+    }
+
+    console.log('🚀 API 호출 시작:', fullUrl)
+    setIsCheckingInProgress(true)
     setLoading(true)
     setError(null)
 
@@ -65,6 +76,8 @@ export default function CheckResultPage() {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
+      setIsCheckingInProgress(false)
+      console.log('✅ API 호출 완료:', fullUrl)
     }
   }
 
@@ -166,7 +179,7 @@ export default function CheckResultPage() {
                 variant="default"
                 size="sm"
                 onClick={() => setIsReportModalOpen(true)}
-                className="bg-red-600 hover:bg-red-700 text-white border-red-600 font-semibold shadow-lg"
+                className="bg-red-600 hover:bg-red-700 text-white border-red-600 font-semibold shadow-lg cursor-pointer"
               >
                 <Flag className="mr-2 h-4 w-4" />
                 {t.results.details.reportButton}
@@ -175,6 +188,7 @@ export default function CheckResultPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => setIsShareModalOpen(true)}
+                className="cursor-pointer"
               >
                 <Share2 className="mr-2 h-4 w-4" />
                 {t.results.details.shareButton}
@@ -321,8 +335,8 @@ export default function CheckResultPage() {
                   return false;
                 }
 
-                // 스킵된 체크들은 표시하지 않음 (message에 'Skipped'가 포함된 경우)
-                if (check.message && check.message.includes('Skipped')) {
+                // 스킵된 체크들은 표시하지 않음
+                if (check.message && (check.message.includes('Skipped') || check.message.includes('Not needed'))) {
                   return false;
                 }
 
@@ -398,6 +412,14 @@ export default function CheckResultPage() {
                         />
                       </div>
                     </div>
+
+                    {/* Evidence Details */}
+                    <CheckEvidence
+                      checkKey={key}
+                      check={check}
+                      domain={result.domain}
+                      currentLang={currentLang}
+                    />
 
                   </CardContent>
                 </Card>

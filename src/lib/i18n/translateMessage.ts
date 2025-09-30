@@ -29,6 +29,14 @@ const messageTranslations: Record<string, { ko: string; en: string }> = {
     ko: '✓ 유효한 SSL 인증서',
     en: '✓ Valid SSL certificate'
   },
+  'Valid SSL certificate': {
+    ko: '유효한 SSL 인증서',
+    en: 'Valid SSL certificate'
+  },
+  'Transfer protection enabled': {
+    ko: '전송 보호 활성화',
+    en: 'Transfer protection enabled'
+  },
 
   // Reputation messages
   'Unable to verify reputation': {
@@ -97,9 +105,17 @@ const messageTranslations: Record<string, { ko: string; en: string }> = {
     ko: '✓ Google 안전 브라우징에서 위협 없음',
     en: '✓ No threats found by Google Safe Browsing'
   },
+  'No threats found by Google Safe Browsing': {
+    ko: 'Google 안전 브라우징에서 위협 없음',
+    en: 'No threats found by Google Safe Browsing'
+  },
   'No threats detected': {
     ko: '위협이 감지되지 않음',
     en: 'No threats detected'
+  },
+  'Threats detected': {
+    ko: '위협이 감지됨',
+    en: 'Threats detected'
   },
   'High confidence - likely safe': {
     ko: '높은 신뢰도 - 안전할 가능성 높음',
@@ -138,6 +154,28 @@ const messageTranslations: Record<string, { ko: string; en: string }> = {
   'No status information available': {
     ko: '상태 정보를 사용할 수 없음',
     en: 'No status information available'
+  },
+
+  // User Reports messages
+  'No user reports': {
+    ko: '사용자 신고 없음',
+    en: 'No user reports'
+  },
+
+  // AI Detection messages
+  'No phishing patterns detected': {
+    ko: '피싱 패턴이 감지되지 않음',
+    en: 'No phishing patterns detected'
+  },
+  'No suspicious patterns detected': {
+    ko: '의심스러운 패턴이 감지되지 않음',
+    en: 'No suspicious patterns detected'
+  },
+
+  // General safety messages
+  'Site appears to be safe': {
+    ko: '사이트가 안전한 것으로 보입니다',
+    en: 'Site appears to be safe'
   }
 };
 
@@ -532,6 +570,22 @@ const recommendationTranslations: Record<string, { ko: string; en: string }> = {
     ko: '인증된 암호화폐 거래소입니다.',
     en: 'This is a recognized cryptocurrency exchange.'
   },
+  'Do not trust this site': {
+    ko: '이 사이트를 신뢰하지 마세요',
+    en: 'Do not trust this site'
+  },
+  'No secure connection. Do not enter personal information': {
+    ko: '보안 연결이 없습니다. 개인 정보를 입력하지 마세요',
+    en: 'No secure connection. Do not enter personal information'
+  },
+  'Recently registered domain. Exercise caution': {
+    ko: '최근 등록된 도메인입니다. 주의하세요',
+    en: 'Recently registered domain. Exercise caution'
+  },
+  'Security threats detected': {
+    ko: '보안 위협이 감지되었습니다',
+    en: 'Security threats detected'
+  },
   // With emojis
   ' CRITICAL: Team scam mission detected - avoid at all costs.': {
     ko: ' 위험: 팀 스캠 미션이 감지됨 - 절대 피하세요.',
@@ -634,6 +688,10 @@ const recommendationTranslations: Record<string, { ko: string; en: string }> = {
   'Malicious activity detected - exercise extreme caution': {
     ko: '악성 활동이 탐지되었습니다 - 극도로 주의하세요',
     en: 'Malicious activity detected - exercise extreme caution'
+  },
+  'Site appears to be safe': {
+    ko: '사이트가 안전한 것으로 보입니다',
+    en: 'Site appears to be safe'
   }
 };
 

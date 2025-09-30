@@ -73,6 +73,27 @@ export interface SafeBrowsingData {
   scoreBreakdown?: string[];
 }
 
+// Blacklist Check Types
+export interface BlacklistData {
+  isBlacklisted: boolean;
+  domain: string;
+  reason?: string;
+  reportedBy?: string;
+  reportDate?: Date;
+  severity?: string;
+  riskLevel?: string;
+  category?: string;
+  targetBrand?: string;
+  description?: string;
+  evidence?: string[];
+  dataSources?: string[];
+  sources?: string[];
+  kisaId?: string;
+  verificationStatus?: string;
+  isConfirmed?: boolean;
+  primaryDataSource?: string;
+}
+
 // Multi-source Exchange Data
 export interface ExchangeData {
   id: string;
@@ -111,40 +132,18 @@ export interface CacheEntry<T> {
   ttl: number;
 }
 
-// Validation Result Types
-export interface ValidationCheck {
-  name: string;
-  passed: boolean;
-  score: number;
-  weight: number;
-  message: string;
-  details?: Record<string, any> | null;
-}
-
-export interface ValidationResult {
-  domain: string;
-  originalInput: string; // 사용자가 입력한 원본 URL
-  finalScore: number; // 0-100
-  status: 'safe' | 'warning' | 'danger';
-  checks: {
-    whois?: ValidationCheck;
-    ssl?: ValidationCheck;
-    maliciousSite?: ValidationCheck;
-    exchange?: ValidationCheck;
-    safeBrowsing?: ValidationCheck;
-    teamScam?: ValidationCheck;
-    cryptoExchange?: ValidationCheck;
-    koreanCryptoScam?: ValidationCheck;
-    userReports?: ValidationCheck;
-    aiPhishing?: ValidationCheck;
-    aiSuspiciousDomain?: ValidationCheck;
-    // Keep reputation for backward compatibility
-    reputation?: ValidationCheck;
-  };
-  summary: string;
-  recommendations: string[];
-  timestamp: string;
-  cached?: boolean;
+// User Reports Types
+export interface UserReportCheck {
+  isReported: boolean;
+  reportCount: number;
+  recentReports: Array<{
+    reportType: string;
+    description: string | null;
+    createdAt: Date;
+    status: string;
+    evidence: string[];
+    reporterEmail: string | null;
+  }>;
 }
 
 // API Error Types

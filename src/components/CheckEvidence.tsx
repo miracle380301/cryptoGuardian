@@ -80,7 +80,68 @@ export function CheckEvidence({ checkKey, check, domain, currentLang }: CheckEvi
         </div>
       )}
 
-      {/* Domain Age/Registration Details */}
+      {/* WHOIS Details */}
+      {checkKey === 'whois' && check.details && (
+        <div className="mt-3 space-y-2">
+          {/* Domain Age */}
+          {check.details.domain_age_days !== undefined && (
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-sm font-medium text-blue-800">
+                  {currentLang === 'ko' ? '도메인 나이' : 'Domain Age'}
+                </span>
+              </div>
+              <p className="text-xs text-blue-700">
+                {check.details.domain_age_days > 365
+                  ? `${Math.floor(check.details.domain_age_days / 365)} ${currentLang === 'ko' ? '년' : 'years'} (${check.details.domain_age_days} ${currentLang === 'ko' ? '일' : 'days'})`
+                  : `${check.details.domain_age_days} ${currentLang === 'ko' ? '일' : 'days'}`
+                }
+              </p>
+              {check.details.creation_date && (
+                <p className="text-xs text-blue-600 mt-1">
+                  {currentLang === 'ko' ? '등록일: ' : 'Registered: '}
+                  {new Date(check.details.creation_date).toLocaleDateString(currentLang === 'ko' ? 'ko-KR' : 'en-US')}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Domain Status */}
+          {check.details.status && check.details.status.length > 0 && (
+            <div className={`p-3 rounded-lg border ${getDomainStatusColor(check.details.status).bg}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <div className={`w-2 h-2 rounded-full ${getDomainStatusColor(check.details.status).dot}`}></div>
+                <span className={`text-sm font-medium ${getDomainStatusColor(check.details.status).text}`}>
+                  {currentLang === 'ko' ? '도메인 상태' : 'Domain Status'}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {check.details.status.map((status: string, idx: number) => (
+                  <span key={idx} className={`text-xs px-2 py-1 rounded ${getStatusBadgeColor(status)}`}>
+                    {getDomainStatusLabel(status, currentLang)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Registrar Info */}
+          {check.details.registrar && (
+            <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                <span className="text-sm font-medium text-gray-800">
+                  {currentLang === 'ko' ? '등록 기관' : 'Registrar'}
+                </span>
+              </div>
+              <p className="text-xs text-gray-700">{check.details.registrar}</p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Domain Age/Registration Details (legacy) */}
       {checkKey === 'domain' && check.details?.domainAge && (
         <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center gap-2">
@@ -115,18 +176,25 @@ export function CheckEvidence({ checkKey, check, domain, currentLang }: CheckEvi
       )}
 
       {/* Safe Browsing Details */}
-      {checkKey === 'safeBrowsing' && check.details?.threats && check.details.threats.length > 0 && (
+      {checkKey === 'safeBrowsing' && check.details?.safeBrowsing?.threats && check.details.safeBrowsing.threats.length > 0 && (
         <div className="mt-3 space-y-2">
-          {check.details.threats.map((threat: any, idx: number) => (
+          {check.details.safeBrowsing.threats.map((threat: any, idx: number) => (
             <div key={idx} className="p-3 bg-red-50 border border-red-200 rounded-lg">
               <div className="flex items-center gap-2">
                 <XCircle className="w-4 h-4 text-red-600" />
                 <span className="text-sm font-medium text-red-800">
-                  {threat.threatType || (currentLang === 'ko' ? '위험 탐지' : 'Threat Detected')}
+                  {getThreatTypeLabel(threat.threatType, currentLang) || (currentLang === 'ko' ? '위험 탐지' : 'Threat Detected')}
                 </span>
               </div>
-              {threat.details && (
-                <p className="text-xs text-red-700 mt-1">{threat.details}</p>
+              {threat.platformType && (
+                <p className="text-xs text-red-700 mt-1">
+                  <strong>{currentLang === 'ko' ? '플랫폼:' : 'Platform:'}</strong> {threat.platformType}
+                </p>
+              )}
+              {threat.threatEntryType && (
+                <p className="text-xs text-red-700 mt-1">
+                  <strong>{currentLang === 'ko' ? '탐지 대상:' : 'Entry Type:'}</strong> {threat.threatEntryType}
+                </p>
               )}
             </div>
           ))}
@@ -142,11 +210,13 @@ function shouldShowEvidence(checkKey: string, check: any): boolean {
     (checkKey === 'blacklist' || checkKey === 'reputation' || checkKey === 'maliciousSite') &&
     (check.details?.blacklistEvidence || check.details?.details)
   ) || (
+    checkKey === 'whois' && check.details
+  ) || (
     checkKey === 'domain' && check.details?.domainAge
   ) || (
     checkKey === 'ssl' && check.details?.certificate
   ) || (
-    checkKey === 'safeBrowsing' && check.details?.threats
+    checkKey === 'safeBrowsing' && check.details?.safeBrowsing?.threats
   )
 }
 
@@ -353,4 +423,90 @@ function getRiskLevelLabel(riskLevel: string, currentLang: string): string {
       default: return riskLevel
     }
   }
+}
+
+function getThreatTypeLabel(threatType: string, currentLang: string): string {
+  if (currentLang === 'ko') {
+    switch (threatType) {
+      case 'MALWARE': return '악성코드'
+      case 'SOCIAL_ENGINEERING': return '피싱/사회공학'
+      case 'UNWANTED_SOFTWARE': return '원치 않는 소프트웨어'
+      case 'POTENTIALLY_HARMFUL_APPLICATION': return '잠재적 유해 애플리케이션'
+      default: return threatType
+    }
+  } else {
+    switch (threatType) {
+      case 'MALWARE': return 'Malware'
+      case 'SOCIAL_ENGINEERING': return 'Social Engineering'
+      case 'UNWANTED_SOFTWARE': return 'Unwanted Software'
+      case 'POTENTIALLY_HARMFUL_APPLICATION': return 'Potentially Harmful Application'
+      default: return threatType
+    }
+  }
+}
+
+function getDomainStatusLabel(status: string, currentLang: string): string {
+  if (currentLang === 'ko') {
+    const lowerStatus = status.toLowerCase();
+    switch (lowerStatus) {
+      case 'ok':
+      case 'active': return '정상'
+      case 'clienttransferprohibited': return '전송 보호'
+      case 'servertransferprohibited': return '서버 전송 보호'
+      case 'clientdeleteprohibited': return '삭제 보호'
+      case 'serverdeleteprohibited': return '서버 삭제 보호'
+      case 'clientupdateprohibited': return '업데이트 보호'
+      case 'serverupdateprohibited': return '서버 업데이트 보호'
+      case 'clienthold': return '클라이언트 보류 (정지)'
+      case 'serverhold': return '서버 보류 (정지)'
+      case 'redemptionperiod': return '복구 기간 (만료됨)'
+      case 'pendingdelete': return '삭제 대기'
+      default: return status
+    }
+  } else {
+    return status
+      .replace(/([A-Z])/g, ' $1')
+      .replace(/^./, str => str.toUpperCase())
+      .trim()
+  }
+}
+
+function getStatusBadgeColor(status: string): string {
+  const lowerStatus = status.toLowerCase();
+
+  // 위험 상태 - 빨간색
+  if (lowerStatus.includes('hold') ||
+      lowerStatus.includes('redemption') ||
+      lowerStatus.includes('pendingdelete')) {
+    return 'bg-red-100 text-red-800 border border-red-300';
+  }
+
+  // 보호 기능 - 파란색
+  if (lowerStatus.includes('prohibited')) {
+    return 'bg-blue-100 text-blue-800 border border-blue-300';
+  }
+
+  // 정상 상태 - 녹색
+  return 'bg-green-100 text-green-800 border border-green-300';
+}
+
+function getDomainStatusColor(statuses: string[]): { bg: string; dot: string; text: string } {
+  const hasError = statuses.some(s => {
+    const lower = s.toLowerCase();
+    return lower.includes('hold') || lower.includes('redemption') || lower.includes('pendingdelete');
+  });
+
+  if (hasError) {
+    return {
+      bg: 'bg-red-50 border-red-200',
+      dot: 'bg-red-500',
+      text: 'text-red-800'
+    };
+  }
+
+  return {
+    bg: 'bg-green-50 border-green-200',
+    dot: 'bg-green-500',
+    text: 'text-green-800'
+  };
 }

@@ -1,9 +1,9 @@
-name: Calculate Daily Statistics
+name: Calculate Weekly Statistics
 
 on:
   schedule:
-    # Run every day at 3 AM UTC
-    - cron: '0 3 * * *'
+    # Run every Monday at 3 AM UTC
+    - cron: '0 3 * * 1'
   workflow_dispatch: # Allow manual trigger
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Calculate daily statistics
+      - name: Calculate weekly statistics
         run: npx tsx scripts/calculate-daily-stats.ts
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

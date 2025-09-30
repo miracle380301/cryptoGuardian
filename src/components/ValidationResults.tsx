@@ -1,4 +1,4 @@
-import { ValidationResult } from '@/types/api.types'
+import { ValidationResult } from '@/types/validation.types'
 
 interface ValidationResultsProps {
   result: ValidationResult
