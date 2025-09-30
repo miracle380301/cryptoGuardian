@@ -20,12 +20,16 @@ interface UserReportsSectionProps {
 export function UserReportsSection({ checkKey, check, domain, currentLang }: UserReportsSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  // Only render for userReports checks that have reports
-  if (checkKey !== 'userReports' || !check.details?.userReports) {
+  // Only render for userReports checks
+  if (checkKey !== 'userReports') {
     return null
   }
 
-  const userReportsData = check.details.userReports
+  const userReportsData = check.details || {
+    isReported: false,
+    reportCount: 0,
+    recentReports: []
+  }
 
   return (
     <div className="mt-3 space-y-2">

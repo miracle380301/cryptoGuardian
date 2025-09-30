@@ -6,7 +6,7 @@ import { ClientProvider } from "@/components/ClientProvider";
 export const metadata: Metadata = {
   title: "크립토가디언 - 암호화폐 사이트 보안 검증",
   description: "암호화폐 거래소 및 관련 웹사이트의 보안과 신뢰도를 실시간으로 검증합니다",
-  metadataBase: new URL('https://cryptoguardian.vercel.app'),
+  metadataBase: new URL('https://cryptoguardian.co.kr'),
   icons: {
     icon: '/favicon.svg',
     shortcut: '/favicon.svg',
@@ -15,12 +15,12 @@ export const metadata: Metadata = {
   openGraph: {
     title: "크립토가디언 - 암호화폐 사이트 보안 검증",
     description: "암호화폐 거래소 및 관련 웹사이트의 보안과 신뢰도를 실시간으로 검증합니다",
-    url: "https://cryptoguardian.vercel.app",
+    url: "https://cryptoguardian.co.kr",
     siteName: "크립토가디언",
     locale: "ko_KR",
     images: [
       {
-        url: "/police.png",
+        url: "https://cryptoguardian.co.kr/police.png",
         width: 1024,
         height: 1024,
         alt: "크립토가디언 보안 검증 서비스",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "크립토가디언 - 암호화폐 사이트 보안 검증",
     description: "암호화폐 거래소 및 관련 웹사이트의 보안과 신뢰도를 실시간으로 검증합니다",
-    images: ["/police.png"],
+    images: ["https://cryptoguardian.co.kr/police.png"],
     creator: "@cryptoguardian",
   },
   robots: {

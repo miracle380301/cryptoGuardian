@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Shield, CheckCircle, AlertTriangle, XCircle, Users } from 'lucide-react'
-import { ValidationResult } from '@/types/api.types'
+import { ValidationResult } from '@/types/validation.types'
 import { useTranslation } from '@/lib/i18n/useTranslation'
 import { translateSummary } from '@/lib/i18n/translateMessage'
 
@@ -37,21 +37,25 @@ export function MainScoreCard({ result }: MainScoreCardProps) {
         </h1>
 
         {/* User Reports Warning */}
-        {result.checks?.userReports?.details?.userReports?.isReported && (
-          <div className="mb-4 mx-auto max-w-lg">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <div className="flex items-center justify-center gap-2 text-red-800">
-                <Users className="w-4 h-4" />
-                <span className="text-sm font-medium">
-                  {currentLang === 'ko'
-                    ? ` ${result.checks.userReports.details.userReports.reportCount}명의 사용자가 이 사이트를 신고했습니다`
-                    : ` ${result.checks.userReports.details.userReports.reportCount} users reported this site`
-                  }
-                </span>
+        {(() => {
+          const userReportsData = result.checks?.userReports?.details;
+
+          return userReportsData?.isReported && userReportsData.reportCount > 0 ? (
+            <div className="mb-4 mx-auto max-w-lg">
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <div className="flex items-center justify-center gap-2 text-red-800">
+                  <Users className="w-4 h-4" />
+                  <span className="text-sm font-medium">
+                    {currentLang === 'ko'
+                      ? `${userReportsData.reportCount}명의 사용자가 이 사이트를 신고했습니다`
+                      : `${userReportsData.reportCount} users reported this site`
+                    }
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          ) : null;
+        })()}
 
         <div className="flex items-center justify-center gap-2 mb-6">
           {getStatusIcon(result.status)}
@@ -110,10 +114,10 @@ export function MainScoreCard({ result }: MainScoreCardProps) {
         </div>
 
         <p className="text-gray-700 max-w-2xl mx-auto">
-          {translateSummary(result.domain, result.finalScore, result.status, !!result.checks?.exchange, currentLang)}
+          {translateSummary(result.domain, result.finalScore, result.status, result.checks?.exchange?.passed ?? false, currentLang)}
         </p>
 
-        {result.checks?.exchange && (
+        {result.checks?.exchange?.passed && (
           <div className="mt-4 inline-flex items-center gap-2 bg-blue-100 text-blue-900 px-4 py-2 rounded-full">
             <Shield className="w-4 h-4" />
             <span className="text-sm font-medium">{t.results.checks.exchange.verified}</span>

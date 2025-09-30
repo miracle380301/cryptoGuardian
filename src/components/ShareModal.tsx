@@ -32,26 +32,35 @@ export function ShareModal({ domain, score, status, isOpen, onClose }: ShareModa
 
   if (!isOpen) return null
 
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : ''
+  const siteUrl = 'https://cryptoguardian.co.kr/'
+
+  // Domain을 URL로 인식하지 못하게 공백 추가
+  const safeDomain = domain.replace(/\./g, ' . ')
 
   const shareMessage = currentLang === 'ko'
-    ? `${domain} 암호화폐 사이트 안전성 검사 결과: ${score}/100점 (${getStatusLabel(status, currentLang)})`
-    : `${domain} crypto site security check result: ${score}/100 (${getStatusLabel(status, currentLang)})`
+    ? `${safeDomain} 암호화폐 사이트 안전성 검사 결과: ${score}/100점 (${getStatusLabel(status, currentLang)})`
+    : `${safeDomain} crypto site security check result: ${score}/100 (${getStatusLabel(status, currentLang)})`
+
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'text-green-600'
+    if (score >= 50) return 'text-yellow-600'
+    return 'text-red-600'
+  }
 
   const handleTwitterShare = () => {
-    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}&url=${encodeURIComponent(currentUrl)}&hashtags=cryptocurrency,security,scam`
+    const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareMessage)}&url=${encodeURIComponent(siteUrl)}&hashtags=cryptocurrency,security,scam`
     window.open(twitterUrl, '_blank', 'width=550,height=420')
   }
 
   const handleFacebookShare = () => {
-    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&quote=${encodeURIComponent(shareMessage)}`
+    const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(siteUrl)}&quote=${encodeURIComponent(shareMessage)}`
     window.open(facebookUrl, '_blank', 'width=550,height=420')
   }
 
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(`${shareMessage}\n${currentUrl}`)
+      await navigator.clipboard.writeText(`${shareMessage}\n${siteUrl}`)
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch (error) {
@@ -81,8 +90,60 @@ export function ShareModal({ domain, score, status, isOpen, onClose }: ShareModa
             <h3 className="text-sm font-medium text-gray-700 mb-2">
               {currentLang === 'ko' ? '공유할 내용:' : 'Share content:'}
             </h3>
-            <div className="bg-gray-50 p-3 rounded-lg text-sm text-gray-800">
-              {shareMessage}
+            <div
+              style={{ backgroundColor: '#f9fafb', color: '#1f2937' }}
+              className="p-4 rounded-lg text-sm"
+            >
+              {/* Score Circle */}
+              <div className="flex justify-center mb-3">
+                <div className="relative inline-flex items-center justify-center">
+                  <svg className="w-24 h-24">
+                    <circle
+                      strokeWidth="6"
+                      stroke="#e5e7eb"
+                      fill="transparent"
+                      r="42"
+                      cx="48"
+                      cy="48"
+                    />
+                    <circle
+                      strokeWidth="6"
+                      strokeDasharray={263.89}
+                      strokeDashoffset={263.89 - (263.89 * score) / 100}
+                      strokeLinecap="round"
+                      stroke={score >= 80 ? '#16a34a' : score >= 50 ? '#ca8a04' : '#dc2626'}
+                      fill="transparent"
+                      r="42"
+                      cx="48"
+                      cy="48"
+                      transform="rotate(-90 48 48)"
+                    />
+                  </svg>
+                  <div className="absolute">
+                    <div
+                      className="text-2xl font-bold"
+                      style={{ color: score >= 80 ? '#16a34a' : score >= 50 ? '#ca8a04' : '#dc2626' }}
+                    >
+                      {score}
+                    </div>
+                    <div style={{ color: '#6b7280' }} className="text-xs">/ 100</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Message */}
+              <p className="text-center mb-2" style={{ color: '#1f2937' }}>{shareMessage}</p>
+
+              {/* URL */}
+              <a
+                href={siteUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#2563eb' }}
+                className="underline break-all block text-center"
+              >
+                {siteUrl}
+              </a>
             </div>
           </div>
 
