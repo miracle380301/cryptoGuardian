@@ -13,7 +13,7 @@ const redis = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN
   : null;
 
 const CACHE_KEY = 'crypto-stats';
-const CACHE_TTL = 60 * 60; // 1 hour in seconds
+const CACHE_TTL = 7 * 24 * 60 * 60; // 7 days in seconds
 
 export async function GET(request: NextRequest) {
   const startTime = Date.now();
