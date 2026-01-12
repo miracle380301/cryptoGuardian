@@ -75,21 +75,23 @@ npm run collect-cryptocompare  # Collect CryptoCompare data
 npm run calculate-stats        # Calculate daily statistics
 ```
 
-## Project Structure
+## Documentation
 
+See [docs/](./docs/) for details:
+
+- [System Architecture](./docs/01-system-architecture.md)
+- [Validation Logic](./docs/02-validation-logic.md)
+- [Data Sources](./docs/03-data-sources.md)
+- [API Endpoints](./docs/04-api-endpoints.md)
+
+## MCP Server (AI Integration)
+
+```bash
+cd mcp-server
+npm install && npm run build
 ```
-src/
-├── app/                # Next.js App Router pages
-│   ├── api/           # API routes
-│   └── check/         # Result pages
-├── components/        # React components
-├── lib/              # Core business logic
-│   ├── score/        # Scoring system
-│   ├── validation/   # Validation logic
-│   ├── apis/         # External API integrations
-│   └── db/           # Database services
-└── types/            # TypeScript types
-```
+
+See [mcp-server/README.md](./mcp-server/README.md) for Claude Desktop setup.
 
 ## Deployment
 

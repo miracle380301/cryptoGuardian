@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>크립토가디언 - 암호화폐 사이트 보안 검증</title>
+  <meta name="description" content="암호화폐 거래소 및 관련 웹사이트의 보안과 신뢰도를 실시간으로 검증합니다">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    @keyframes pulse-line {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .pulse-line {
+      animation: pulse-line 2s ease-in-out infinite;
+    }
+
+    /* Animated cursor hand */
+    #animated-cursor {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    #animated-cursor.show {
+      opacity: 1;
+    }
+
+    @keyframes click-animation {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.9); }
+      100% { transform: scale(1); }
+    }
+
+    #animated-cursor.clicking {
+      animation: click-animation 0.3s ease;
+    }
+  </style>
+</head>
+<body class="bg-gray-50">
+  <!-- Animated Hand Cursor -->
+  <div id="animated-cursor">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M9 11V6C9 4.89543 9.89543 4 11 4C12.1046 4 13 4.89543 13 6V11M9 14H5C3.89543 14 3 13.1046 3 12C3 10.8954 3.89543 10 5 10H9M13 11V4C13 2.89543 13.8954 2 15 2C16.1046 2 17 2.89543 17 4V11M17 11V6C17 4.89543 17.8954 4 19 4C20.1046 4 21 4.89543 21 6V12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="white"/>
+    </svg>
+  </div>
+
+  <div class="min-h-screen">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+
+      <!-- Hero Section -->
+      <div class="text-center mb-8 sm:mb-12 lg:mb-16 max-w-3xl mx-auto">
+        <div class="flex justify-center mb-4 sm:mb-6">
+          <div class="relative inline-block">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-blue-500 sm:w-16 sm:h-16"
+            >
+              <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
+            </svg>
+            <div class="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full"></div>
+          </div>
+        </div>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 px-4">
+          크립토가디언
+        </h1>
+        <p class="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-3 sm:mb-4 font-medium px-4">
+          암호화폐 사이트 안전성을 검증하세요
+        </p>
+        <p class="text-gray-500 text-base sm:text-lg leading-relaxed px-4">
+          거래소, DeFi, NFT 마켓플레이스 등 모든 암호화폐 관련 사이트의 보안 상태를 즉시 확인
+        </p>
+      </div>
+
+      <!-- Check Form -->
+      <div class="w-full max-w-3xl mx-auto relative mb-8 sm:mb-12 lg:mb-16">
+        <form id="checkForm" class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <!-- Search Type Selector -->
+          <div class="flex-shrink-0">
+            <select id="searchType" class="w-full sm:w-44 h-12 sm:h-14 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 bg-white text-sm sm:text-base px-3 cursor-pointer outline-none">
+              <option value="general">일반 도메인</option>
+              <option value="crypto" selected>암호화폐 관련</option>
+            </select>
+          </div>
+
+          <!-- Input Field -->
+          <div class="relative flex-1">
+            <input
+              type="text"
+              id="urlInput"
+              placeholder="암호화폐 거래소나 관련 사이트 입력 (예: binance.com)"
+              class="pl-10 sm:pl-12 h-12 sm:h-14 text-base sm:text-lg border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors bg-white w-full outline-none"
+            />
+            <i data-lucide="search" class="absolute left-3 sm:left-4 top-3 sm:top-4 h-5 w-5 sm:h-6 sm:w-6 text-gray-400"></i>
+          </div>
+
+          <!-- Submit Button -->
+          <button
+            type="submit"
+            class="h-12 sm:h-14 px-6 sm:px-8 text-base sm:text-lg bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium w-full sm:w-auto cursor-pointer"
+            style="transition: all 0.2s ease;"
+          >
+            보안 검증하기
+          </button>
+        </form>
+      </div>
+
+      <!-- Features Section -->
+      <div class="mb-8 sm:mb-12 lg:mb-16 mt-16 sm:mt-20 lg:mt-24 max-w-3xl mx-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 max-w-6xl mx-auto">
+          <!-- Feature 1: Realtime -->
+          <div class="text-center">
+            <div class="w-16 h-16 flex items-center justify-center mb-4 mx-auto">
+              <i data-lucide="database" class="h-12 w-12 text-green-600"></i>
+            </div>
+            <h3 class="font-bold text-xl mb-3 text-gray-900">실시간 분석</h3>
+            <p class="text-gray-600">웹사이트 신뢰성과 보안 상태에 대한 실시간 검증</p>
+          </div>
+
+          <!-- Feature 2: SSL -->
+          <div class="text-center">
+            <div class="w-16 h-16 flex items-center justify-center mb-4 mx-auto">
+              <i data-lucide="shield" class="h-12 w-12 text-green-600"></i>
+            </div>
+            <h3 class="font-bold text-xl mb-3 text-gray-900">SSL 및 보안 검사</h3>
+            <p class="text-gray-600">포괄적인 SSL 인증서와 보안 프로토콜 검증</p>
+          </div>
+
+          <!-- Feature 3: Trust Score -->
+          <div class="text-center">
+            <div class="w-16 h-16 flex items-center justify-center mb-4 mx-auto">
+              <i data-lucide="check-circle" class="h-12 w-12 text-green-600"></i>
+            </div>
+            <h3 class="font-bold text-xl mb-3 text-gray-900">신뢰도 점수 시스템</h3>
+            <p class="text-gray-600">여러 보안 매개변수를 기반으로 한 명확한 0-100 점수</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics Section -->
+      <div class="mb-0 mt-16 sm:mt-20 lg:mt-24 max-w-3xl mx-auto">
+        <div class="bg-white border border-gray-200 rounded-sm shadow-sm">
+          <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-green-500 via-blue-500 to-green-500 pulse-line"></div>
+            <h2 class="text-lg font-semibold text-gray-800 uppercase tracking-wide">
+              실시간 통계
+            </h2>
+            <div class="absolute top-2 right-4 w-2 h-2 bg-green-500 rounded-full pulse-line"></div>
+          </div>
+          <div class="p-6">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <!-- Stat 1 -->
+              <div class="text-center group">
+                <div class="text-2xl font-bold mb-2 text-blue-600" id="stat1">0</div>
+                <div class="text-sm text-gray-600 uppercase tracking-wide">분석된 사이트</div>
+                <div class="mt-2 h-0.5 bg-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></div>
+              </div>
+
+              <!-- Stat 2 -->
+              <div class="text-center group">
+                <div class="text-2xl font-bold mb-2 text-gray-900" id="stat2">0%</div>
+                <div class="text-sm text-gray-600 uppercase tracking-wide">탐지율</div>
+                <div class="mt-2 h-0.5 bg-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></div>
+              </div>
+
+              <!-- Stat 3 -->
+              <div class="text-center group">
+                <div class="text-2xl font-bold mb-2 text-red-600" id="stat3">0</div>
+                <div class="text-sm text-gray-600 uppercase tracking-wide">탐지된 스캠</div>
+                <div class="mt-2 h-0.5 bg-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></div>
+              </div>
+
+              <!-- Stat 4 -->
+              <div class="text-center group">
+                <div class="text-2xl font-bold mb-2 text-gray-900" id="stat4">0/7</div>
+                <div class="text-sm text-gray-600 uppercase tracking-wide">모니터링</div>
+                <div class="mt-2 h-0.5 bg-gray-200 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide icons
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+
+    // Typewriter effect
+    const urlInput = document.getElementById('urlInput');
+    const demoText = 'hexatradeglobal-asia.com';
+    let currentIndex = 0;
+    let typingComplete = false;
+
+    function typeWriter() {
+      if (currentIndex <= demoText.length) {
+        urlInput.value = demoText.slice(0, currentIndex);
+        currentIndex++;
+        setTimeout(typeWriter, 80);
+      } else {
+        typingComplete = true;
+        // Start hand cursor animation after typing completes
+        setTimeout(animateHandCursor, 800);
+      }
+    }
+
+    // Animate hand cursor to button
+    function animateHandCursor() {
+      const cursor = document.getElementById('animated-cursor');
+      const submitButton = document.querySelector('button[type="submit"]');
+
+      if (!submitButton) return;
+
+      const buttonRect = submitButton.getBoundingClientRect();
+      const targetX = buttonRect.left + buttonRect.width / 2 - 20;
+      const targetY = buttonRect.top + buttonRect.height / 2 - 20;
+
+      // Start position (from input field)
+      const inputRect = urlInput.getBoundingClientRect();
+      const startX = inputRect.right - 50;
+      const startY = inputRect.top + inputRect.height / 2 - 20;
+
+      cursor.style.left = startX + 'px';
+      cursor.style.top = startY + 'px';
+      cursor.classList.add('show');
+
+      // Animate to button
+      let progress = 0;
+      const duration = 1500; // 1.5 seconds
+      const startTime = Date.now();
+
+      function moveToButton() {
+        const now = Date.now();
+        progress = Math.min((now - startTime) / duration, 1);
+
+        // Easing function
+        const easeInOutCubic = progress < 0.5
+          ? 4 * progress * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+        const currentX = startX + (targetX - startX) * easeInOutCubic;
+        const currentY = startY + (targetY - startY) * easeInOutCubic;
+
+        cursor.style.left = currentX + 'px';
+        cursor.style.top = currentY + 'px';
+
+        if (progress < 1) {
+          requestAnimationFrame(moveToButton);
+        } else {
+          // Click animation
+          setTimeout(() => {
+            cursor.classList.add('clicking');
+            submitButton.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+              cursor.classList.remove('clicking');
+              submitButton.style.transform = 'scale(1)';
+
+              // Submit form after click animation
+              setTimeout(() => {
+                cursor.classList.remove('show');
+                submitButton.click();
+              }, 300);
+            }, 300);
+          }, 200);
+        }
+      }
+
+      requestAnimationFrame(moveToButton);
+    }
+
+    // Start typing after page load
+    setTimeout(typeWriter, 500);
+
+    // Form submission
+    document.getElementById('checkForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const url = urlInput.value.trim();
+
+      if (!url) return;
+
+      // Redirect to landing result page
+      window.location.href = '/landing-result.html';
+    });
+
+    // Count up animation
+    function animateValue(element, start, end, duration, suffix = '', isSpecial = false) {
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const value = Math.floor(start + (end - start) * easeOutQuart);
+
+        if (isSpecial) {
+          element.textContent = value + '/7';
+        } else if (element.id === 'stat1' || element.id === 'stat3') {
+          element.textContent = value.toLocaleString() + suffix;
+        } else {
+          element.textContent = value + suffix;
+        }
+
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          if (isSpecial) {
+            element.textContent = end + '/7';
+          } else if (element.id === 'stat1' || element.id === 'stat3') {
+            element.textContent = end.toLocaleString() + suffix;
+          } else {
+            element.textContent = end + suffix;
+          }
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    // Animate stats with hardcoded values (no server required)
+    setTimeout(() => {
+      // Hardcoded statistics values
+      const stat1Value = 15432;  // 분석된 사이트
+      const stat2Value = 94;     // 탐지율 (%)
+      const stat3Value = 823;    // 탐지된 스캠
+
+      setTimeout(() => {
+        animateValue(document.getElementById('stat1'), 0, stat1Value, 2000, '');
+      }, 500);
+      setTimeout(() => {
+        animateValue(document.getElementById('stat2'), 0, stat2Value, 2000, '%');
+      }, 650);
+      setTimeout(() => {
+        animateValue(document.getElementById('stat3'), 0, stat3Value, 2000, '');
+      }, 800);
+      setTimeout(() => {
+        animateValue(document.getElementById('stat4'), 0, 24, 1000, '', true);
+      }, 950);
+    }, 100);
+  </script>
+</body>
+</html>

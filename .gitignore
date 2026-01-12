@@ -39,3 +39,34 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+
+# 테스트/임시 파일
+*.log
+*.tmp
+*.temp
+
+# 데이터베이스
+*.db
+*.sqlite
+prisma/*.db
+prisma/*.db-journal
+
+# 캐시
+.cache/
+*.cache
+
+# 테스트 결과/생성 파일
+result-data.json
+generated-*.html
+
+# MCP 서버
+mcp-server/
