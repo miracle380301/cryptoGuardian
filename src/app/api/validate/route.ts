@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       whoisLookup(cleanedDomain),
       checkSSL(cleanedDomain),
       checkSafeBrowsing(cleanedDomain),
-      Promise.resolve(analyzePhishingPatterns(cleanedDomain)),
+      analyzePhishingPatterns(cleanedDomain),  // Now async - loads from DB
       Promise.resolve(analyzeSuspiciousDomain(cleanedDomain)),
     ];
 
