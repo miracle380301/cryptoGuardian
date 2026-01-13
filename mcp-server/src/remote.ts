@@ -480,8 +480,8 @@ app.get("/health", (_req: Request, res: Response) => {
 app.get("/sse", async (req: Request, res: Response) => {
   console.log("New SSE connection");
 
-  const transport = new SSEServerTransport("/messages", res);
   const sessionId = crypto.randomUUID();
+  const transport = new SSEServerTransport(`/messages?sessionId=${sessionId}`, res);
   transports.set(sessionId, transport);
 
   const server = createMcpServer();
