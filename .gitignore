@@ -68,8 +68,5 @@ prisma/*.db-journal
 result-data.json
 generated-*.html
 
-# MCP 서버
-mcp-server/
-
-# Claude 임시 폴더
-tmpclaude-*/
+# Claude 임시 파일
+tmpclaude-*
