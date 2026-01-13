@@ -516,7 +516,12 @@ app.post("/messages", async (req: Request, res: Response) => {
   }
 
   console.log(`Processing message for session ${sessionId}`);
-  await transport.handlePostMessage(req, res);
+  try {
+    await transport.handlePostMessage(req, res);
+    console.log(`Message processed successfully for session ${sessionId}`);
+  } catch (error) {
+    console.error(`Error processing message for session ${sessionId}:`, error);
+  }
 });
 
 // 서버 시작
