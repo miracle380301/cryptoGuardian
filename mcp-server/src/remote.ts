@@ -2,8 +2,11 @@
 
 import express, { Request, Response } from "express";
 import cors from "cors";
+import { randomUUID } from "crypto";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { z } from "zod";
 
 // API base URL
@@ -509,14 +512,110 @@ app.use((req, res, next) => {
   }
 });
 
-// 활성 트랜스포트 저장
-const transports: Map<string, SSEServerTransport> = new Map();
+// 활성 트랜스포트 저장 (SSE + Streamable HTTP 둘 다 지원)
+const transports: Map<string, SSEServerTransport | StreamableHTTPServerTransport> = new Map();
 
 // Health check
 app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", server: "crypto-guardian-mcp", version: "1.0.0" });
 });
 
+//=============================================================================
+// STREAMABLE HTTP TRANSPORT (PROTOCOL VERSION 2025-11-25) - PlayMCP 지원
+//=============================================================================
+app.all("/mcp", async (req: Request, res: Response) => {
+  console.log(`Received ${req.method} request to /mcp`);
+
+  try {
+    // 세션 ID 확인 (헤더에서)
+    const sessionId = req.headers["mcp-session-id"] as string | undefined;
+    let transport: StreamableHTTPServerTransport;
+
+    if (sessionId && transports.has(sessionId)) {
+      // 기존 세션 확인
+      const existingTransport = transports.get(sessionId);
+
+      if (existingTransport instanceof StreamableHTTPServerTransport) {
+        // 기존 Streamable HTTP 트랜스포트 재사용
+        transport = existingTransport;
+      } else {
+        // SSE 트랜스포트와 세션 ID 충돌
+        res.status(400).json({
+          jsonrpc: "2.0",
+          error: {
+            code: -32000,
+            message: "Bad Request: Session exists but uses a different transport protocol",
+          },
+          id: null,
+        });
+        return;
+      }
+    } else if (!sessionId && req.method === "POST" && isInitializeRequest(req.body)) {
+      // 새 세션 초기화
+      transport = new StreamableHTTPServerTransport({
+        sessionIdGenerator: () => randomUUID(),
+        onsessioninitialized: (newSessionId: string) => {
+          console.log(`StreamableHTTP session initialized: ${newSessionId}`);
+          transports.set(newSessionId, transport);
+        },
+      });
+
+      // 종료 핸들러
+      transport.onclose = () => {
+        const sid = transport.sessionId;
+        if (sid && transports.has(sid)) {
+          console.log(`StreamableHTTP transport closed: ${sid}`);
+          transports.delete(sid);
+        }
+      };
+
+      // MCP 서버 연결
+      const server = createMcpServer();
+      await server.connect(transport);
+    } else if (sessionId && !transports.has(sessionId)) {
+      // 세션 ID가 제공되었지만 존재하지 않음
+      res.status(404).json({
+        jsonrpc: "2.0",
+        error: {
+          code: -32001,
+          message: "Session not found",
+        },
+        id: null,
+      });
+      return;
+    } else {
+      // 유효하지 않은 요청
+      res.status(400).json({
+        jsonrpc: "2.0",
+        error: {
+          code: -32000,
+          message: "Bad Request: No valid session ID provided or not an initialization request",
+        },
+        id: null,
+      });
+      return;
+    }
+
+    // 요청 처리
+    await transport.handleRequest(req, res, req.body);
+  } catch (error) {
+    console.error("Error handling /mcp request:", error);
+    if (!res.headersSent) {
+      res.status(500).json({
+        jsonrpc: "2.0",
+        error: {
+          code: -32603,
+          message: "Internal server error",
+        },
+        id: null,
+      });
+    }
+  }
+});
+
+//=============================================================================
+// DEPRECATED HTTP+SSE TRANSPORT (PROTOCOL VERSION 2024-11-05)
+//=============================================================================
 // SSE 엔드포인트 - 클라이언트 연결
 app.get("/sse", async (req: Request, res: Response) => {
   console.log("New SSE connection");
@@ -536,7 +635,7 @@ app.get("/sse", async (req: Request, res: Response) => {
   await server.connect(transport);
 });
 
-// 메시지 수신 엔드포인트
+// 메시지 수신 엔드포인트 (SSE 전용)
 app.post("/messages", async (req: Request, res: Response) => {
   const sessionId = req.query.sessionId as string;
   console.log(`POST /messages received - sessionId: ${sessionId}`);
@@ -548,17 +647,31 @@ app.post("/messages", async (req: Request, res: Response) => {
     return;
   }
 
-  const transport = transports.get(sessionId);
+  const existingTransport = transports.get(sessionId);
 
-  if (!transport) {
+  if (!existingTransport) {
     console.log(`Error: Session not found for ${sessionId}`);
     res.status(404).json({ error: "Session not found" });
     return;
   }
 
+  // SSE 트랜스포트만 허용
+  if (!(existingTransport instanceof SSEServerTransport)) {
+    console.log(`Error: Session ${sessionId} uses Streamable HTTP, not SSE`);
+    res.status(400).json({
+      jsonrpc: "2.0",
+      error: {
+        code: -32000,
+        message: "Bad Request: Session uses Streamable HTTP protocol, use /mcp endpoint instead",
+      },
+      id: null,
+    });
+    return;
+  }
+
   console.log(`Processing message for session ${sessionId}`);
   try {
-    await transport.handlePostMessage(req, res);
+    await existingTransport.handlePostMessage(req, res);
     console.log(`Message processed successfully for session ${sessionId}`);
   } catch (error) {
     console.error(`Error processing message for session ${sessionId}:`, error);
@@ -568,6 +681,26 @@ app.post("/messages", async (req: Request, res: Response) => {
 // 서버 시작
 app.listen(PORT, () => {
   console.log(`Crypto Guardian MCP Server (Remote) running on port ${PORT}`);
-  console.log(`SSE endpoint: http://localhost:${PORT}/sse`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
+  console.log(`
+==============================================
+SUPPORTED TRANSPORT OPTIONS:
+
+1. Streamable HTTP (Protocol version: 2025-11-25) - PlayMCP 지원
+   Endpoint: /mcp
+   Methods: GET, POST, DELETE
+   Usage:
+     - Initialize with POST to /mcp
+     - Establish SSE stream with GET to /mcp
+     - Send requests with POST to /mcp
+     - Terminate session with DELETE to /mcp
+
+2. HTTP + SSE (Protocol version: 2024-11-05) - Claude Desktop 지원
+   Endpoints: /sse (GET) and /messages (POST)
+   Usage:
+     - Establish SSE stream with GET to /sse
+     - Send requests with POST to /messages?sessionId=<id>
+
+Health check: http://localhost:${PORT}/health
+==============================================
+`);
 });
