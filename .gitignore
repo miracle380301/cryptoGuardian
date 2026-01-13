@@ -70,3 +70,6 @@ generated-*.html
 
 # MCP 서버
 mcp-server/
+
+# Claude 임시 폴더
+tmpclaude-*/
