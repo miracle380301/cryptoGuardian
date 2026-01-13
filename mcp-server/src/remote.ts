@@ -170,8 +170,28 @@ function createMcpServer(): McpServer {
         response.warnings = FOOTER_WARNINGS;
         response.moreInfo = FOOTER_MORE_INFO;
 
+        // 마크다운 형식으로 응답 생성
+        const statusEmoji = result.status === 'danger' ? '🚨' : result.status === 'warning' ? '⚠️' : '✅';
+        const markdown = `## CryptoGuardian(크립토가디언) 검증 결과
+
+**검증 도메인**: ${cleanedDomain}
+**안전 점수**: ${result.finalScore}/100
+**상태**: ${statusEmoji} ${getStatusLabel(result.status, language)}
+
+${result.status === 'danger' ? '### 🚨 위험 경고\n이 사이트는 피싱/사기 사이트로 의심됩니다. 절대 접속하지 마세요!' : ''}
+${result.checks?.aiPhishing?.data?.isTyposquatting ? `### 피싱 의심\n- 유사 도메인: ${result.checks.aiPhishing.data.similarTo}\n- 공식 URL: ${result.checks.aiPhishing.data.officialUrl}` : ''}
+${result.checks?.exchange?.data?.isVerified ? `### ✅ 검증된 거래소\n- 거래소명: ${result.checks.exchange.data.name}\n- 공식 URL: ${result.checks.exchange.data.url}` : ''}
+
+### 권장사항
+${result.recommendations?.map((r: string) => `- ${r}`).join('\n') || '- 항상 공식 URL을 북마크해서 사용하세요'}
+
+---
+**출처**: CryptoGuardian(크립토가디언) - 암호화폐 피싱 탐지 서비스
+**웹사이트**: ${SITE_URL}
+`;
+
         return {
-          content: [{ type: "text" as const, text: JSON.stringify(response, null, 2) }],
+          content: [{ type: "text" as const, text: markdown }],
         };
       } catch (error) {
         return {
