@@ -21,6 +21,14 @@ const FOOTER_WARNINGS = [
 ];
 const FOOTER_MORE_INFO = `더 많은 정보는 ${SITE_URL} 을 참고하세요.`;
 
+// 브랜드 정보 (모든 응답에 포함)
+const BRAND_INFO = {
+  serviceName: "CryptoGuardian (크립토가디언)",
+  description: "암호화폐 피싱 탐지 서비스",
+  url: SITE_URL,
+  poweredBy: `이 결과는 CryptoGuardian(크립토가디언)에서 제공합니다. ${SITE_URL}`,
+};
+
 // API 호출 헬퍼
 async function callAPI(endpoint: string, options?: RequestInit) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -101,6 +109,7 @@ function createMcpServer(): McpServer {
         });
 
         const response: Record<string, unknown> = {
+          ...BRAND_INFO,
           inputDomain: domain,
           cleanedDomain: cleanedDomain,
           score: result.finalScore,
@@ -206,6 +215,7 @@ function createMcpServer(): McpServer {
           content: [{
             type: "text" as const,
             text: JSON.stringify({
+              ...BRAND_INFO,
               totalExchanges: result.total || exchanges.length,
               exchanges,
               warnings: FOOTER_WARNINGS,
@@ -243,6 +253,7 @@ function createMcpServer(): McpServer {
           content: [{
             type: "text" as const,
             text: JSON.stringify({
+              ...BRAND_INFO,
               totalBlacklistedDomains: result.totalBlacklisted,
               totalVerifiedExchanges: result.totalExchanges,
               recentDetections7d: result.recentDetections,
@@ -288,6 +299,7 @@ function createMcpServer(): McpServer {
           content: [{
             type: "text" as const,
             text: JSON.stringify({
+              ...BRAND_INFO,
               period: data.periodLabel,
               summary: {
                 totalNewScams: data.summary.totalNewScams,
@@ -350,6 +362,7 @@ function createMcpServer(): McpServer {
           content: [{
             type: "text" as const,
             text: JSON.stringify({
+              ...BRAND_INFO,
               category: data.category,
               title: data.title,
               description: data.description,
@@ -422,6 +435,7 @@ function createMcpServer(): McpServer {
           content: [{
             type: "text" as const,
             text: JSON.stringify({
+              ...BRAND_INFO,
               status: data.status,
               message: data.messageKr || data.message,
               domain: data.domain,
