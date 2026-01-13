@@ -1,34 +1,64 @@
 # CryptoGuardian MCP 서버 설정 가이드
 
-## Claude Desktop 설정
+## 엔드포인트 정보
 
-### 설정 파일 위치
+CryptoGuardian MCP 서버는 두 가지 전송 프로토콜을 지원합니다:
 
-**Windows:**
-```
-%APPDATA%\Claude\claude_desktop_config.json
-```
+| 엔드포인트 | 프로토콜 | 지원 플랫폼 |
+|-----------|----------|------------|
+| `/sse` + `/messages` | HTTP+SSE (2024-11-05) | Claude Desktop, ChatGPT |
+| `/mcp` | Streamable HTTP (2025-11-25) | PlayMCP |
 
-**Mac:**
-```
-~/Library/Application Support/Claude/claude_desktop_config.json
-```
+**서버 URL:** `https://crypto-guardian-mcp.onrender.com`
 
 ---
 
-## 설정 방법
+## 원격 서버 연결 (권장)
 
-### 1. 설정 파일 열기
-
-Windows에서 실행 (Win + R):
-```
-%APPDATA%\Claude\claude_desktop_config.json
-```
-
-### 2. MCP 서버 등록
+### Claude Desktop (원격)
 
 `claude_desktop_config.json` 파일에 다음 내용 추가:
 
+```json
+{
+  "mcpServers": {
+    "crypto-guardian": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://crypto-guardian-mcp.onrender.com/sse"
+      ]
+    }
+  }
+}
+```
+
+### ChatGPT
+
+ChatGPT에서 MCP 서버 추가 시:
+- **URL:** `https://crypto-guardian-mcp.onrender.com/sse`
+
+### PlayMCP
+
+PlayMCP에서 MCP 서버 등록 시:
+- **URL:** `https://crypto-guardian-mcp.onrender.com/mcp`
+
+> PlayMCP는 Streamable HTTP 프로토콜을 사용하므로 `/mcp` 엔드포인트를 사용합니다.
+
+---
+
+## 로컬 서버 연결
+
+### Claude Desktop (로컬)
+
+로컬에서 MCP 서버를 직접 실행하려면:
+
+**설정 파일 위치:**
+- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+- Mac: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+**Windows:**
 ```json
 {
   "mcpServers": {
@@ -43,7 +73,7 @@ Windows에서 실행 (Win + R):
 }
 ```
 
-**Mac/Linux 경로 예시:**
+**Mac/Linux:**
 ```json
 {
   "mcpServers": {
@@ -58,15 +88,9 @@ Windows에서 실행 (Win + R):
 }
 ```
 
-### 3. Claude Desktop 재시작
+### 로컬 개발 환경
 
-설정 저장 후 Claude Desktop을 완전히 종료하고 다시 시작합니다.
-
----
-
-## 로컬 개발 환경 설정
-
-로컬에서 테스트하려면 환경변수를 로컬 서버로 변경:
+로컬 Next.js 서버와 함께 테스트:
 
 ```json
 {
@@ -82,8 +106,8 @@ Windows에서 실행 (Win + R):
 }
 ```
 
-로컬 서버 실행:
 ```bash
+# Next.js 서버 실행
 cd D:\projects\cryptoGuardian
 npm run dev
 ```
@@ -143,17 +167,18 @@ npm run build
 
 ## 전체 설정 예시
 
-다른 MCP 서버와 함께 사용하는 경우:
+다른 MCP 서버와 함께 사용하는 경우 (원격 서버 권장):
 
 ```json
 {
   "mcpServers": {
     "crypto-guardian": {
-      "command": "node",
-      "args": ["D:\\projects\\cryptoGuardian\\mcp-server\\dist\\index.js"],
-      "env": {
-        "CRYPTO_GUARDIAN_API_URL": "https://cryptoguardian.co.kr"
-      }
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://crypto-guardian-mcp.onrender.com/sse"
+      ]
     },
     "other-server": {
       "command": "node",
