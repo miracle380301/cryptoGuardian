@@ -497,8 +497,11 @@ app.get("/sse", async (req: Request, res: Response) => {
 // 메시지 수신 엔드포인트
 app.post("/messages", async (req: Request, res: Response) => {
   const sessionId = req.query.sessionId as string;
+  console.log(`POST /messages received - sessionId: ${sessionId}`);
+  console.log(`Active sessions: ${Array.from(transports.keys()).join(", ")}`);
 
   if (!sessionId) {
+    console.log("Error: sessionId is required");
     res.status(400).json({ error: "sessionId is required" });
     return;
   }
@@ -506,10 +509,12 @@ app.post("/messages", async (req: Request, res: Response) => {
   const transport = transports.get(sessionId);
 
   if (!transport) {
+    console.log(`Error: Session not found for ${sessionId}`);
     res.status(404).json({ error: "Session not found" });
     return;
   }
 
+  console.log(`Processing message for session ${sessionId}`);
   await transport.handlePostMessage(req, res);
 });
 
