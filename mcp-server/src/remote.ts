@@ -466,7 +466,14 @@ app.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
-app.use(express.json());
+// express.json()을 /messages 제외한 라우트에만 적용
+app.use((req, res, next) => {
+  if (req.path === "/messages") {
+    next(); // /messages는 raw body 유지 (SSEServerTransport가 직접 처리)
+  } else {
+    express.json()(req, res, next);
+  }
+});
 
 // 활성 트랜스포트 저장
 const transports: Map<string, SSEServerTransport> = new Map();
