@@ -178,7 +178,9 @@ server.tool(
     try {
       const result = await callAPI(`/api/exchanges?limit=${limit}&sortBy=${sortBy}`);
 
-      const exchanges = result.exchanges?.map((ex: Record<string, unknown>) => ({
+      // API 응답 구조: { success, data: { exchanges, total, ... } }
+      const exchangeData = result.data || result;
+      const exchanges = exchangeData.exchanges?.map((ex: Record<string, unknown>) => ({
         name: ex.name,
         officialUrl: ex.url,
         trustScore: ex.trustScore,
@@ -192,7 +194,7 @@ server.tool(
           {
             type: "text" as const,
             text: JSON.stringify({
-              totalExchanges: result.total || exchanges.length,
+              totalExchanges: exchangeData.total || exchanges.length,
               exchanges,
               warnings: FOOTER_WARNINGS,
               moreInfo: FOOTER_MORE_INFO,
@@ -228,16 +230,19 @@ server.tool(
     try {
       const result = await callAPI("/api/stats");
 
+      // API 응답 구조: { success, stats: { totalBlacklisted, ... } }
+      const stats = result.stats || result;
+
       return {
         content: [
           {
             type: "text" as const,
             text: JSON.stringify({
-              totalBlacklistedDomains: result.totalBlacklisted,
-              totalVerifiedExchanges: result.totalExchanges,
-              recentDetections7d: result.recentDetections,
-              detectionRate: result.detectionRate,
-              lastUpdated: result.lastUpdated,
+              totalBlacklistedDomains: stats.totalBlacklisted,
+              totalVerifiedExchanges: stats.totalExchanges,
+              recentDetections7d: stats.recentDetections,
+              detectionRate: stats.detectionRate,
+              lastUpdated: stats.lastUpdated,
               warnings: FOOTER_WARNINGS,
               moreInfo: FOOTER_MORE_INFO,
             }, null, 2),
